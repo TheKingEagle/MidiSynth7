@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MidiSynth7", "MidiSynth7\MidiSynth7.csproj", "{8746DABC-EDDC-4727-84D5-6881424FB3A9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8746DABC-EDDC-4727-84D5-6881424FB3A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8746DABC-EDDC-4727-84D5-6881424FB3A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8746DABC-EDDC-4727-84D5-6881424FB3A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8746DABC-EDDC-4727-84D5-6881424FB3A9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C35FF865-8CA0-433C-826C-228780503666}
+	EndGlobalSection
+EndGlobal
