@@ -9,9 +9,9 @@ namespace MidiSynth7.components
 {
     public class SystemConfig
     {
-        public int ActiveOutputDeviceId { get; set; }
+        public int ActiveOutputDeviceIndex { get; set; }
 
-        public int ActiveInputDeviceId { get; set; }
+        public int ActiveInputDeviceIndex { get; set; }
         
         public int[] ChannelInstruments { get; set; }
 
@@ -45,17 +45,17 @@ namespace MidiSynth7.components
             //Constructor for new instance
             DisplayMode = displayMode;
 
-            ActiveInputDeviceId   = -1;
-            ActiveOutputDeviceId  = 0;
-            EnableRiffs           = false;
-            ChannelInstruments    = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            ChannelOctaves        = new int[] { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 };
-            ChannelVolumes        = new int[] { 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127 };
-            ChannelPans           = new int[] { 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63 };
-            ChannelReverbs        = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            ChannelChoruses       = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            ChannelModulations    = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            ChannelCustomControls = new List<(string name, (int controllerID, int value)[])>();
+            ActiveInputDeviceIndex   = -1;
+            ActiveOutputDeviceIndex  = 0;
+            EnableRiffs              = false;
+            ChannelInstruments       = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            ChannelOctaves           = new int[] { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 };
+            ChannelVolumes           = new int[] { 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127 };
+            ChannelPans              = new int[] { 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63 };
+            ChannelReverbs           = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            ChannelChoruses          = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            ChannelModulations       = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            ChannelCustomControls    = new List<(string name, (int controllerID, int value)[])>();
 
             var controller1 = new (int controllerID, int value)[]
             {
