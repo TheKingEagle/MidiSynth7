@@ -3,4 +3,4 @@ A fully-featured MiDI software synthesizer written for WPF. This is an update fr
 
 This is another work in progress. Frequent updates will be made to this repo.
 
-*This is also basically an open sourced port from v6, but with some upgrades*
+*This is also basically an open sourced rewrite & port from v6, but with some upgrades*
