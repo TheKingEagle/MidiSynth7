@@ -63,6 +63,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Expression.Drawing, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -74,6 +75,7 @@
       <HintPath>..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
     </Reference>
@@ -105,6 +107,34 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="components\views\Standard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="entities\BlackKey.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="entities\controls\DialControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="entities\controls\PianoControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="entities\controls\PianoControlFullRange.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="entities\TransposeNotification.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="entities\WhiteKey.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -117,6 +147,29 @@
     <Compile Include="components\MidiEngine.cs" />
     <Compile Include="components\NumberedEntry.cs" />
     <Compile Include="components\SystemConfig.cs" />
+    <Compile Include="components\views\Standard.xaml.cs">
+      <DependentUpon>Standard.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="entities\BlackKey.xaml.cs">
+      <DependentUpon>BlackKey.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="entities\controls\DialControl.xaml.cs">
+      <DependentUpon>DialControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="entities\KeyTypes.cs" />
+    <Compile Include="entities\controls\PianoControl.xaml.cs">
+      <DependentUpon>PianoControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="entities\controls\PianoControlFullRange.xaml.cs">
+      <DependentUpon>PianoControlFullRange.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="entities\Pie.cs" />
+    <Compile Include="entities\TransposeNotification.xaml.cs">
+      <DependentUpon>TransposeNotification.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="entities\WhiteKey.xaml.cs">
+      <DependentUpon>WhiteKey.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -147,10 +200,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="entities\controls\" />
-    <Folder Include="entities\views\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
       <Visible>False</Visible>

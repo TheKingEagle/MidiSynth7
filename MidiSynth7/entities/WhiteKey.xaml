@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="MidiSynth7.entities.WhiteKey"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="145" d:DesignWidth="27" Width="27" Height="145" MaxHeight="145" MaxWidth="27" MinHeight="145" MinWidth="27" MouseLeave="UserControl_MouseLeave" MouseEnter="UserControl_MouseEnter" Focusable="False" FontWeight="Bold" FontSize="18" Foreground="Black" ClipToBounds="True">
+
+    <UserControl.Resources>
+        <LinearGradientBrush x:Name="OFFBRUSH" x:Key="OFFBrush" EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="#FFF0F0F0" Offset="1"/>
+            <GradientStop Color="White"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Name="ONBRUSH" x:Key="ONBrush" EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="#FF00C2Ff" Offset="1"/>
+            <GradientStop Color="#FF0023Ff"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Name="ALTONBRUSH" x:Key="ALTONBrush" EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="#FF0017FF" Offset="1"/>
+            <GradientStop Color="#FF000F6A"/>
+        </LinearGradientBrush>
+    </UserControl.Resources>
+    <Grid>
+
+        <Border BorderThickness="1,2,1,1" Name="border" MouseDown="Border_MouseDown" MouseUp="Border_MouseUp" Background="{StaticResource ResourceKey=OFFBrush}">
+            <Border.BorderBrush>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Black"/>
+                    <GradientStop Color="#FF080808" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.BorderBrush>
+
+            <Border.CornerRadius>
+                <CornerRadius BottomLeft="4" BottomRight="4"/>
+            </Border.CornerRadius>
+            <ContentPresenter x:Name="cp_NoteID" Content="" RenderTransformOrigin="0.5,0.5" Margin="-58,56,-57,61">
+                <ContentPresenter.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="270"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </ContentPresenter.RenderTransform>
+
+            </ContentPresenter>
+        </Border>
+
+    </Grid>
+</UserControl>
