@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MidiSynth7"
         mc:Ignorable="d"
-        Title="RMSoftware MIDI Synthesizer v7.0 • Standard Edition" Height="590" Width="1106" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None" Background="#000C0C0C" AllowsTransparency="True" SnapsToDevicePixels="True" Icon="syn6.png" Foreground="White" Initialized="Window_Initialized" Loaded="window_Loaded" StateChanged="window_StateChanged" >
+        Title="RMSoftware MIDI Synthesizer v7.0 • Standard Edition" Height="590" Width="1106" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None" Background="#000C0C0C" AllowsTransparency="True" SnapsToDevicePixels="True" Icon="syn6.png" Foreground="White" Initialized="Window_Initialized" Loaded="window_Loaded" StateChanged="window_StateChanged" Unloaded="window_Unloaded" PreviewKeyDown="window_PreviewKeyDown" PreviewKeyUp="window_PreviewKeyUp" >
 
     <Window.Resources>
         <ResourceDictionary Source="asset\Themes.xaml"/>
@@ -81,7 +81,7 @@
             </Grid>
 
             <Grid x:Name="GR_MwnContent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,40,0,0">
-                <Frame x:Name="FR_SynthView" NavigationUIVisibility="Hidden" Source="/MidiSynth7;component/components/views/Standard.xaml" >
+                <Frame x:Name="FR_SynthView" NavigationUIVisibility="Hidden">
                     <Frame.Background>
                         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                             <GradientStop Color="#FF0C0C0C" Offset="0"/>

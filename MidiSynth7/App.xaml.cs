@@ -12,5 +12,7 @@ namespace MidiSynth7
     /// </summary>
     public partial class App : Application
     {
+        public static string APP_DATA_DIR = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\MidiSynth7\\";
+        public static string PRESET_DIR = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\MidiSynth7\\RiffPreset";
     }
 }

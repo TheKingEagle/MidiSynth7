@@ -14,8 +14,12 @@ namespace MidiSynth7.components
         public int ActiveInputDeviceIndex { get; set; }
         
         public int[] ChannelInstruments { get; set; }
+        public int[] ChannelBanks { get; set; }
 
-        public int[] ChannelOctaves { get; set; }
+        /// <summary>
+        /// This is configuration for Octave, transpose, and other note offset related settings.
+        /// </summary>
+        public int[] ChannelOffsets { get; set; }
 
         public int[] ChannelVolumes { get; set; }
 
@@ -33,6 +37,8 @@ namespace MidiSynth7.components
 
         public bool EnableRiffs { get; set; }
 
+        public string InstrumentDefinitionPath { get; set; }
+
         public DisplayModes DisplayMode { get; set; }
 
         public SystemConfig()
@@ -49,9 +55,11 @@ namespace MidiSynth7.components
             ActiveOutputDeviceIndex  = 0;
             EnableRiffs              = false;
             ChannelInstruments       = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            ChannelOctaves           = new int[] { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 };
+            ChannelBanks             = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            //Offset layout:                     {global octave, global transpose, ofx 3 transpose 1, ofx3 transpose 2, ..etc}
+            ChannelOffsets           = new int[] { 3, 0, -12, -24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             ChannelVolumes           = new int[] { 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127 };
-            ChannelPans              = new int[] { 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63 };
+            ChannelPans              = new int[] { 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64 };
             ChannelReverbs           = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             ChannelChoruses          = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             ChannelModulations       = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -100,6 +108,18 @@ namespace MidiSynth7.components
             ChannelCustomControls.Add(("Tremolo",controller1));
             ChannelCustomControls.Add(("Phaser", controller2));
 
+        }
+
+        public bool CheckForMissingValues()
+        {
+            object[] items = new object[]
+            {
+                DisplayMode, EnableRiffs,ChannelOffsets,ChannelInstruments,
+                ChannelVolumes,ChannelCustomControls,ChannelChoruses,ChannelReverbs,
+                ActiveInputDeviceIndex,ActiveOutputDeviceIndex, SelectedRiff,
+                ChannelModulations,ChannelPans,ChannelBanks
+            };
+            return items.Any(v => v == null);
         }
 
     }

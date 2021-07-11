@@ -75,7 +75,7 @@ namespace MidiSynth7.components
         private string RSAuthor;
         private string RSCopyright;
         private string RSComments;
-        private string PresetDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\MidiSynth7\\RiffPreset";
+        private string PresetDirectory = App.PRESET_DIR;
        
         #endregion
 
@@ -138,6 +138,7 @@ namespace MidiSynth7.components
         {
             try
             {
+                Console.WriteLine("HIHIHIHIHI");
                 Generatepresets();
                 device = new OutputDevice(DeviceIndex);
                 onMidiInit(new EventArgs());

@@ -86,6 +86,7 @@
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -146,6 +147,7 @@
     <Compile Include="components\InstrumentDefinition.cs" />
     <Compile Include="components\MidiEngine.cs" />
     <Compile Include="components\NumberedEntry.cs" />
+    <Compile Include="components\SynthView.cs" />
     <Compile Include="components\SystemConfig.cs" />
     <Compile Include="components\views\Standard.xaml.cs">
       <DependentUpon>Standard.xaml</DependentUpon>
@@ -200,7 +202,9 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\preset1.mid" />
+  </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
       <Visible>False</Visible>
@@ -218,6 +222,39 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="syn6.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\preset2.mid" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\preset3.mid" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\preset4.mid" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\preset5.mid" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\preset6.mid" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\preset7.mid" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\preset8.mid" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\preset9.mid" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\preset10.mid" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\preset11.mid" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\preset12.mid" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

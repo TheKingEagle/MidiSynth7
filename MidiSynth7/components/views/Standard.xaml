@@ -13,7 +13,7 @@
         <ResourceDictionary Source="..\..\asset\Themes.xaml"/>
     </Page.Resources>
     <Grid>
-        <GroupBox Header="MIDI Output" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Height="173" Width="248" BorderThickness="2" BorderBrush="#FF0008A6" Padding="0">
+        <GroupBox x:Name="gb_out" Header="MIDI Output" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Height="173" Width="248" BorderThickness="2" BorderBrush="#FF0008A6" Padding="0">
             <Grid>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -53,7 +53,7 @@
                 </SynthGUI:DialControl>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Controllers" HorizontalAlignment="Left" Margin="263,4,0,0" VerticalAlignment="Top" Height="173" Width="807" BorderThickness="2" BorderBrush="#FF3E0000" Padding="0">
+        <GroupBox x:Name="gb_ctrl" Header="Controllers" HorizontalAlignment="Left" Margin="263,4,0,0" VerticalAlignment="Top" Height="173" Width="807" BorderThickness="2" BorderBrush="#FF3E0000" Padding="0">
             <Grid>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -69,7 +69,7 @@
                 <SynthGUI:DialControl x:Name="CTRL_Modulation" HorizontalAlignment="Left" Margin="660,16,0,0" VerticalAlignment="Top" Text="Modulation" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged"/>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Instruments" HorizontalAlignment="Left" Margin="10,182,0,0" VerticalAlignment="Top" Height="182" Width="248" BorderThickness="2" BorderBrush="#FF035507" Padding="0">
+        <GroupBox x:Name="gb_instrument" Header="Instruments" HorizontalAlignment="Left" Margin="10,182,0,0" VerticalAlignment="Top" Height="182" Width="248" BorderThickness="2" BorderBrush="#FF035507" Padding="0">
             <Grid>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -80,7 +80,7 @@
                 <GroupBox x:Name="gb_split" Header="Split Instrument" HorizontalAlignment="Left" Margin="0,74,0,0" VerticalAlignment="Top" Height="86" Width="240" BorderBrush="#FF135300" BorderThickness="2" IsEnabled="False">
                     <Grid HorizontalAlignment="Left" Height="64" VerticalAlignment="Top" Width="224">
                         <TextBlock HorizontalAlignment="Left" Margin="9,13,0,0" TextWrapping="Wrap" Text="Bank:" VerticalAlignment="Top"/>
-                        <ComboBox x:Name="cb_sBank" HorizontalAlignment="Left" Margin="45,10,0,0" VerticalAlignment="Top" Width="173" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="cb_sBank_SelectionChanged">
+                        <ComboBox x:Name="cb_sBank" HorizontalAlignment="Left" Margin="45,10,0,0" VerticalAlignment="Top" Width="173" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_sBank_SelectionChanged">
                             <ComboBox.Background>
                                 <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                                     <GradientStop Color="#FFD8D8D8" Offset="1"/>
@@ -91,7 +91,7 @@
                             </ComboBox.Background>
                         </ComboBox>
                         <TextBlock HorizontalAlignment="Left" Margin="9,40,0,0" TextWrapping="Wrap" Text="Patch:" VerticalAlignment="Top"/>
-                        <ComboBox x:Name="cb_sPatch" HorizontalAlignment="Left" Margin="45,37,0,0" VerticalAlignment="Top" Width="173" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="cb_sPatch_SelectionChanged">
+                        <ComboBox x:Name="cb_sPatch" HorizontalAlignment="Left" Margin="45,37,0,0" VerticalAlignment="Top" Width="173" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_sPatch_SelectionChanged">
                             <ComboBox.Background>
                                 <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                                     <GradientStop Color="#FFD8D8D8" Offset="1"/>
@@ -105,7 +105,7 @@
                 </GroupBox>
                 <CheckBox x:Name="cb__InsS_Enable" Content="" HorizontalAlignment="Left" Margin="102,75,0,0" VerticalAlignment="Top" Focusable="False" Checked="toggleChecked" Unchecked="toggleChecked"/>
                 <TextBlock HorizontalAlignment="Left" Margin="17,13,0,0" TextWrapping="Wrap" Text="Bank:" VerticalAlignment="Top"/>
-                <ComboBox x:Name="cb_mBank" HorizontalAlignment="Left" Margin="53,10,0,0" VerticalAlignment="Top" Width="173" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="cb_mBank_SelectionChanged">
+                <ComboBox x:Name="cb_mBank" HorizontalAlignment="Left" Margin="53,10,0,0" VerticalAlignment="Top" Width="173" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_mBank_SelectionChanged">
                     <ComboBox.Background>
                         <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                             <GradientStop Color="#FFD8D8D8" Offset="1"/>
@@ -116,7 +116,7 @@
                     </ComboBox.Background>
                 </ComboBox>
                 <TextBlock HorizontalAlignment="Left" Margin="17,40,0,0" TextWrapping="Wrap" Text="Patch:" VerticalAlignment="Top"/>
-                <ComboBox x:Name="cb_mPatch" HorizontalAlignment="Left" Margin="53,37,0,0" VerticalAlignment="Top" Width="173" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="cb_mPatch_SelectionChanged">
+                <ComboBox x:Name="cb_mPatch" HorizontalAlignment="Left" Margin="53,37,0,0" VerticalAlignment="Top" Width="173" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_mPatch_SelectionChanged">
                     <ComboBox.Background>
                         <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                             <GradientStop Color="#FFD8D8D8" Offset="1"/>
@@ -161,7 +161,7 @@
                     </LinearGradientBrush>
                 </Grid.Background>
                 <TextBlock HorizontalAlignment="Left" Margin="10,15,0,0" TextWrapping="Wrap" Text="Drum Kit:" VerticalAlignment="Top"/>
-                <ComboBox x:Name="cb_dkitlist" HorizontalAlignment="Left" Margin="10,36,0,0" VerticalAlignment="Top" Width="220" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="ComboBox_SelectionChanged" SelectedIndex="0">
+                <ComboBox x:Name="cb_dkitlist" HorizontalAlignment="Left" Margin="10,36,0,0" VerticalAlignment="Top" Width="220" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_dkit_SelectionChanged" SelectedIndex="0">
                     <ComboBox.Background>
                         <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                             <GradientStop Color="#FFD8D8D8" Offset="1"/>
@@ -238,7 +238,7 @@
             </Grid>
         </GroupBox>
 
-        <GroupBox Header="MIDI Composer" HorizontalAlignment="Left" Margin="636,273,0,0" VerticalAlignment="Top" Height="182" Width="434" BorderThickness="2" BorderBrush="#FF0097FF" Padding="0">
+        <GroupBox x:Name="gb_comp" Header="MIDI Composer" HorizontalAlignment="Left" Margin="636,273,0,0" VerticalAlignment="Top" Height="182" Width="434" BorderThickness="2" BorderBrush="#FF0097FF" Padding="0">
             <Grid Margin="0,0,0,-1">
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -397,7 +397,7 @@
         <CheckBox x:Name="cb_DS_Enable" Content="" HorizontalAlignment="Left" Margin="328,183,0,0" VerticalAlignment="Top" Checked="toggleChecked" Unchecked="toggleChecked" Focusable="False"/>
         <CheckBox x:Name="cb_OFX_Enble" Content="" HorizontalAlignment="Left" Margin="584,183,0,0" VerticalAlignment="Top" Checked="toggleChecked" Unchecked="toggleChecked" Focusable="False"/>
         <CheckBox x:Name="cb_NFX_Enable" Content="" HorizontalAlignment="Left" Margin="861,183,0,0" VerticalAlignment="Top" Width="16" Checked="toggleChecked" Unchecked="toggleChecked" Focusable="False"/>
-        <GroupBox Header="Channels" HorizontalAlignment="Left" Margin="636,460,0,0" VerticalAlignment="Top" Height="53" Width="434" BorderBrush="#FF0008A6" BorderThickness="2" IsEnabled="False">
+        <GroupBox x:Name="gb_chn" Header="Channels" HorizontalAlignment="Left" Margin="636,460,0,0" VerticalAlignment="Top" Height="53" Width="434" BorderBrush="#FF0008A6" BorderThickness="2" IsEnabled="False">
             <Grid>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">

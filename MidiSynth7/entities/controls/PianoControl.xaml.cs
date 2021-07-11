@@ -75,9 +75,9 @@ namespace MidiSynth7.entities.controls
 
         public System.Windows.Input.Key[] KeysTable = 
         {
-           Key.Z, Key.S,Key.X,Key.D,Key.C,Key.V,Key.G,Key.B,Key.H,Key.N,Key.J,Key.M,(System.Windows.Input.KeyInterop.KeyFromVirtualKey(188)),Key.L,(System.Windows.Input.KeyInterop.KeyFromVirtualKey(190)),(System.Windows.Input.KeyInterop.KeyFromVirtualKey(186)),(System.Windows.Input.KeyInterop.KeyFromVirtualKey(191)),
-           Key.Q,Key.D2,Key.W,Key.D3,Key.E,Key.D4,Key.R,Key.T,Key.D6,Key.Y,Key.D7,Key.U,Key.I,Key.D9,Key.O,Key.D0,Key.P,(System.Windows.Input.KeyInterop.KeyFromVirtualKey(189)),
-           (System.Windows.Input.KeyInterop.KeyFromVirtualKey(219)),(System.Windows.Input.KeyInterop.KeyFromVirtualKey(221)),(System.Windows.Input.KeyInterop.KeyFromVirtualKey(8)),(System.Windows.Input.KeyInterop.KeyFromVirtualKey(220))
+           Key.Z, Key.S,Key.X,Key.C,Key.F,Key.V,Key.G,Key.B,Key.N,Key.J,Key.M,Key.K,(System.Windows.Input.KeyInterop.KeyFromVirtualKey(188)),Key.L,(System.Windows.Input.KeyInterop.KeyFromVirtualKey(190)),(System.Windows.Input.KeyInterop.KeyFromVirtualKey(191)),(System.Windows.Input.KeyInterop.KeyFromVirtualKey(222)),Key.RightShift,(System.Windows.Input.KeyInterop.KeyFromVirtualKey(13)),
+           Key.Q,Key.W,Key.D3,Key.E,Key.D4,Key.R,Key.D5,Key.T,Key.Y,Key.D7,Key.U,Key.D8,Key.I,Key.O,Key.D0,Key.P,(System.Windows.Input.KeyInterop.KeyFromVirtualKey(189)),
+           (System.Windows.Input.KeyInterop.KeyFromVirtualKey(219)),(System.Windows.Input.KeyInterop.KeyFromVirtualKey(187)),(System.Windows.Input.KeyInterop.KeyFromVirtualKey(221))
         };
 
         KeyTypes[] kTypeTable =
@@ -117,7 +117,7 @@ namespace MidiSynth7.entities.controls
         };
         public void UserControl_KeyDown(object sender, KeyEventArgs e)
         {
-            for (int i = 0; i < kTypeTable.Length; i++)
+            for (int i = 0; i < KeysTable.Length; i++)
             {
                 if (KeysTable[i] == (Key)e.Key)
                 {
@@ -125,14 +125,14 @@ namespace MidiSynth7.entities.controls
                     {
                         if (item.GetType() == typeof(BlackKey))
                         {
-                            if (((BlackKey)item).KeyID == i)
+                            if (((BlackKey)item).KeyID == i + 21)
                             {
                                 ((BlackKey)item).SendOn(true);
                             }
                         }
                         if (item.GetType() == typeof(WhiteKey))
                         {
-                            if (((WhiteKey)item).KeyID == i)
+                            if (((WhiteKey)item).KeyID == i + 21)
                             {
                                 ((WhiteKey)item).SendOn(true);
                             }
@@ -144,7 +144,7 @@ namespace MidiSynth7.entities.controls
 
         public void UserControl_KeyUp(object sender, KeyEventArgs e)
         {
-            for (int i = 0; i < kTypeTable.Length; i++)
+            for (int i = 0; i < KeysTable.Length; i++)
             {
                 if (KeysTable[i] == (Key)e.Key)
                 {
@@ -152,14 +152,14 @@ namespace MidiSynth7.entities.controls
                     {
                         if (item.GetType() == typeof(BlackKey))
                         {
-                            if (((BlackKey)item).KeyID == i)
+                            if (((BlackKey)item).KeyID == i + 21)
                             {
                                 ((BlackKey)item).SendOff(true);
                             }
                         }
                         if (item.GetType() == typeof(WhiteKey))
                         {
-                            if (((WhiteKey)item).KeyID == i)
+                            if (((WhiteKey)item).KeyID == i + 21)
                             {
                                 ((WhiteKey)item).SendOff(true);
                             }
