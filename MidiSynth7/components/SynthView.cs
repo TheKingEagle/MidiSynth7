@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MidiSynth7.entities.controls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ namespace MidiSynth7.components
     public interface ISynthView
     {
         void HandleNoteOnEvent(object sender, NoteEventArgs e);
+        void HandleNoteOn_VS_Event(object sender, PKeyEventArgs e, int data2);
         void HandleNoteOffEvent(object sender, NoteEventArgs e);
         void HandleEvent(object sender, EventArgs e, string id="generic");
 
