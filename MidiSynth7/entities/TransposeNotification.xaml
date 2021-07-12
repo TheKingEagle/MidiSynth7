@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MidiSynth7.entities" x:Class="MidiSynth7.entities.TransposeNotification" 
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="200" Width="150" Height="150" MinWidth="150" MinHeight="150" MaxWidth="150" MaxHeight="150" BorderBrush="#FF001076" BorderThickness="8" Background="#FF202020" Foreground="White">
+             d:DesignHeight="200" d:DesignWidth="200" Width="150" Height="150" MinWidth="150" MinHeight="150" MaxWidth="150" MaxHeight="150" BorderBrush="#FF001076" BorderThickness="8" Background="#FF202020" Foreground="White" UseLayoutRounding="True" SnapsToDevicePixels="True">
     <UserControl.Effect>
         <DropShadowEffect/>
     </UserControl.Effect>
