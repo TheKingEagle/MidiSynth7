@@ -111,7 +111,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="components\views\Standard.xaml">
+    <Page Include="components\views\StandardView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -152,8 +152,8 @@
     <Compile Include="components\NumberedEntry.cs" />
     <Compile Include="components\SynthView.cs" />
     <Compile Include="components\SystemConfig.cs" />
-    <Compile Include="components\views\Standard.xaml.cs">
-      <DependentUpon>Standard.xaml</DependentUpon>
+    <Compile Include="components\views\StandardView.xaml.cs">
+      <DependentUpon>StandardView.xaml</DependentUpon>
     </Compile>
     <Compile Include="entities\BlackKey.xaml.cs">
       <DependentUpon>BlackKey.xaml</DependentUpon>

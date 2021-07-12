@@ -13,13 +13,13 @@
     <Window.RenderTransform>
         <ScaleTransform x:Name="MainWinTransform" ScaleX="1" ScaleY="1"></ScaleTransform>
     </Window.RenderTransform>
-    <Border Background="#FF0C0C0C" Margin="12" BorderBrush="#FF0080FF" BorderThickness="1">
+    <Border Background="#FF0C0C0C" Margin="12" BorderBrush="#FF0080FF" BorderThickness="1" CornerRadius="4,4,0,0">
         <Border.Effect>
             <DropShadowEffect Color="#FF6CB5FF" Direction="0" ShadowDepth="0" BlurRadius="12"/>
         </Border.Effect>
-        <Grid x:Name="GR_MwnExt">
-            <Grid x:Name="GR_Title" Height="40" VerticalAlignment="Top" >
-                <Border BorderBrush="#FF0080FF" BorderThickness="0,0,0,1" Background="#FF002A83">
+        <Grid x:Name="GR_MwnExt" ClipToBounds="True">
+            <Grid x:Name="GR_Title" Height="40" VerticalAlignment="Top" ClipToBounds="True" >
+                <Border BorderBrush="#FF0080FF" BorderThickness="0,0,0,1" Background="#FF002A83" CornerRadius="4,4,0,0">
                     <Grid>
                         <Grid HorizontalAlignment="Stretch" Margin="0,0,157,0" PreviewMouseDown="GR_Title_PreviewMouseDown" Background="#00000000">
                             <Image Width="24" Height="24" HorizontalAlignment="Left" Source="{Binding Icon, ElementName=window}" Margin="3.5,0,0,0" RenderOptions.BitmapScalingMode="Fant"></Image>
@@ -36,7 +36,7 @@
                                     <Path Data="M 2 20 L 24 20" Stroke="White" StrokeThickness="6"/>
                                 </Canvas>
                             </Button>
-                            <Button x:Name="bn_SETTINGS" Margin="0,4,97,0" VerticalAlignment="Top" Background="#FF2C2C2C" Foreground="White" BorderThickness="1" Height="31" FontSize="14" BorderBrush="#FF0060FF" Focusable="False" HorizontalAlignment="Right" Width="30" Click="Bn_SETTINGS_Click">
+                            <Button x:Name="bn_SETTINGS" Margin="0,4,97,0" VerticalAlignment="Top" Background="#FF2C2C2C" Foreground="White" BorderThickness="1" Height="31" FontSize="14" BorderBrush="#FF0060FF" Focusable="False" HorizontalAlignment="Right" Width="30" Click="Bn_Settings_Click">
                                 <Canvas Width="28" Height="29">
                                     <Path Fill="silver" StrokeThickness="1" Stroke="Black" Data="M 208,50 L 201,45 191,51 185,57 176,65 168,76 161,88 156,102 152,120 151,135 152,142 155,153 158,162 164,173 171,183 179,192 186,199 194,207 202,212 209,218 212,220 210,245 208,273 206,300 203,334 202,361 199,402 198,432 202,448 208,458 214,467 222,473 231,479 246,484 256,484 268,484 280,479 293,471 304,460 312,445 315,427 315,412 312,376 309,331 304,262 301,219 309,214 322,204 334,191 348,174 358,152 360,141 360,123 357,103 349,83 342,73 326,56 316,47 311,45 304,49 305,62 304,113 281,150 231,150 208,115 208,51  Z " Stretch="Uniform" Width="24" Height="29" Canvas.Left="1.75"/>
                                     <Rectangle Fill="Maroon" Height="9" Canvas.Left="11" Stroke="Black" StrokeThickness="0.4" Canvas.Top="14" Width="3" RenderTransformOrigin="0.5,0.5">
@@ -80,7 +80,7 @@
                 </Border>
             </Grid>
 
-            <Grid x:Name="GR_MwnContent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,40,0,0">
+            <Grid x:Name="GR_MwnContent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,40,0,0" ClipToBounds="True">
                 <Frame x:Name="FR_SynthView" NavigationUIVisibility="Hidden">
                     <Frame.Background>
                         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -89,7 +89,64 @@
                         </LinearGradientBrush>
                     </Frame.Background>
                 </Frame>
+                <Grid x:Name="GR_OverlayContent" Background="#BF000000" ClipToBounds="True" Visibility="Collapsed" Opacity="0">
+                    <Border x:Name="BDR_SettingsFrame" HorizontalAlignment="Center" VerticalAlignment="Center" Width="520" Height="450" BorderBrush="#FF008BFF" BorderThickness="1" CornerRadius="4,4,0,0" RenderTransformOrigin="0.5,0.5">
+                        <Border.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="#FF0C0C0C"/>
+                                <GradientStop Color="#FF0C0C0C" Offset="0.80"/>
+                                <GradientStop Color="#FF101820" Offset="0.95"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Grid>
+                            <Border Height="40" VerticalAlignment="Top" HorizontalAlignment="Stretch" BorderThickness="0,0,0,1" CornerRadius="4,4,0,0" Background="#FF00163E" BorderBrush="#FF008BFF">
+                                <Grid>
+                                    <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="29" RenderTransformOrigin="0.5,0.5">
+                                        <Canvas.RenderTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                                <SkewTransform/>
+                                                <RotateTransform/>
+                                                <TranslateTransform/>
+                                            </TransformGroup>
+                                        </Canvas.RenderTransform>
+                                        <Path Fill="silver" StrokeThickness="1" Stroke="Black" Data="M 208,50 L 201,45 191,51 185,57 176,65 168,76 161,88 156,102 152,120 151,135 152,142 155,153 158,162 164,173 171,183 179,192 186,199 194,207 202,212 209,218 212,220 210,245 208,273 206,300 203,334 202,361 199,402 198,432 202,448 208,458 214,467 222,473 231,479 246,484 256,484 268,484 280,479 293,471 304,460 312,445 315,427 315,412 312,376 309,331 304,262 301,219 309,214 322,204 334,191 348,174 358,152 360,141 360,123 357,103 349,83 342,73 326,56 316,47 311,45 304,49 305,62 304,113 281,150 231,150 208,115 208,51  Z " Stretch="Uniform" Width="24" Height="29" Canvas.Left="1.75"/>
+                                        <Rectangle Fill="Maroon" Height="9" Canvas.Left="11" Stroke="Black" StrokeThickness="0.4" Canvas.Top="14" Width="3" RenderTransformOrigin="0.5,0.5">
+                                            <Rectangle.RenderTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform/>
+                                                    <SkewTransform/>
+                                                    <RotateTransform Angle="4.885"/>
+                                                    <TranslateTransform/>
+                                                </TransformGroup>
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                        <TextBlock Margin="28,0,0,0" VerticalAlignment="Center" Canvas.Top="0" FontSize="20">Configuration</TextBlock>
+                                    </Canvas>
+                                </Grid>
+                            </Border>
+                            <Grid Margin="0,40,0,0">
+                                <GroupBox Header="MIDI Input" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Height="118" Width="498" BorderBrush="#FF136600">
+                                    <Grid HorizontalAlignment="Left" Height="98" VerticalAlignment="Top" Width="490">
+                                        <ComboBox x:Name="cm_InputDevices" HorizontalAlignment="Left" Margin="10,66,0,0" VerticalAlignment="Top" Width="210" SelectionChanged="CM_InputDevices_SelectionChanged"/>
+                                        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="If you have a real midi input device such as a midi keyboard controller, you can pair it with this application. Select a device from the list to connect it to the synthesizer." VerticalAlignment="Top" Width="470"/>
+                                    </Grid>
+                                </GroupBox>
+                                <GroupBox x:Name="groupBox" Header="Synthezier Layout" HorizontalAlignment="Center" Margin="0,133,0,0" VerticalAlignment="Top" Height="109" Width="498" BorderBrush="#FF003489">
+                                    <Grid Margin="0,0,0,0">
+                                        <RadioButton x:Name="rb_syncfg_Micro" Content="Compact - Best for small displays.                                  [1024x768 recommended]" HorizontalAlignment="Left" Margin="10,16,0,0" VerticalAlignment="Top" GroupName="rb_cfg_SynLayout" Foreground="White"/>
+                                        <RadioButton x:Name="rb_syncfg_Standard" Content="Standard - Best for average displays.                              [1280x720 recommended]" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" GroupName="rb_cfg_SynLayout" IsChecked="True" Foreground="White"/>
+                                        <RadioButton x:Name="rb_syncfg_Extended" Content="Studio - Full range keyboard. Best on large displays.     [1600x900 recommended]" HorizontalAlignment="Left" Margin="10,58,0,0" VerticalAlignment="Top" GroupName="rb_cfg_SynLayout" Foreground="White"/>
+                                    </Grid>
+                                </GroupBox>
+                                <Button x:Name="bn_cfgSave" Content="Save &amp; Close" HorizontalAlignment="Right"  Margin="0,0,24,24" VerticalAlignment="Bottom" Width="89" Height="25" Background="#FF001D40" BorderBrush="White" BorderThickness="1" Click="bn_cfgSave_Click"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                </Grid>
             </Grid>
+
         </Grid>
 
     </Border>

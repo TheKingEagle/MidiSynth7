@@ -19,6 +19,8 @@ using System.IO;
 using Newtonsoft.Json;
 using System.Reflection;
 using System.ComponentModel;
+using Sanford.Multimedia.Midi;
+using MidiSynth7.entities.controls;
 
 namespace MidiSynth7
 {
@@ -34,9 +36,8 @@ namespace MidiSynth7
         private int appinfo_projectBuild = 0;
         private bool _loadingView = false;
         DisplayModes _switchto = DisplayModes.Standard;
+        UIElement _elementFromanim = null;
         private ISynthView currentView;
-        private Storyboard WindowStoryboard;
-        private DoubleAnimation WindowDoubleAnimation;
         public List<NumberedEntry> OutputDevices = new List<NumberedEntry>();
         public List<NumberedEntry> InputDevices = new List<NumberedEntry>();
         public List<Ellipse> channelElipses = new List<Ellipse>();
@@ -46,7 +47,7 @@ namespace MidiSynth7
 
         public MidiEngine MidiEngine;
         private BackgroundWorker midiTaskWorker;
-        private bool mthdinit;
+        private bool mthdinit;//todo: remove?
 
         #endregion
         public MainWindow()
@@ -138,6 +139,7 @@ namespace MidiSynth7
             }
 
             Loadview(AppConfig.DisplayMode);
+            
         }
 
         private void Loadview(DisplayModes mode)
@@ -148,7 +150,7 @@ namespace MidiSynth7
                     this.Width = 1106;
                     this.Height = 590;
                     Title = $"RMSoftware MIDI Synthesizer v7.0 • Standard Edition • {(Environment.Is64BitProcess ? "x64" : "x86")} build {appinfo_projectBuild}";
-                    currentView = new components.views.Standard(this, ref AppConfig, ref MidiEngine);
+                    currentView = new components.views.StandardView(this, ref AppConfig, ref MidiEngine);
                     FR_SynthView.Content = currentView;
                     break;
                 case DisplayModes.Studio:
@@ -176,10 +178,8 @@ namespace MidiSynth7
             _loadingView = true;
             _Minimized = false;
             _switchto = mode;
-            WindowDoubleAnimation.From = 1;
-            WindowDoubleAnimation.To = 0;
-            WindowStoryboard.Begin();
-            WindowScale(1, 0.8);
+            FadeUI(1, 0, this);
+            ScaleUI(1, 0.8,this);
 
             
         }
@@ -219,10 +219,8 @@ namespace MidiSynth7
             try
             {
                 _Closing = true;
-                WindowDoubleAnimation.From = 1;
-                WindowDoubleAnimation.To = 0;
-                WindowStoryboard.Begin();
-                WindowScale(1, 0.8);
+                FadeUI(1, 0, this);
+                ScaleUI(1, 0.8,this);
                 
 
             }
@@ -239,10 +237,8 @@ namespace MidiSynth7
                 //WindowState = System.Windows.WindowState.Minimized;
                 _Closing = false;
                 _Minimized = true;
-                WindowDoubleAnimation.From = 1;
-                WindowDoubleAnimation.To = 0;
-                WindowStoryboard.Begin();
-                WindowScale(1, 0.8);
+                FadeUI(1, 0, this);
+                ScaleUI(1, 0.8,this);
 
 
             }
@@ -252,9 +248,11 @@ namespace MidiSynth7
             }
         }
 
-        private void Bn_SETTINGS_Click(object sender, RoutedEventArgs e)
+        private void Bn_Settings_Click(object sender, RoutedEventArgs e)
         {
-
+            if (GR_OverlayContent.Visibility == Visibility.Visible) return;
+            FadeUI(0, 1, GR_OverlayContent);
+            ScaleUI(0.8, 1, BDR_SettingsFrame);
         }
 
         private void Bn_Maximize_Click(object sender, RoutedEventArgs e)
@@ -270,21 +268,48 @@ namespace MidiSynth7
         private void Window_Initialized(object sender, EventArgs e)
         {
 
-            WindowStoryboard = new Storyboard();
-            WindowDoubleAnimation = new DoubleAnimation(0, 1, new Duration(TimeSpan.FromMilliseconds(120)), FillBehavior.HoldEnd);
+            int midiInIndex = 0;
+            FadeUI(1, 0, this);
+            foreach (string item in MidiEngine.GetInputDevices())
+            {
+                InputDevices.Add(new NumberedEntry(midiInIndex, item));
+                midiInIndex++;
+            }
+            foreach (NumberedEntry item in InputDevices)
+            {
+                cm_InputDevices.Items.Add(item);
+            }
+            
+
+        }
+
+        private void FadeUI(double from, double to, UIElement uielm)
+        {
+            _elementFromanim = uielm;
+            if(uielm.Visibility != Visibility.Visible)
+            {
+                uielm.Opacity = 0;
+                uielm.Visibility = Visibility.Visible;
+            }
+            Storyboard WindowStoryboard = new Storyboard();
+            DoubleAnimation WindowDoubleAnimation = new DoubleAnimation(from, to, new Duration(TimeSpan.FromMilliseconds(120)), FillBehavior.HoldEnd);
             WindowDoubleAnimation.AutoReverse = false;
             QuadraticEase qe = new QuadraticEase();
             qe.EasingMode = EasingMode.EaseInOut;
             WindowDoubleAnimation.EasingFunction = qe;
             Storyboard.SetTargetProperty(WindowStoryboard, new PropertyPath(OpacityProperty));
-            Storyboard.SetTarget(WindowDoubleAnimation, this);
+            Storyboard.SetTarget(WindowDoubleAnimation, uielm);
             WindowStoryboard.Children.Add(WindowDoubleAnimation);
             WindowStoryboard.Completed += WindowStoryboard_Completed;
-            
+            WindowStoryboard.Begin((FrameworkElement)uielm, HandoffBehavior.Compose);
         }
 
         private void WindowStoryboard_Completed(object sender, EventArgs e)
         {
+            if(_elementFromanim.Opacity <= 0.9 && _elementFromanim != this)
+            {
+                _elementFromanim.Visibility = Visibility.Collapsed;
+            }
             if (_Closing)
             {
                 this.Close();
@@ -293,7 +318,7 @@ namespace MidiSynth7
             {
                 _Minimized = false;
                 this.WindowState = System.Windows.WindowState.Minimized;
-                WindowScale(1, 1);
+                ScaleUI(1, 1,this);
                 this.Opacity = 1;
 
             }
@@ -303,25 +328,23 @@ namespace MidiSynth7
                 _Minimized = false;
                 _loadingView = false;
                 Loadview(_switchto);
-                WindowDoubleAnimation.From = 0;
-                WindowDoubleAnimation.To = 1;
-                WindowStoryboard.Begin(this,HandoffBehavior.Compose);
-                WindowScale(0.8, 1);
+                FadeUI(0, 1, this);
+                ScaleUI(0.8, 1,this);
 
             }
         }
 
         private void window_Loaded(object sender, RoutedEventArgs e)
         {
-            WindowScale(0.8, 1);
-            WindowStoryboard.Begin();
+            ScaleUI(0.8, 1,this);
+            FadeUI(0, 1, this);
         }
 
-        private void WindowScale(double from, double to)
+        private void ScaleUI(double from, double to, UIElement uielm)
         {
             ScaleTransform trans = new ScaleTransform();
-            this.RenderTransform = trans;
-            this.RenderTransformOrigin = new Point(0.5d, 0.5d);
+            uielm.RenderTransform = trans;
+            uielm.RenderTransformOrigin = new Point(0.5d, 0.5d);
             
             if(from != to)
             {
@@ -337,16 +360,15 @@ namespace MidiSynth7
             
         }
 
+
         private void window_StateChanged(object sender, EventArgs e)
         {
 
             if(window.WindowState != WindowState.Minimized)
             {
                 _Minimized = false;
-                WindowDoubleAnimation.From = 0;
-                WindowDoubleAnimation.To = 1;
-                WindowStoryboard.Begin();
-                WindowScale(0.8, 1);
+                FadeUI(0, 1, this);
+                ScaleUI(0.8, 1,this);
             }
         }
 
@@ -447,6 +469,13 @@ namespace MidiSynth7
             {
                 MessageBox.Show(e.Error.ToString());
             }
+            //set in device
+            if (AppConfig.ActiveInputDeviceIndex < cm_InputDevices.Items.Count)
+            {
+                cm_InputDevices.SelectedIndex = AppConfig.ActiveInputDeviceIndex;
+            }
+            //tell view we updated shit
+            currentView.HandleEvent(this, new EventArgs(), "RefMainWin");
             currentView.HandleEvent(sender, new EventArgs(), "MTaskWorker");
         }
 
@@ -566,6 +595,79 @@ namespace MidiSynth7
         {
             currentView.HandleKeyUp(sender, e);
 
+
+        }
+
+        private void CM_InputDevices_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //for program start
+            if (MidiEngine.inDevice != null)
+            {
+                MidiEngine.inDevice.StopRecording();
+                MidiEngine.inDevice.Close();
+            }
+            if (cm_InputDevices.SelectedIndex > -1)
+            {
+                MidiEngine.inDevice = new Sanford.Multimedia.Midi.InputDevice(((NumberedEntry)cm_InputDevices.SelectedItem).Index);
+                MidiEngine.inDevice.ChannelMessageReceived += inDevice_ChannelMessageReceived;
+                MidiEngine.inDevice.StartRecording();
+            }
+        }
+
+        private void inDevice_ChannelMessageReceived(object sender, ChannelMessageEventArgs e)
+        {
+            if (e.Message.Command == Sanford.Multimedia.Midi.ChannelCommand.Controller)
+            {
+
+                MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
+            }
+            if (e.Message.Command == Sanford.Multimedia.Midi.ChannelCommand.PitchWheel)
+            {
+                //MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
+                //TODO: Add settings to toggle some controls off
+            }
+            if (e.Message.Command == Sanford.Multimedia.Midi.ChannelCommand.PolyPressure)
+            {
+                MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
+            }
+            if (e.Message.Command == Sanford.Multimedia.Midi.ChannelCommand.ChannelPressure)
+            {
+                MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
+            }
+            if (e.Message.Command == Sanford.Multimedia.Midi.ChannelCommand.ProgramChange)
+            {
+                MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
+            }
+            if (e.Message.Command == Sanford.Multimedia.Midi.ChannelCommand.NoteOn)
+            {
+                currentView.HandleNoteOn_VS_Event(this, new PKeyEventArgs(e.Message.Data1), e.Message.Data2);
+            }
+            if (e.Message.Command == Sanford.Multimedia.Midi.ChannelCommand.NoteOff || (e.Message.Command == Sanford.Multimedia.Midi.ChannelCommand.NoteOn && e.Message.Data2 == 0))
+            {
+               currentView.HandleNoteOffEvent(this,new NoteEventArgs(e.Message));
+            }
+        }
+
+        private void bn_cfgSave_Click(object sender, RoutedEventArgs e)
+        {
+            if (MidiEngine.inDevice != null)
+            {
+                MidiEngine.inDevice.StopRecording();
+                MidiEngine.inDevice.Close();
+            }
+            if (cm_InputDevices.SelectedIndex > -1)
+            {
+                MidiEngine.inDevice = new Sanford.Multimedia.Midi.InputDevice(((NumberedEntry)cm_InputDevices.SelectedItem).Index);
+                MidiEngine.inDevice.ChannelMessageReceived += inDevice_ChannelMessageReceived;
+                MidiEngine.inDevice.StartRecording();
+            }
+
+            AppConfig.ActiveInputDeviceIndex = cm_InputDevices.SelectedIndex;
+            SaveConfig();
+            currentView.HandleEvent(this, new EventArgs(), "RefMainWin");
+            currentView.HandleEvent(sender, new EventArgs(), "RefAppConfig");
+            ScaleUI(1, 0.8, BDR_SettingsFrame);
+            FadeUI(1, 0, GR_OverlayContent);
 
         }
     }
