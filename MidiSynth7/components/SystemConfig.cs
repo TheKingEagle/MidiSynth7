@@ -17,9 +17,9 @@ namespace MidiSynth7.components
         public int[] ChannelBanks { get; set; }
 
         /// <summary>
-        /// This is configuration for Octave, transpose, and other note offset related settings.
+        /// This is configuration containing Octave, transpose, and octaveFX 3 transpose
         /// </summary>
-        public int[] ChannelOffsets { get; set; }
+        public int[] PitchOffsets { get; set; }
 
         public int[] ChannelVolumes { get; set; }
 
@@ -57,7 +57,7 @@ namespace MidiSynth7.components
             ChannelInstruments       = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             ChannelBanks             = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             //Offset layout:                     {global octave, global transpose, ofx 3 transpose 1, ofx3 transpose 2, ..etc}
-            ChannelOffsets           = new int[] { 3, 0, -12, -24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            PitchOffsets           = new int[] { 3, 0, -12, -24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             ChannelVolumes           = new int[] { 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127 };
             ChannelPans              = new int[] { 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64 };
             ChannelReverbs           = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -114,7 +114,7 @@ namespace MidiSynth7.components
         {
             object[] items = new object[]
             {
-                DisplayMode, EnableRiffs,ChannelOffsets,ChannelInstruments,
+                DisplayMode, EnableRiffs,PitchOffsets,ChannelInstruments,
                 ChannelVolumes,ChannelCustomControls,ChannelChoruses,ChannelReverbs,
                 ActiveInputDeviceIndex,ActiveOutputDeviceIndex, SelectedRiff,
                 ChannelModulations,ChannelPans,ChannelBanks

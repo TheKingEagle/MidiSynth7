@@ -72,7 +72,7 @@ namespace MidiSynth7.components.views
             CTRL_Chorus.Value = Config.ChannelChoruses[0];
             CTRL_Modulation.Value = Config.ChannelModulations[0];
             CTRL_Balance.Value = Config.ChannelPans[0];
-            CTRL_Octave.Value = Config.ChannelOffsets[0];
+            CTRL_Octave.Value = Config.PitchOffsets[0];
             CTRL_Reverb.Value = Config.ChannelReverbs[0];
             CTRL_Volume.Value = Config.ChannelVolumes[0];
             UpdateMIDIControls();
@@ -236,8 +236,8 @@ namespace MidiSynth7.components.views
                     if (rb_ofx_custom.IsChecked.Value)
                     {
 
-                        int Offset1 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.ChannelOffsets[2];
-                        int Offset2 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.ChannelOffsets[3];
+                        int Offset1 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.PitchOffsets[2];
+                        int Offset2 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.PitchOffsets[3];
                         MidiEngine.MidiNote_Stop(1, Offset1 + Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value);
                         MidiEngine.MidiNote_Stop(2, Offset2 + Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value);
                     }
@@ -251,8 +251,8 @@ namespace MidiSynth7.components.views
                         MidiEngine.MidiNote_SetProgram(OFX_b2.Index, OFX_p2.Index, 12);
                         MidiEngine.MidiNote_PlayTimed(10, e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value, 110, 100);
                         //offsets {g, t, ofx3_1, ofx3_2}
-                        int Offset1 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.ChannelOffsets[2];
-                        int Offset2 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.ChannelOffsets[3];
+                        int Offset1 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.PitchOffsets[2];
+                        int Offset2 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.PitchOffsets[3];
                         MidiEngine.MidiNote_PlayTimed(11, (e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value) + Offset1 - 12, 110, 100);
                         MidiEngine.MidiNote_PlayTimed(12, (e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value) + Offset2 - 12, 110, 100);
                     }
@@ -263,8 +263,8 @@ namespace MidiSynth7.components.views
                         MidiEngine.MidiNote_SetProgram(OFX_b2.Index, OFX_p2.Index, 12);
                         MidiEngine.MidiNote_PlayTimed(10, e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value, 110, 100);
                         //offsets {g, t, ofx3_1, ofx3_2}
-                        int Offset1 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.ChannelOffsets[2];
-                        int Offset2 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.ChannelOffsets[3];
+                        int Offset1 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.PitchOffsets[2];
+                        int Offset2 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.PitchOffsets[3];
                         MidiEngine.MidiNote_PlayTimed(11, (e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value) + Offset1, 110, 100);
                         MidiEngine.MidiNote_PlayTimed(12, (e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value) + Offset2, 110, 100);
                     }
@@ -454,7 +454,7 @@ namespace MidiSynth7.components.views
                 Config.ChannelModulations[0] = CTRL_Modulation.Value;
                 Config.ChannelChoruses[0] = CTRL_Chorus.Value;
                 Config.ChannelPans[0] = CTRL_Balance.Value;
-                Config.ChannelOffsets[0] = CTRL_Octave.Value;//global octave
+                Config.PitchOffsets[0] = CTRL_Octave.Value;//global octave
                 
             }
         }
@@ -521,8 +521,8 @@ namespace MidiSynth7.components.views
                         MidiEngine.MidiNote_SetPan(1, 0);
                         MidiEngine.MidiNote_SetPan(2, 127);
                         //offsets {g, t, ofx3_1, ofx3_2}
-                        int Offset1 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.ChannelOffsets[2];
-                        int Offset2 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.ChannelOffsets[3];
+                        int Offset1 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.PitchOffsets[2];
+                        int Offset2 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.PitchOffsets[3];
                         MidiEngine.MidiNote_Play(1, Offset1 + Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, CTRL_Volume.Value);
                         MidiEngine.MidiNote_Play(2, Offset2 + Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, CTRL_Volume.Value);
                     }
