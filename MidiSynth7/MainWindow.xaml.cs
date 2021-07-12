@@ -33,7 +33,7 @@ namespace MidiSynth7
 
         private bool _Closing = false;
         private bool _Minimized = false;
-        private int appinfo_projectBuild = 0;
+        private int appinfo_projectRevision = 0;
         private bool _loadingView = false;
         DisplayModes _switchto = DisplayModes.Standard;
         UIElement _elementFromanim = null;
@@ -108,7 +108,7 @@ namespace MidiSynth7
             }
             #endregion
 
-            appinfo_projectBuild = Assembly.GetExecutingAssembly().GetName().Version.Revision;
+            appinfo_projectRevision = Assembly.GetExecutingAssembly().GetName().Version.Revision;
             AppConfig = LoadConfig();
             if(!string.IsNullOrWhiteSpace(AppConfig.InstrumentDefinitionPath))
             {
@@ -149,14 +149,14 @@ namespace MidiSynth7
                 case DisplayModes.Standard:
                     this.Width = 1106;
                     this.Height = 590;
-                    Title = $"RMSoftware MIDI Synthesizer v7.0 • Standard Edition • {(Environment.Is64BitProcess ? "x64" : "x86")} build {appinfo_projectBuild}";
+                    Title = $"RMSoftware MIDI Synthesizer v7.0 • Standard Edition • {(Environment.Is64BitProcess ? "x64" : "x86")} rev. {appinfo_projectRevision}";
                     currentView = new components.views.StandardView(this, ref AppConfig, ref MidiEngine);
                     FR_SynthView.Content = currentView;
                     break;
                 case DisplayModes.Studio:
                     this.Width = 1524;
                     this.Height = 652;
-                    Title = $"RMSoftware MIDI Synthesizer v7.0 • Studio Edition • {(Environment.Is64BitProcess ? "x64" : "x86")} build {appinfo_projectBuild}";
+                    Title = $"RMSoftware MIDI Synthesizer v7.0 • Studio Edition • {(Environment.Is64BitProcess ? "x64" : "x86")} rev. {appinfo_projectRevision}";
                     
                     FR_SynthView.Content = "//TODO: Studio view";//TODO: Pass parameters and other important system info
 
