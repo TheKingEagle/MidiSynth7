@@ -52,7 +52,6 @@ namespace MidiSynth7
         public MainWindow()
         {
             InitializeComponent();
-
             #region Generate presets
             if (!Directory.Exists(App.PRESET_DIR))
             {
@@ -371,6 +370,26 @@ namespace MidiSynth7
             }
         }
 
+        public void SaveConfigAs(SystemConfig cfg, string filename)
+        {
+            if (!Directory.Exists(App.APP_DATA_DIR)) Directory.CreateDirectory(App.APP_DATA_DIR);
+            if (cfg == null)
+            {
+                MessageBox.Show("Configuration error: null");
+                return;
+            }
+            if (File.Exists(App.APP_DATA_DIR + filename))
+            {
+                File.Delete(App.APP_DATA_DIR + filename);
+            }
+
+            using (StreamWriter sw = new StreamWriter(App.APP_DATA_DIR + filename))
+            {
+                sw.WriteLine(JsonConvert.SerializeObject(cfg, Formatting.Indented));
+                sw.Flush();
+            }
+        }
+
         public class ChInvk
         {
             Ellipse index;
@@ -490,26 +509,36 @@ namespace MidiSynth7
             }
             else
             {
+                string json = "";
                 using (StreamReader sr = new StreamReader(App.APP_DATA_DIR + "synth7.config"))
                 {
-                    SystemConfig cfg = JsonConvert.DeserializeObject<SystemConfig>(sr.ReadToEnd());
-                    if(cfg == null)
+                    json = sr.ReadToEnd();
+                }
+                SystemConfig cfg = JsonConvert.DeserializeObject<SystemConfig>(json);
+                if (cfg == null)
+                {
+                    Console.WriteLine("CONFIG: Json was invalid, null entity returned.");
+                    return new SystemConfig(DisplayModes.Standard);
+
+                }
+
+                else
+                {
+                    if (cfg.CheckForMissingValues())
                     {
-                        Console.WriteLine("CONFIG: Json was invalid, null entity returned.");
-                        return new SystemConfig(DisplayModes.Standard);
-                        
+                        string filename = "config.old";
+                        Console.WriteLine("CONFIG: Json was valid, but missing required components");
+                        MessageBox.Show("Notice: Your settings are incompatible with this version of MidiSynth. \r\n\r\n" +
+                            $"Previous config saved as '{App.APP_DATA_DIR + filename}'\r\n\r\n A new one will be created.", "Incompatible Configuration", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                        SaveConfigAs(cfg, filename);
+                        SystemConfig newcfg = new SystemConfig(DisplayModes.Standard);
+
+                        SaveConfigAs(newcfg, "synth7.config");
+                        return newcfg;
                     }
-                    
-                    else
-                    {
-                        if(cfg.CheckForMissingValues())
-                        {
-                            Console.WriteLine("CONFIG: Json was valid, but missing required components");
-                            return new SystemConfig(DisplayModes.Standard);
-                        }
-                        Console.WriteLine("CONFIG: successfully loaded saved config.");
-                        return cfg;
-                    }
+                    Console.WriteLine("CONFIG: successfully loaded saved config.");
+                    return cfg;
                 }
             }
         }
