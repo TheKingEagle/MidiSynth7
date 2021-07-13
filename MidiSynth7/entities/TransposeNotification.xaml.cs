@@ -8,6 +8,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -31,25 +32,57 @@ namespace MidiSynth7.entities
             
         }
         bool showing = false;
+        bool ticked = false;
         void displayTimer_Tick(object sender, EventArgs e)
         {
-            showing = false;
-            displayTimer.Stop();
-            Visibility = System.Windows.Visibility.Hidden;
+            if(showing && !ticked)
+            {
+                ticked = true;
+                showing = false;
+                displayTimer.Stop();
+                FadeUI(1, 0, this);
+            }
         }
 
         public void Show(int transpose)
         {
+            ticked = false;
             string prefix = (transpose > 0) ? "+" : "";
-            la_indicator.Content = prefix+transpose.ToString();
-            //if (!showing)
-            //{
-            Visibility = System.Windows.Visibility.Visible;
-            displayTimer.Stop();
-            displayTimer.Start();
-            
+            la_indicator.Text = prefix+transpose.ToString();
+            if (!showing)  FadeUI(0, 1, this);
             showing = true;
-            //}
+            if(showing)
+            {
+                displayTimer.Stop();
+                displayTimer.Start();
+            }
+        }
+
+        private void FadeUI(double from, double to, UIElement uielm)
+        {
+            //_elementFromanim = uielm;
+            if (uielm.Visibility != Visibility.Visible)
+            {
+                uielm.Opacity = 0;
+                uielm.Visibility = Visibility.Visible;
+            }
+            Storyboard UIStoryboard = new Storyboard();
+            DoubleAnimation WindowDoubleAnimation = new DoubleAnimation(from, to, new Duration(TimeSpan.FromMilliseconds(120)), FillBehavior.HoldEnd);
+            WindowDoubleAnimation.AutoReverse = false;
+            QuadraticEase qe = new QuadraticEase();
+            qe.EasingMode = EasingMode.EaseInOut;
+            WindowDoubleAnimation.EasingFunction = qe;
+            Storyboard.SetTargetProperty(UIStoryboard, new PropertyPath(OpacityProperty));
+            Storyboard.SetTarget(WindowDoubleAnimation, uielm);
+            UIStoryboard.Children.Add(WindowDoubleAnimation);
+            UIStoryboard.Completed += UIStoryboard_Completed;
+            UIStoryboard.Begin((FrameworkElement)uielm, HandoffBehavior.Compose);
+        }
+
+        private void UIStoryboard_Completed(object sender, EventArgs e)
+        {
+            if(!showing && Opacity == 0) Visibility = Visibility.Collapsed;
+            if(showing && !ticked) displayTimer.Start();
         }
     }
 }

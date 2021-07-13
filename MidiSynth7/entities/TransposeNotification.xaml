@@ -5,21 +5,22 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MidiSynth7.entities" x:Class="MidiSynth7.entities.TransposeNotification" 
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="200" Width="150" Height="150" MinWidth="150" MinHeight="150" MaxWidth="150" MaxHeight="150" BorderBrush="#FF001076" BorderThickness="8" Background="#FF202020" Foreground="White" UseLayoutRounding="True" SnapsToDevicePixels="True">
+             d:DesignHeight="200" d:DesignWidth="200" Width="150" Height="150" MinWidth="150" MinHeight="150" MaxWidth="150" MaxHeight="150" BorderBrush="#FF001076" BorderThickness="8" Background="#FF202020" Foreground="White" UseLayoutRounding="True" SnapsToDevicePixels="True" RenderTransformOrigin="0.5,0.5">
+    
     <UserControl.Effect>
         <DropShadowEffect/>
     </UserControl.Effect>
-    <Grid>
-        <Label x:Name="la_indicator" Content="+5" HorizontalAlignment="Left" VerticalAlignment="Top" Height="95" Width="134" FontSize="72" Foreground="White" FontWeight="Bold" BorderThickness="0" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" SnapsToDevicePixels="False">
-            <Label.Effect>
+    <Grid UseLayoutRounding="True" SnapsToDevicePixels="True">
+        <TextBlock x:Name="la_indicator" Text="+5" VerticalAlignment="Top" Height="95" Width="134" FontSize="72" Foreground="White" FontWeight="Bold"  Padding="0" HorizontalAlignment="Center"  SnapsToDevicePixels="True" TextAlignment="Center" UseLayoutRounding="True" TextOptions.TextHintingMode="Fixed" RenderTransformOrigin="0.5,0.5">
+            <TextBlock.Effect>
                 <DropShadowEffect/>
-            </Label.Effect>
-        </Label>
-        <Label Content="Transpose" HorizontalAlignment="Left" VerticalAlignment="Top" Height="39" Width="134" HorizontalContentAlignment="Center" FontSize="24" Foreground="White" FontWeight="Bold" BorderThickness="0" Padding="0" Margin="0,95,0,0" VerticalContentAlignment="Center" SnapsToDevicePixels="True">
-            <Label.Effect>
+            </TextBlock.Effect>
+        </TextBlock>
+        <TextBlock Text="Transpose" VerticalAlignment="Top" Height="39" Width="134" HorizontalAlignment="Center" FontSize="24" Foreground="White" FontWeight="Bold"  Padding="0" Margin="0,95,0,0" SnapsToDevicePixels="True" TextAlignment="Center">
+            <TextBlock.Effect>
                 <DropShadowEffect/>
-            </Label.Effect>
-        </Label>
+            </TextBlock.Effect>
+        </TextBlock>
 
     </Grid>
 </UserControl>

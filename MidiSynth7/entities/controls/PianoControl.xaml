@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MidiSynth7.entities" xmlns:MIDISynth6_WPF="clr-namespace:MidiSynth7" x:Class="MidiSynth7.entities.controls.PianoControl" 
              mc:Ignorable="d" 
-             d:DesignHeight="145" d:DesignWidth="621" Width="621" MinWidth="621" MinHeight="145" SnapsToDevicePixels="True">
+             d:DesignHeight="145" d:DesignWidth="621" Width="621" MinWidth="621" MinHeight="145" SnapsToDevicePixels="True" UseLayoutRounding="True">
 
 
 
@@ -55,16 +55,7 @@
 
 
         </Grid>
-        <local:TransposeNotification x:Name="Notify" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" RenderTransformOrigin="0.5,0.5" SnapsToDevicePixels="True" Margin="0,-9,0,0">
-            <local:TransposeNotification.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform ScaleX="1" ScaleY="1"/>
-                    <SkewTransform/>
-                    <RotateTransform/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </local:TransposeNotification.RenderTransform>
-        </local:TransposeNotification>
+        <local:TransposeNotification x:Name="Notify" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" RenderTransformOrigin="0.5,0.5" SnapsToDevicePixels="True" Margin="0,-9,0,0" UseLayoutRounding="True"/>
     </Grid>
 
 </UserControl>
