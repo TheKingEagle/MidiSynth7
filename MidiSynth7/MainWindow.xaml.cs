@@ -110,7 +110,12 @@ namespace MidiSynth7
 
             appinfo_projectRevision = Assembly.GetExecutingAssembly().GetName().Version.Revision;
             AppConfig = LoadConfig();
-            if(!string.IsNullOrWhiteSpace(AppConfig.InstrumentDefinitionPath))
+            for (int i = 0; i < 9; i++)
+            {
+                CheckBox cbparam = WP_AllowedParams.Children[i] as CheckBox;
+                cbparam.IsChecked = AppConfig.InDeviceAllowedParams[i];
+            }
+            if (!string.IsNullOrWhiteSpace(AppConfig.InstrumentDefinitionPath))
             {
                 if (!File.Exists(AppConfig.InstrumentDefinitionPath))
                 {
@@ -278,7 +283,10 @@ namespace MidiSynth7
             foreach (NumberedEntry item in InputDevices)
             {
                 cm_InputDevices.Items.Add(item);
+                cm_InputDevices2.Items.Add(item);
             }
+
+            
             
 
         }
@@ -474,6 +482,10 @@ namespace MidiSynth7
             {
                 cm_InputDevices.SelectedIndex = AppConfig.ActiveInputDeviceIndex;
             }
+            if (AppConfig.ActiveInputDevice2Index < cm_InputDevices2.Items.Count)
+            {
+                cm_InputDevices2.SelectedIndex = AppConfig.ActiveInputDevice2Index;
+            }
             //tell view we updated shit
             currentView.HandleEvent(this, new EventArgs(), "RefMainWin");
             currentView.HandleEvent(sender, new EventArgs(), "MTaskWorker");
@@ -553,10 +565,10 @@ namespace MidiSynth7
 
                 else
                 {
-                    if (cfg.CheckForMissingValues())
+                    if (cfg.CheckForMissingValues() || cfg.CheckForInvalidCounts())
                     {
                         string filename = "config.old";
-                        Console.WriteLine("CONFIG: Json was valid, but missing required components");
+                        Console.WriteLine("CONFIG: json produced incompatible data");
                         MessageBox.Show("Notice: Your settings are incompatible with this version of MidiSynth. \r\n\r\n" +
                             $"Previous config saved as '{App.APP_DATA_DIR + filename}'\r\n\r\n A new one will be created.", "Incompatible Configuration", MessageBoxButton.OK, MessageBoxImage.Warning);
 
@@ -578,6 +590,11 @@ namespace MidiSynth7
             {
                 MidiEngine.inDevice.StopRecording();
                 MidiEngine.inDevice.Close();
+            }
+            if (MidiEngine.inDevice2 != null)
+            {
+                MidiEngine.inDevice2.StopRecording();
+                MidiEngine.inDevice2.Close();
             }
             MidiEngine.MidiEngine_Close();
 
@@ -612,13 +629,24 @@ namespace MidiSynth7
                 MidiEngine.inDevice.ChannelMessageReceived += inDevice_ChannelMessageReceived;
                 MidiEngine.inDevice.StartRecording();
             }
+
+            if (MidiEngine.inDevice2 != null)
+            {
+                MidiEngine.inDevice2.StopRecording();
+                MidiEngine.inDevice2.Close();
+            }
+            if (cm_InputDevices2.SelectedIndex > -1)
+            {
+                MidiEngine.inDevice2 = new Sanford.Multimedia.Midi.InputDevice(((NumberedEntry)cm_InputDevices2.SelectedItem).Index);
+                MidiEngine.inDevice2.ChannelMessageReceived += inDevice_ChannelMessageReceived;
+                MidiEngine.inDevice2.StartRecording();
+            }
         }
 
         private void inDevice_ChannelMessageReceived(object sender, ChannelMessageEventArgs e)
         {
             if (e.Message.Command == Sanford.Multimedia.Midi.ChannelCommand.Controller)
             {
-
                 MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
             }
             if (e.Message.Command == Sanford.Multimedia.Midi.ChannelCommand.PitchWheel)
@@ -634,17 +662,21 @@ namespace MidiSynth7
             {
                 MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
             }
-            if (e.Message.Command == Sanford.Multimedia.Midi.ChannelCommand.ProgramChange)
+            if (e.Message.Command == ChannelCommand.ProgramChange)
             {
                 MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
             }
-            if (e.Message.Command == Sanford.Multimedia.Midi.ChannelCommand.NoteOn)
+            if (e.Message.Command == ChannelCommand.NoteOn)
             {
-                currentView.HandleNoteOn_VS_Event(this, new PKeyEventArgs(e.Message.Data1), e.Message.Data2);
+                MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
+                currentView.HandleNoteOnEvent(this, new NoteEventArgs(e.Message));
+               
+                //currentView.HandleNoteOn_VS_Event(this, new PKeyEventArgs(e.Message.Data1), e.Message.Data2);
             }
-            if (e.Message.Command == Sanford.Multimedia.Midi.ChannelCommand.NoteOff || (e.Message.Command == Sanford.Multimedia.Midi.ChannelCommand.NoteOn && e.Message.Data2 == 0))
+            if (e.Message.Command == ChannelCommand.NoteOff || (e.Message.Command == ChannelCommand.NoteOn && e.Message.Data2 == 0))
             {
-               currentView.HandleNoteOffEvent(this,new NoteEventArgs(e.Message));
+                MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
+                currentView.HandleNoteOffEvent(this,new NoteEventArgs(e.Message));
             }
         }
 
@@ -662,7 +694,27 @@ namespace MidiSynth7
                 MidiEngine.inDevice.StartRecording();
             }
 
+            if (MidiEngine.inDevice2 != null)
+            {
+                MidiEngine.inDevice2.StopRecording();
+                MidiEngine.inDevice2.Close();
+            }
+            
+            if (cm_InputDevices2.SelectedIndex > -1)
+            {
+                MidiEngine.inDevice2 = new Sanford.Multimedia.Midi.InputDevice(((NumberedEntry)cm_InputDevices2.SelectedItem).Index);
+                MidiEngine.inDevice2.ChannelMessageReceived += inDevice_ChannelMessageReceived;
+                MidiEngine.inDevice2.StartRecording();
+            }
+
             AppConfig.ActiveInputDeviceIndex = cm_InputDevices.SelectedIndex;
+            AppConfig.ActiveInputDevice2Index = cm_InputDevices2.SelectedIndex;
+
+            for (int i = 0; i < 9; i++)
+            {
+                CheckBox cbcfg = WP_AllowedParams.Children[i] as CheckBox;
+                AppConfig.InDeviceAllowedParams[i] = cbcfg.IsChecked.Value;
+            }
             SaveConfig();
             currentView.HandleEvent(this, new EventArgs(), "RefMainWin");
             currentView.HandleEvent(sender, new EventArgs(), "RefAppConfig");
