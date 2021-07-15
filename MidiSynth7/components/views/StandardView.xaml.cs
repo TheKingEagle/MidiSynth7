@@ -638,6 +638,7 @@ namespace MidiSynth7.components.views
         {
             await FlashChannelActivity(e.ChannelMssge.MidiChannel);
             pianomain.UnLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
+            //Pianomain_pKeyUp(sender, new PKeyEventArgs(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value));
         }
 
         public void HandleEvent(object sender, EventArgs e, string id = "generic")
