@@ -12,6 +12,7 @@ using System.Windows.Threading;
 // TODO: Figure out any optimizations to make to this system
 // TODO: Create new presets with more flexibility
 // TODO: Possible tracker support?
+// TODO: Get off the UI Thread!!!!!
 // =============== ===================================== ===============
 namespace MidiSynth7.components
 {
@@ -51,6 +52,7 @@ namespace MidiSynth7.components
         
         public OutputDevice device;                                                             // The output device of midi.
         public InputDevice inDevice;                                                            // The input device (external keyboards etc)
+        public InputDevice inDevice2;                                                           // The input device (external keyboards etc)
         public Sequencer ModableSequencer;                                                      // For Riff center
         public Sequence riffSequence;                                                           // Loaded Riff Sequence
         public List<Sequence> presets = new List<Sequence>();
