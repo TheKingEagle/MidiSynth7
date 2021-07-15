@@ -129,6 +129,10 @@
                                 </Grid>
                             </Border>
                             <Grid Margin="0,40,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="353*"/>
+                                    <RowDefinition Height="55*"/>
+                                </Grid.RowDefinitions>
                                 <GroupBox Header="MIDI Input" HorizontalAlignment="Center" Margin="10,10,10,0" VerticalAlignment="Top" Height="217" Width="498" BorderBrush="#FF136600">
                                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="490">
                                         <Grid.RowDefinitions>
@@ -177,14 +181,14 @@
                                         </GroupBox>
                                     </Grid>
                                 </GroupBox>
-                                <GroupBox x:Name="groupBox" Header="Synthezier Layout" HorizontalAlignment="Center" Margin="10,232,10,0" VerticalAlignment="Top" Height="109" Width="498" BorderBrush="#FF003489">
+                                <GroupBox x:Name="groupBox" Header="Synthezier Layout" HorizontalAlignment="Center" Margin="10,232,10,10" Width="498" BorderBrush="#FF003489">
                                     <Grid Margin="0,0,0,0">
-                                        <RadioButton x:Name="rb_syncfg_Micro" Content="Compact - Best for small displays.                                  [1024x768 recommended]" HorizontalAlignment="Left" Margin="10,16,0,0" VerticalAlignment="Top" GroupName="rb_cfg_SynLayout" Foreground="White"/>
-                                        <RadioButton x:Name="rb_syncfg_Standard" Content="Standard - Best for average displays.                              [1280x720 recommended]" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" GroupName="rb_cfg_SynLayout" IsChecked="True" Foreground="White"/>
-                                        <RadioButton x:Name="rb_syncfg_Extended" Content="Studio - Full range keyboard. Best on large displays.     [1600x900 recommended]" HorizontalAlignment="Left" Margin="10,58,0,0" VerticalAlignment="Top" GroupName="rb_cfg_SynLayout" Foreground="White"/>
+                                        <RadioButton x:Name="rb_syncfg_Micro" Content="Compact - Best for small displays.                                  [1024x768 recommended]" HorizontalAlignment="Left" Margin="10,17,0,0" VerticalAlignment="Top" GroupName="rb_cfg_SynLayout" Foreground="White"/>
+                                        <RadioButton x:Name="rb_syncfg_Standard" Content="Standard - Best for average displays.                              [1280x720 recommended]" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" GroupName="rb_cfg_SynLayout" IsChecked="True" Foreground="White"/>
+                                        <RadioButton x:Name="rb_syncfg_Extended" Content="Studio - Full range keyboard. Best on large displays.     [1600x900 recommended]" HorizontalAlignment="Left" Margin="10,59,0,0" VerticalAlignment="Top" GroupName="rb_cfg_SynLayout" Foreground="White"/>
                                     </Grid>
                                 </GroupBox>
-                                <Button x:Name="bn_cfgSave" Content="Save &amp; Close" HorizontalAlignment="Right"  Margin="0,0,16,16" VerticalAlignment="Bottom" Width="89" Height="25" Background="#FF001D40" BorderBrush="White" BorderThickness="1" Click="bn_cfgSave_Click"/>
+                                <Button x:Name="bn_cfgSave" Content="Save &amp; Close" HorizontalAlignment="Right"  Margin="0,14,14,14" Width="89" Background="#FF001D40" BorderBrush="White" BorderThickness="1" Click="bn_cfgSave_Click" Grid.Row="1"/>
                             </Grid>
                         </Grid>
                     </Border>
