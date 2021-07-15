@@ -94,10 +94,13 @@
                         <Border.Background>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                 <GradientStop Color="#FF0C0C0C"/>
-                                <GradientStop Color="#FF0C0C0C" Offset="0.80"/>
+                                <GradientStop Color="#FF0C0C0C" Offset="0.26"/>
                                 <GradientStop Color="#FF101820" Offset="0.95"/>
                             </LinearGradientBrush>
                         </Border.Background>
+                        <Border.Effect>
+                            <DropShadowEffect Color="#FF6CB5FF" Direction="0" ShadowDepth="0" BlurRadius="12"/>
+                        </Border.Effect>
                         <Grid>
                             <Border Height="40" VerticalAlignment="Top" HorizontalAlignment="Stretch" BorderThickness="0,0,0,1" CornerRadius="4,4,0,0" Background="#FF00163E" BorderBrush="#FF008BFF">
                                 <Grid>
@@ -126,20 +129,62 @@
                                 </Grid>
                             </Border>
                             <Grid Margin="0,40,0,0">
-                                <GroupBox Header="MIDI Input" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Height="118" Width="498" BorderBrush="#FF136600">
-                                    <Grid HorizontalAlignment="Left" Height="98" VerticalAlignment="Top" Width="490">
-                                        <ComboBox x:Name="cm_InputDevices" HorizontalAlignment="Left" Margin="10,66,0,0" VerticalAlignment="Top" Width="210" SelectionChanged="CM_InputDevices_SelectionChanged"/>
-                                        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="If you have a real midi input device such as a midi keyboard controller, you can pair it with this application. Select a device from the list to connect it to the synthesizer." VerticalAlignment="Top" Width="470"/>
+                                <GroupBox Header="MIDI Input" HorizontalAlignment="Center" Margin="10,10,10,0" VerticalAlignment="Top" Height="217" Width="498" BorderBrush="#FF136600">
+                                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="490">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="102*"/>
+                                            <RowDefinition Height="95*"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="If you have a real midi input device such as a midi keyboard controller, you can pair it with this application. Select up to two input devices from below." VerticalAlignment="Top" Width="470" Grid.ColumnSpan="2" Height="32"/>
+                                        <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="10,0,10,38" Height="16" ><Run Text="Device 1:"/></TextBlock>
+                                        <ComboBox x:Name="cm_InputDevices" HorizontalAlignment="Stretch" Margin="10,0,10,10" VerticalAlignment="Bottom" SelectionChanged="CM_InputDevices_SelectionChanged" Height="22"/>
+                                        <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="10,0,10,38" Grid.Column="1" Height="16" ><Run Text="Device 2:"/></TextBlock>
+                                        <ComboBox x:Name="cm_InputDevices2" HorizontalAlignment="Stretch" Margin="10,0,10,10" VerticalAlignment="Bottom" SelectionChanged="CM_InputDevices_SelectionChanged" Grid.Column="1" Height="22"/>
+                                        <GroupBox Grid.Column="0" Grid.ColumnSpan="2" Header="Allowed Device Control Parameters" Grid.Row="1" BorderBrush="#FFAA4110" Margin="10,0,10,10">
+                                            <WrapPanel x:Name="WP_AllowedParams" Orientation="Horizontal" >
+                                                <CheckBox Margin="8" Foreground="White" x:Name="CFGCB_AllowPitchWheel">
+                                                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left">Pitch wheel</TextBlock>
+                                                </CheckBox>
+                                                <CheckBox Margin="8" Foreground="White" x:Name="CFGCB_AllowVelocity">
+                                                    <TextBlock>Velocity</TextBlock>
+                                                </CheckBox>
+                                                <CheckBox Margin="8" Foreground="White" x:Name="CFGCB_AllowProgramChanges">
+                                                    <TextBlock>Instrument Change</TextBlock>
+                                                </CheckBox>
+                                                <CheckBox Margin="8" Foreground="White" x:Name="CFGCB_AllowCTRLVolume">
+                                                    <TextBlock>Volume</TextBlock>
+                                                </CheckBox>
+                                                <CheckBox Margin="8" Foreground="White" x:Name="CFGCB_AllowCTRLPan">
+                                                    <TextBlock>Pan/Balance</TextBlock>
+                                                </CheckBox>
+                                                <CheckBox Margin="8" Foreground="White" x:Name="CFGCB_AllowCTRLReverb">
+                                                    <TextBlock>Reverb</TextBlock>
+                                                </CheckBox>
+                                                <CheckBox Margin="8" Foreground="White" x:Name="CFGCB_AllowCTRLChorus">
+                                                    <TextBlock>Chorus</TextBlock>
+                                                </CheckBox>
+                                                <CheckBox Margin="8" Foreground="White" x:Name="CFGCB_AllowCTRLPhaser">
+                                                    <TextBlock>Phaser</TextBlock>
+                                                </CheckBox>
+                                                <CheckBox Margin="8" Foreground="White" x:Name="CFGCB_AllowCTRLModulation">
+                                                    <TextBlock>Modulation</TextBlock>
+                                                </CheckBox>
+                                            </WrapPanel>
+                                        </GroupBox>
                                     </Grid>
                                 </GroupBox>
-                                <GroupBox x:Name="groupBox" Header="Synthezier Layout" HorizontalAlignment="Center" Margin="0,133,0,0" VerticalAlignment="Top" Height="109" Width="498" BorderBrush="#FF003489">
+                                <GroupBox x:Name="groupBox" Header="Synthezier Layout" HorizontalAlignment="Center" Margin="10,232,10,0" VerticalAlignment="Top" Height="109" Width="498" BorderBrush="#FF003489">
                                     <Grid Margin="0,0,0,0">
                                         <RadioButton x:Name="rb_syncfg_Micro" Content="Compact - Best for small displays.                                  [1024x768 recommended]" HorizontalAlignment="Left" Margin="10,16,0,0" VerticalAlignment="Top" GroupName="rb_cfg_SynLayout" Foreground="White"/>
                                         <RadioButton x:Name="rb_syncfg_Standard" Content="Standard - Best for average displays.                              [1280x720 recommended]" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" GroupName="rb_cfg_SynLayout" IsChecked="True" Foreground="White"/>
                                         <RadioButton x:Name="rb_syncfg_Extended" Content="Studio - Full range keyboard. Best on large displays.     [1600x900 recommended]" HorizontalAlignment="Left" Margin="10,58,0,0" VerticalAlignment="Top" GroupName="rb_cfg_SynLayout" Foreground="White"/>
                                     </Grid>
                                 </GroupBox>
-                                <Button x:Name="bn_cfgSave" Content="Save &amp; Close" HorizontalAlignment="Right"  Margin="0,0,24,24" VerticalAlignment="Bottom" Width="89" Height="25" Background="#FF001D40" BorderBrush="White" BorderThickness="1" Click="bn_cfgSave_Click"/>
+                                <Button x:Name="bn_cfgSave" Content="Save &amp; Close" HorizontalAlignment="Right"  Margin="0,0,16,16" VerticalAlignment="Bottom" Width="89" Height="25" Background="#FF001D40" BorderBrush="White" BorderThickness="1" Click="bn_cfgSave_Click"/>
                             </Grid>
                         </Grid>
                     </Border>
