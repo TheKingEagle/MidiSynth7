@@ -12,26 +12,56 @@ namespace MidiSynth7.components
         public int ActiveOutputDeviceIndex { get; set; }
 
         public int ActiveInputDeviceIndex { get; set; }
-        
+
+        public int ActiveInputDevice2Index { get; set; }
+
+        /// <summary>
+        /// Expects 16 items
+        /// </summary>
         public int[] ChannelInstruments { get; set; }
+
+        /// <summary>
+        /// Expects 16 items
+        /// </summary>
         public int[] ChannelBanks { get; set; }
 
         /// <summary>
-        /// This is configuration containing Octave, transpose, and octaveFX 3 transpose
+        /// Expects 16 items (Three are used for now)
         /// </summary>
         public int[] PitchOffsets { get; set; }
 
+        /// <summary>
+        /// Expects 16 items
+        /// </summary>
         public int[] ChannelVolumes { get; set; }
 
+        /// <summary>
+        /// Expects 16 items
+        /// </summary>
         public int[] ChannelPans { get; set; }
 
+        /// <summary>
+        /// Expects 16 items
+        /// </summary>
         public int[] ChannelReverbs { get; set; }
 
+        /// <summary>
+        /// Expects 16 items
+        /// </summary>
         public int[] ChannelChoruses { get; set; }
 
+        /// <summary>
+        /// Expects 16 items
+        /// </summary>
         public int[] ChannelModulations { get; set; }
 
         public List<(string name, (int controllerID, int value)[])> ChannelCustomControls { get; set; }
+        
+        /// <summary>
+        /// Configures which events the input devices may send, are processed [true] or ignored [false] by the synth.
+        /// Expects 9 items: {pitch wheel, velocity, instrument change, volume, pan/balance, Reverb, chorus, phaser, modulation}
+        /// </summary>
+        public bool[] InDeviceAllowedParams { get; set; }
 
         public int SelectedRiff { get; set; }
 
@@ -52,18 +82,21 @@ namespace MidiSynth7.components
             DisplayMode = displayMode;
 
             ActiveInputDeviceIndex   = -1;
+            ActiveInputDevice2Index   = -1;
             ActiveOutputDeviceIndex  = 0;
             EnableRiffs              = false;
             ChannelInstruments       = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             ChannelBanks             = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             //Offset layout:                     {global octave, global transpose, ofx 3 transpose 1, ofx3 transpose 2, ..etc}
-            PitchOffsets           = new int[] { 3, 0, -12, -24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            PitchOffsets             = new int[] { 3, 0, -12, -24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             ChannelVolumes           = new int[] { 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127 };
             ChannelPans              = new int[] { 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64 };
             ChannelReverbs           = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             ChannelChoruses          = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             ChannelModulations       = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             ChannelCustomControls    = new List<(string name, (int controllerID, int value)[])>();
+
+            InDeviceAllowedParams    = new bool[] { true, true, true, true, true, true, true, true, true };
 
             var controller1 = new (int controllerID, int value)[]
             {
@@ -114,12 +147,26 @@ namespace MidiSynth7.components
         {
             object[] items = new object[]
             {
-                DisplayMode, EnableRiffs,PitchOffsets,ChannelInstruments,
+                DisplayMode,PitchOffsets,ChannelInstruments,
                 ChannelVolumes,ChannelCustomControls,ChannelChoruses,ChannelReverbs,
-                ActiveInputDeviceIndex,ActiveOutputDeviceIndex, SelectedRiff,
-                ChannelModulations,ChannelPans,ChannelBanks
+                ChannelModulations,ChannelPans,ChannelBanks, InDeviceAllowedParams
             };
             return items.Any(v => v == null);
+        }
+
+        public bool CheckForInvalidCounts()
+        {
+            object[] items = new object[]
+            {
+                PitchOffsets,ChannelInstruments,
+                ChannelVolumes,ChannelChoruses,ChannelReverbs,
+                ChannelModulations,ChannelPans,ChannelBanks
+            };
+            object[] items2 = new object[]
+            {
+                InDeviceAllowedParams
+            };
+            return items.Any(v=> ((Array)v).Length < 16) & items2.Any(v2 => ((Array)v2).Length < 9);
         }
 
     }
