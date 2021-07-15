@@ -81,7 +81,11 @@ namespace MidiSynth7.entities
 
         private void UIStoryboard_Completed(object sender, EventArgs e)
         {
-            if(!showing && Opacity == 0) Visibility = Visibility.Collapsed;
+            if (!showing && Opacity == 0)
+            {
+                Visibility = Visibility.Collapsed;
+                this.Focusable = false;
+            }
             if(showing && !ticked) displayTimer.Start();
         }
     }
