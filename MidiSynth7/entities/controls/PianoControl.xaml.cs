@@ -234,6 +234,21 @@ namespace MidiSynth7.entities.controls
                 WK_item.FSendOnA();
             }
         }
+
+        public void CustomLightKey(int zbkeyid,LinearGradientBrush background)
+        {
+            //duh.
+            BlackKey BK_item = blackKeys.FirstOrDefault(o => o.KeyID == zbkeyid);
+            WhiteKey WK_item = whiteKeys.FirstOrDefault(o => o.KeyID == zbkeyid);
+            if (BK_item != null)
+            {
+                BK_item.FSendOnC(background);
+            }
+            if (WK_item != null)
+            {
+                WK_item.FSendOnC(background);
+            }
+        }
         public void UnLightKey(int zbkeyid)
         {
             BlackKey BK_item = blackKeys.FirstOrDefault(o => o.KeyID == zbkeyid );
