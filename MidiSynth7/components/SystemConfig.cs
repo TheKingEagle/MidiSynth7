@@ -15,6 +15,9 @@ namespace MidiSynth7.components
 
         public int ActiveInputDevice2Index { get; set; }
 
+        public bool Input1RelayMode { get; set; }
+        public bool Input2RelayMode { get; set; }
+
         /// <summary>
         /// Expects 16 items
         /// </summary>
