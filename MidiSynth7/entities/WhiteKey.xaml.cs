@@ -92,6 +92,12 @@ namespace MidiSynth7.entities
             border.Background = (Brush)this.TryFindResource("ALTONBrush");
 
         }
+        public void FSendOnC(Brush background)
+        {
+            border.Background = background;
+
+        }
+
         private void Border_MouseUp(object sender, MouseButtonEventArgs e)
         {
             border.Background = (Brush)this.TryFindResource("OFFBrush");
