@@ -35,6 +35,7 @@ namespace MidiSynth7.components.views
             Config = config;
             MidiEngine = engine;
             AppContext = context;
+            cb_Devices.Items.Clear();
 
             if (Config.ActiveOutputDeviceIndex == -1)
             {
@@ -42,6 +43,7 @@ namespace MidiSynth7.components.views
             }
 
             int midiOutIndex = 0;
+            AppContext.OutputDevices.Clear();
             foreach (string item in MidiEngine.GetOutputDevices())
             {
                 AppContext.OutputDevices.Add(new NumberedEntry(midiOutIndex, item));
@@ -51,7 +53,7 @@ namespace MidiSynth7.components.views
             {
                 cb_Devices.Items.Add(item);
             }
-            
+
             if (Config.ActiveOutputDeviceIndex < cb_Devices.Items.Count)
             {
                 cb_Devices.SelectedIndex = Config.ActiveOutputDeviceIndex;
@@ -72,7 +74,7 @@ namespace MidiSynth7.components.views
             #endregion
 
             #region Patch & banks
-            
+
             foreach (Bank item in AppContext.InstrumentDefinition.Banks)
             {
                 cb_mBank.Items.Add(item);
@@ -103,7 +105,9 @@ namespace MidiSynth7.components.views
             cb_sPatch.SelectedIndex = config.ChannelInstruments[4];
             #endregion
 
-            #region ADD elipses
+            #region ADD ellipses
+            AppContext.channelIndicators.Clear();
+            AppContext.channelElipses.Clear();
             AppContext.channelElipses.Add(ch1);
             AppContext.channelElipses.Add(ch2);
             AppContext.channelElipses.Add(ch3);
@@ -120,6 +124,7 @@ namespace MidiSynth7.components.views
             AppContext.channelElipses.Add(ch14);
             AppContext.channelElipses.Add(ch15);
             AppContext.channelElipses.Add(ch16);
+
             foreach (Ellipse item in AppContext.channelElipses)
             {
                 AppContext.channelIndicators.Add(new MainWindow.ChInvk(item, AppContext));
@@ -152,7 +157,7 @@ namespace MidiSynth7.components.views
                     MidiEngine.MidiNote_SetPan(i, CTRL_Balance.Value);
                     MidiEngine.MidiNote_SetControl(Sanford.Multimedia.Midi.ControllerType.Volume, i, CTRL_Volume.Value);
                 }
-                
+
             }
 
         }
@@ -334,7 +339,7 @@ namespace MidiSynth7.components.views
                 Config.ChannelChoruses[0] = CTRL_Chorus.Value;
                 Config.ChannelPans[0] = CTRL_Balance.Value;
                 Config.PitchOffsets[0] = CTRL_Octave.Value;//global octave
-                
+
             }
         }
 
@@ -360,7 +365,7 @@ namespace MidiSynth7.components.views
                 //NumberedEntry OFX_p1 = (NumberedEntry)OFX_I1PatchSel.SelectedItem;
                 //NumberedEntry OFX_p2 = (NumberedEntry)OFX_I2PatchSel.SelectedItem;
                 //TODO: REPLACE WITH AN ACTUAL SELECTION
-                Bank OFX_b1 = new Bank(0,"b1");
+                Bank OFX_b1 = new Bank(0, "b1");
                 Bank OFX_b2 = new Bank(0, "b2");
                 NumberedEntry OFX_p1 = new NumberedEntry(32, "p1"); ;
                 NumberedEntry OFX_p2 = new NumberedEntry(48, "p2"); ;
@@ -426,7 +431,7 @@ namespace MidiSynth7.components.views
             }
         }
 
-        private void Pianomain_pKeyDown_VelocitySense(object sender, PKeyEventArgs e, int velocity)
+        private void Pianomain_pKeyDown_VelocitySense(object sender, PKeyEventArgs e, int velocity, int channel=0)
         {
             RiffKey = e.KeyID;
             if (MidiEngine != null)
@@ -499,9 +504,12 @@ namespace MidiSynth7.components.views
                     }
 
                 }
-                MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 0);
-                MidiEngine.MidiNote_SetPan(0, CTRL_Balance.Value);
-                MidiEngine.MidiNote_Play(0, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity);
+                if(channel == 0)
+                {
+                    MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 0);
+                    MidiEngine.MidiNote_SetPan(0, CTRL_Balance.Value);
+                }
+                MidiEngine.MidiNote_Play(channel, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity);
 
             }
         }
@@ -619,12 +627,18 @@ namespace MidiSynth7.components.views
         {
             await FlashChannelActivity(e.ChannelMssge.MidiChannel);
             
+            
             if (e.ChannelMssge.Data2 > 0)
             {
+                
                 pianomain.LightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
                 if (e.ChannelMssge.MidiChannel != 0)
                 {
                     pianomain.ALTLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
+                }
+                if(e.ChannelMssge.MidiChannel == 9)
+                {
+                    pianomain.CustomLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value, (LinearGradientBrush)this.TryFindResource("PercussionKeyLightBrush"));
                 }
             }
 
@@ -686,7 +700,7 @@ namespace MidiSynth7.components.views
 
         }
 
-        public void HandleNoteOn_VS_Event(object sender, PKeyEventArgs e, int velocity) => Pianomain_pKeyDown_VelocitySense(sender, e, velocity);
+        public void HandleNoteOn_VS_Event(object sender, PKeyEventArgs e, int velocity, int channel) => Pianomain_pKeyDown_VelocitySense(sender, e, velocity, channel);
 
         #endregion
     }
