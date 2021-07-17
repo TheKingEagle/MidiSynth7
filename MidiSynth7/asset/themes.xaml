@@ -572,4 +572,9 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <LinearGradientBrush x:Name="PercussionKeyLight" x:Key="PercussionKeyLightBrush" EndPoint="0.5,1" StartPoint="0.5,0">
+        <GradientStop Color="#FF0085C3" Offset="1"/>
+        <GradientStop Color="#FF476672"/>
+    </LinearGradientBrush>
 </ResourceDictionary>
