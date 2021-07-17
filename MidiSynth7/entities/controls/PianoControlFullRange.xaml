@@ -106,7 +106,7 @@
         <local:BlackKey HorizontalAlignment="Left" Margin="1344,0,0,0" VerticalAlignment="Top" KeyID="106"/>
 
          <!--Transpose-->
-        <local:TransposeNotification x:Name="Notify" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden"/>
+        <local:TransposeNotification x:Name="Notify" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" IsHitTestVisible="False"/>
 
 
 
