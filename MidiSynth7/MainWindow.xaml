@@ -89,7 +89,7 @@
                         </LinearGradientBrush>
                     </Frame.Background>
                 </Frame>
-                <Grid x:Name="GR_OverlayContent" Background="#BF000000" ClipToBounds="True" Visibility="Collapsed" Opacity="0">
+                <Grid x:Name="GR_OverlayContent" Background="#BF000000" ClipToBounds="True" Visibility="Collapsed" Opacity="0" PreviewMouseUp="GR_OverlayContent_PreviewMouseUp">
                     <Border x:Name="BDR_SettingsFrame" HorizontalAlignment="Center" VerticalAlignment="Center" Width="520" Height="450" BorderBrush="#FF008BFF" BorderThickness="1" CornerRadius="4,4,0,0" RenderTransformOrigin="0.5,0.5">
                         <Border.Background>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -126,6 +126,7 @@
                                         </Rectangle>
                                         <TextBlock Margin="28,0,0,0" VerticalAlignment="Center" Canvas.Top="0" FontSize="20">Configuration</TextBlock>
                                     </Canvas>
+                                    <Button MinHeight="24" MinWidth="24" x:Name="CfgHelpRequested" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0" Click="CfgHelpRequested_Click">?</Button>
                                 </Grid>
                             </Border>
                             <Grid Margin="0,40,0,0">
@@ -145,10 +146,16 @@
                                         </Grid.ColumnDefinitions>
                                         <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="If you have a real midi input device such as a midi keyboard controller, you can pair it with this application. Select up to two input devices from below." VerticalAlignment="Top" Width="470" Grid.ColumnSpan="2" Height="32"/>
                                         <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="10,0,10,38" Height="16" ><Run Text="Device 1:"/></TextBlock>
+                                        <CheckBox Click="RelayMode_Click" Margin="0,0,10,37" Foreground="White" x:Name="CFGCB_SynthRelay1" HorizontalAlignment="Right" VerticalAlignment="Bottom" VerticalContentAlignment="Center">
+                                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" LineHeight="10"><Run Text="Relay Mode"/></TextBlock>
+                                        </CheckBox>
                                         <ComboBox x:Name="cm_InputDevices" HorizontalAlignment="Stretch" Margin="10,0,10,10" VerticalAlignment="Bottom" SelectionChanged="CM_InputDevices_SelectionChanged" Height="22"/>
                                         <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="10,0,10,38" Grid.Column="1" Height="16" ><Run Text="Device 2:"/></TextBlock>
+                                        <CheckBox Click="RelayMode_Click" Grid.Column="1" Grid.Row="0" Margin="0,0,10,37" Foreground="White" x:Name="CFGCB_SynthRelay2" HorizontalAlignment="Right" VerticalAlignment="Bottom" VerticalContentAlignment="Center">
+                                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" LineHeight="10"><Run Text="Relay Mode"/></TextBlock>
+                                        </CheckBox>
                                         <ComboBox x:Name="cm_InputDevices2" HorizontalAlignment="Stretch" Margin="10,0,10,10" VerticalAlignment="Bottom" SelectionChanged="CM_InputDevices_SelectionChanged" Grid.Column="1" Height="22"/>
-                                        <GroupBox Grid.Column="0" Grid.ColumnSpan="2" Header="Allowed Device Control Parameters" Grid.Row="1" BorderBrush="#FFAA4110" Margin="10,0,10,10">
+                                        <GroupBox x:Name="GB_AllowedParams" Grid.Column="0" Grid.ColumnSpan="2" Header="Allowed Device Control Parameters" Grid.Row="1" BorderBrush="#FFAA4110" Margin="10,0,10,10" PreviewMouseUp="GB_AllowedParams_PreviewMouseUp">
                                             <WrapPanel x:Name="WP_AllowedParams" Orientation="Horizontal" >
                                                 <CheckBox Margin="8" Foreground="White" x:Name="CFGCB_AllowPitchWheel">
                                                     <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left">Pitch wheel</TextBlock>
@@ -177,6 +184,7 @@
                                                 <CheckBox Margin="8" Foreground="White" x:Name="CFGCB_AllowCTRLModulation">
                                                     <TextBlock>Modulation</TextBlock>
                                                 </CheckBox>
+                                                
                                             </WrapPanel>
                                         </GroupBox>
                                     </Grid>

@@ -38,11 +38,14 @@ namespace MidiSynth7
         DisplayModes _switchto = DisplayModes.Standard;
         UIElement _elementFromanim = null;
         private ISynthView currentView;
+        private DisplayModes CurrentViewDM;
         public List<NumberedEntry> OutputDevices = new List<NumberedEntry>();
         public List<NumberedEntry> InputDevices = new List<NumberedEntry>();
         public List<Ellipse> channelElipses = new List<Ellipse>();
         public List<ChInvk> channelIndicators = new List<ChInvk>();
         public InstrumentDefinition InstrumentDefinition { get; private set; }
+        public bool SynHelpRequested { get; private set; }
+
         public SystemConfig AppConfig;
 
         public MidiEngine MidiEngine;
@@ -110,6 +113,26 @@ namespace MidiSynth7
 
             appinfo_projectRevision = Assembly.GetExecutingAssembly().GetName().Version.Revision;
             AppConfig = LoadConfig();
+            CFGCB_SynthRelay1.IsChecked = AppConfig.Input1RelayMode;
+            CFGCB_SynthRelay2.IsChecked = AppConfig.Input2RelayMode;
+
+            switch (AppConfig.DisplayMode)
+            {
+                case DisplayModes.Standard:
+                    rb_syncfg_Standard.IsChecked = true;
+                    break;
+                case DisplayModes.Studio:
+                    rb_syncfg_Extended.IsChecked = true;
+
+                    break;
+                case DisplayModes.Compact:
+                    rb_syncfg_Micro.IsChecked = true;
+
+                    break;
+                default:
+                    rb_syncfg_Standard.IsChecked = true;
+                    break;
+            }
             for (int i = 0; i < 9; i++)
             {
                 CheckBox cbparam = WP_AllowedParams.Children[i] as CheckBox;
@@ -149,21 +172,25 @@ namespace MidiSynth7
 
         private void Loadview(DisplayModes mode)
         {
+            CurrentViewDM = mode;
             switch (mode)
             {
                 case DisplayModes.Standard:
                     this.Width = 1106;
                     this.Height = 590;
                     Title = $"RMSoftware MIDI Synthesizer v7.0 • Standard Edition • {(Environment.Is64BitProcess ? "x64" : "x86")} rev. {appinfo_projectRevision}";
+                    currentView = null;
                     currentView = new components.views.StandardView(this, ref AppConfig, ref MidiEngine);
                     FR_SynthView.Content = currentView;
+                    
                     break;
                 case DisplayModes.Studio:
                     this.Width = 1524;
                     this.Height = 652;
                     Title = $"RMSoftware MIDI Synthesizer v7.0 • Studio Edition • {(Environment.Is64BitProcess ? "x64" : "x86")} rev. {appinfo_projectRevision}";
-                    
-                    FR_SynthView.Content = "//TODO: Studio view";//TODO: Pass parameters and other important system info
+                    currentView = null;
+                    currentView = new components.views.StudioView(this, ref AppConfig, ref MidiEngine);
+                    FR_SynthView.Content = currentView;
 
                     break;
                 case DisplayModes.Compact:
@@ -668,10 +695,24 @@ namespace MidiSynth7
             }
             if (e.Message.Command == ChannelCommand.NoteOn)
             {
-                MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
-                currentView.HandleNoteOnEvent(this, new NoteEventArgs(e.Message));
-               
-                //currentView.HandleNoteOn_VS_Event(this, new PKeyEventArgs(e.Message.Data1), e.Message.Data2);
+                //MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
+                //currentView.HandleNoteOnEvent(this, new NoteEventArgs(e.Message));
+                if(sender as Sanford.Multimedia.Midi.InputDevice == MidiEngine.inDevice && !AppConfig.Input1RelayMode)
+                {
+                    currentView.HandleNoteOn_VS_Event(this, new PKeyEventArgs(e.Message.Data1), e.Message.Data2);
+                    return;
+                }
+                if (sender as Sanford.Multimedia.Midi.InputDevice == MidiEngine.inDevice2 && !AppConfig.Input2RelayMode)
+                {
+                    currentView.HandleNoteOn_VS_Event(this, new PKeyEventArgs(e.Message.Data1), e.Message.Data2);
+                    return;
+                }
+                else
+                {
+                    MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
+                    currentView.HandleNoteOnEvent(this, new NoteEventArgs(e.Message));
+                    return;
+                }
             }
             if (e.Message.Command == ChannelCommand.NoteOff || (e.Message.Command == ChannelCommand.NoteOn && e.Message.Data2 == 0))
             {
@@ -682,30 +723,32 @@ namespace MidiSynth7
 
         private void bn_cfgSave_Click(object sender, RoutedEventArgs e)
         {
-            if (MidiEngine.inDevice != null)
-            {
-                MidiEngine.inDevice.StopRecording();
-                MidiEngine.inDevice.Close();
-            }
-            if (cm_InputDevices.SelectedIndex > -1)
-            {
-                MidiEngine.inDevice = new Sanford.Multimedia.Midi.InputDevice(((NumberedEntry)cm_InputDevices.SelectedItem).Index);
-                MidiEngine.inDevice.ChannelMessageReceived += inDevice_ChannelMessageReceived;
-                MidiEngine.inDevice.StartRecording();
-            }
+            //if (MidiEngine.inDevice != null)
+            //{
+            //    MidiEngine.inDevice.StopRecording();
+            //    MidiEngine.inDevice.Close();
+                
+            //}
+            //if (cm_InputDevices.SelectedIndex > -1)
+            //{
+            //    MidiEngine.inDevice = new Sanford.Multimedia.Midi.InputDevice(((NumberedEntry)cm_InputDevices.SelectedItem).Index);
+            //    MidiEngine.inDevice.ChannelMessageReceived += inDevice_ChannelMessageReceived;
+            //    MidiEngine.inDevice.StartRecording();
+            //}
 
-            if (MidiEngine.inDevice2 != null)
-            {
-                MidiEngine.inDevice2.StopRecording();
-                MidiEngine.inDevice2.Close();
-            }
+            //if (MidiEngine.inDevice2 != null)
+            //{
+            //    MidiEngine.inDevice2.StopRecording();
+            //    MidiEngine.inDevice2.Close();
+            //    MidiEngine.inDevice2.Dispose();
+            //}
             
-            if (cm_InputDevices2.SelectedIndex > -1)
-            {
-                MidiEngine.inDevice2 = new Sanford.Multimedia.Midi.InputDevice(((NumberedEntry)cm_InputDevices2.SelectedItem).Index);
-                MidiEngine.inDevice2.ChannelMessageReceived += inDevice_ChannelMessageReceived;
-                MidiEngine.inDevice2.StartRecording();
-            }
+            //if (cm_InputDevices2.SelectedIndex > -1)
+            //{
+            //    MidiEngine.inDevice2 = new Sanford.Multimedia.Midi.InputDevice(((NumberedEntry)cm_InputDevices2.SelectedItem).Index);
+            //    MidiEngine.inDevice2.ChannelMessageReceived += inDevice_ChannelMessageReceived;
+            //    MidiEngine.inDevice2.StartRecording();
+            //}
 
             AppConfig.ActiveInputDeviceIndex = cm_InputDevices.SelectedIndex;
             AppConfig.ActiveInputDevice2Index = cm_InputDevices2.SelectedIndex;
@@ -715,12 +758,67 @@ namespace MidiSynth7
                 CheckBox cbcfg = WP_AllowedParams.Children[i] as CheckBox;
                 AppConfig.InDeviceAllowedParams[i] = cbcfg.IsChecked.Value;
             }
+
+            AppConfig.DisplayMode = rb_syncfg_Extended.IsChecked.Value 
+                ? DisplayModes.Studio : rb_syncfg_Micro.IsChecked.Value 
+                ? DisplayModes.Compact : DisplayModes.Standard;
+            AppConfig.Input1RelayMode = CFGCB_SynthRelay1.IsChecked.Value;
+            AppConfig.Input2RelayMode = CFGCB_SynthRelay2.IsChecked.Value;
+            if (AppConfig.DisplayMode == CurrentViewDM)
+            {
+                currentView.HandleEvent(this, new EventArgs(), "RefMainWin");
+                currentView.HandleEvent(sender, new EventArgs(), "RefAppConfig");
+            }
+            if (AppConfig.DisplayMode != CurrentViewDM)
+            {
+                SwitchView(AppConfig.DisplayMode);
+            }
             SaveConfig();
-            currentView.HandleEvent(this, new EventArgs(), "RefMainWin");
-            currentView.HandleEvent(sender, new EventArgs(), "RefAppConfig");
+            
             ScaleUI(1, 0.8, BDR_SettingsFrame);
             FadeUI(1, 0, GR_OverlayContent);
 
+        }
+
+        private void CfgHelpRequested_Click(object sender, RoutedEventArgs e)
+        {
+            SynHelpRequested = !SynHelpRequested;
+            this.Cursor = SynHelpRequested ? Cursors.Help : Cursors.Arrow;
+            
+        }
+
+
+        private void RelayMode_Click(object sender, RoutedEventArgs e)
+        {
+            if(SynHelpRequested)
+            {
+                this.Cursor = Cursors.Arrow;
+                SynHelpRequested = false;
+                MessageBox.Show("If checked, MIDI events sent by the device will not be directly altered by the synthesizer. Note, some controller events will still affect incoming events.\r\n\r\nIt is recommended to leave unchecked if the selected device is an external keyboard starting on the A0 key.");
+            }
+        }
+
+
+        private void GR_OverlayContent_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = false;
+
+            //if (SynHelpRequested)
+            //{
+            //    this.Cursor = Cursors.Arrow;
+            //    SynHelpRequested = false;
+            //}
+        }
+
+        private void GB_AllowedParams_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = false;
+            if (SynHelpRequested)
+            {
+                this.Cursor = Cursors.Arrow;
+                SynHelpRequested = false;
+                MessageBox.Show("Filters MIDI events sent by the device. By default, everything is processed by the synthesizer.");
+            }
         }
     }
 }
