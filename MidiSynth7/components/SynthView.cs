@@ -11,7 +11,7 @@ namespace MidiSynth7.components
     public interface ISynthView
     {
         void HandleNoteOnEvent(object sender, NoteEventArgs e);
-        void HandleNoteOn_VS_Event(object sender, PKeyEventArgs e, int data2);
+        void HandleNoteOn_VS_Event(object sender, PKeyEventArgs e, int data2, int channel=0);
         void HandleNoteOffEvent(object sender, NoteEventArgs e);
         void HandleEvent(object sender, EventArgs e, string id="generic");
 
