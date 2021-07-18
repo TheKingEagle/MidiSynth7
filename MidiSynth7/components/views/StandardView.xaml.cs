@@ -171,7 +171,12 @@ namespace MidiSynth7.components.views
             }
         }
 
-        private void MIO_bn_stop_Click(object sender, RoutedEventArgs e) => MidiEngine?.MidiEngine_Panic();
+        private void MIO_bn_stop_Click(object sender, RoutedEventArgs e)
+        {
+            MidiEngine?.MidiEngine_Panic();
+            invokeUnLightRange(0, pianomain.KeyCount).GetAwaiter().GetResult();
+
+        }
 
         private void ToggleChecked(object sender, RoutedEventArgs e)
         {
@@ -348,7 +353,7 @@ namespace MidiSynth7.components.views
 
         }
 
-        #region Piano Key events
+        #region Piano Keys
 
         private void Pianomain_pKeyDown(object sender, PKeyEventArgs e)
         {
@@ -618,6 +623,18 @@ namespace MidiSynth7.components.views
                 MidiEngine.MidiNote_Stop(0, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value);
 
             }
+        }
+
+        private async Task invokeUnLightRange(int start=0, int count=40)
+        {
+            void lightaction()
+            {
+                for (int i = start; i < count; i++)
+                {
+                    pianomain.UnLightKey(i);
+                }
+            }
+            await Task.Run(() => Dispatcher.Invoke(lightaction));
         }
 
         #endregion
