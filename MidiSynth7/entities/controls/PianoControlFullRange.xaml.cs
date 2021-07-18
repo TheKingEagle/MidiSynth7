@@ -24,6 +24,8 @@ namespace MidiSynth7.entities.controls
     {
         List<BlackKey> blackKeys = new List<BlackKey>();
         List<WhiteKey> whiteKeys = new List<WhiteKey>();
+        public int KeyCount { get { return contentGrid.Children.Count; } }
+
         public PianoControlFullRange()
         {
             InitializeComponent();

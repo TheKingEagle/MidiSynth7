@@ -9,106 +9,104 @@
 
 
 
+    <Grid>
+        <Grid x:Name="contentGrid" x:FieldModifier="private">
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="21"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="23" Margin="27,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="24" Margin="54,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="26" Margin="81,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="28" Margin="108,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="29" Margin="135,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="31" Margin="162,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="33" Margin="189,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="35" Margin="216,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="36" Margin="243,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="38" Margin="270,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="40" Margin="297,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="41" Margin="324,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="43" Margin="351,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="45" Margin="378,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="47" Margin="405,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="59" Margin="594,0,0,0"/>
 
-    <Grid x:Name="contentGrid">
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="48" Margin="432,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="50" Margin="459,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="52" Margin="486,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="53" Margin="513,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="55" Margin="540,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="57" Margin="567,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="60" Margin="621,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="62" Margin="648,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="64" Margin="675,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="65" Margin="702,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="67" Margin="729,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="69" Margin="756,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="71" Margin="783,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="72" Margin="810,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="74" Margin="837,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="76" Margin="864,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="77" Margin="891,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="79" Margin="918,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="81" Margin="945,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="83" Margin="972,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="84" Margin="999,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="86" Margin="1026,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="88" Margin="1053,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="89" Margin="1080,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="91" Margin="1107,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="93" Margin="1134,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="95" Margin="1161,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="96" Margin="1188,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="98" Margin="1215,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="100" Margin="1242,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="101" Margin="1269,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="103" Margin="1296,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="105" Margin="1323,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="107" Margin="1350,0,0,0"/>
+            <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="108" Margin="1377,0,0,0"/>
 
-    
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="21"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="23" Margin="27,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="24" Margin="54,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="26" Margin="81,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="28" Margin="108,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="29" Margin="135,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="31" Margin="162,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="33" Margin="189,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="35" Margin="216,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="36" Margin="243,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="38" Margin="270,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="40" Margin="297,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="41" Margin="324,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="43" Margin="351,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="45" Margin="378,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="47" Margin="405,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="59" Margin="594,0,0,0"/>
-        
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="48" Margin="432,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="50" Margin="459,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="52" Margin="486,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="53" Margin="513,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="55" Margin="540,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="57" Margin="567,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="60" Margin="621,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="62" Margin="648,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="64" Margin="675,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="65" Margin="702,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="67" Margin="729,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="69" Margin="756,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="71" Margin="783,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="72" Margin="810,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="74" Margin="837,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="76" Margin="864,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="77" Margin="891,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="79" Margin="918,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="81" Margin="945,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="83" Margin="972,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="84" Margin="999,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="86" Margin="1026,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="88" Margin="1053,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="89" Margin="1080,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="91" Margin="1107,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="93" Margin="1134,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="95" Margin="1161,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="96" Margin="1188,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="98" Margin="1215,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="100" Margin="1242,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="101" Margin="1269,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="103" Margin="1296,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="105" Margin="1323,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="107" Margin="1350,0,0,0"/>
-        <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="108" Margin="1377,0,0,0"/>
-        
-        <!--Black Keys-->
-        <local:BlackKey HorizontalAlignment="Left" Margin="21,0,0,0" VerticalAlignment="Top" KeyID="22"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="67,0,0,0" VerticalAlignment="Top" KeyID="25"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="102,0,0,0" VerticalAlignment="Top" KeyID="27"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="148,0,0,0" VerticalAlignment="Top" KeyID="30"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="179,0,0,0" VerticalAlignment="Top" KeyID="32"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="210,0,0,0" VerticalAlignment="Top" KeyID="34"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="256,0,0,0" VerticalAlignment="Top" KeyID="37"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="291,0,0,0" VerticalAlignment="Top" KeyID="39"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="337,0,0,0" VerticalAlignment="Top" KeyID="42"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="368,0,0,0" VerticalAlignment="Top" KeyID="44"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="399,0,0,0" VerticalAlignment="Top" KeyID="46"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="445,0,0,0" VerticalAlignment="Top" KeyID="49" Width="20"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="480,0,0,0" VerticalAlignment="Top" KeyID="51"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="526,0,0,0" VerticalAlignment="Top" KeyID="54"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="557,0,0,0" VerticalAlignment="Top" KeyID="56"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="588,0,0,0" VerticalAlignment="Top" KeyID="58"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="634,0,0,0" VerticalAlignment="Top" KeyID="61" Width="20"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="669,0,0,0" VerticalAlignment="Top" KeyID="63"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="715,0,0,0" VerticalAlignment="Top" KeyID="66"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="746,0,0,0" VerticalAlignment="Top" KeyID="68"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="777,0,0,0" VerticalAlignment="Top" KeyID="70"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="823,0,0,0" VerticalAlignment="Top" KeyID="73" Width="20"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="858,0,0,0" VerticalAlignment="Top" KeyID="75"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="904,0,0,0" VerticalAlignment="Top" KeyID="78"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="935,0,0,0" VerticalAlignment="Top" KeyID="80"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="966,0,0,0" VerticalAlignment="Top" KeyID="82"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="1012,0,0,0" VerticalAlignment="Top" KeyID="85" Width="20"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="1047,0,0,0" VerticalAlignment="Top" KeyID="87"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="1093,0,0,0" VerticalAlignment="Top" KeyID="90"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="1124,0,0,0" VerticalAlignment="Top" KeyID="92"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="1155,0,0,0" VerticalAlignment="Top" KeyID="94"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="1201,0,0,0" VerticalAlignment="Top" KeyID="97" Width="20"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="1236,0,0,0" VerticalAlignment="Top" KeyID="99"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="1282,0,0,0" VerticalAlignment="Top" KeyID="102"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="1313,0,0,0" VerticalAlignment="Top" KeyID="104"/>
-        <local:BlackKey HorizontalAlignment="Left" Margin="1344,0,0,0" VerticalAlignment="Top" KeyID="106"/>
-
-         <!--Transpose-->
-        <local:TransposeNotification x:Name="Notify" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" IsHitTestVisible="False"/>
-
-
+            <!--Black Keys-->
+            <local:BlackKey HorizontalAlignment="Left" Margin="21,0,0,0" VerticalAlignment="Top" KeyID="22"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="67,0,0,0" VerticalAlignment="Top" KeyID="25"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="102,0,0,0" VerticalAlignment="Top" KeyID="27"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="148,0,0,0" VerticalAlignment="Top" KeyID="30"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="179,0,0,0" VerticalAlignment="Top" KeyID="32"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="210,0,0,0" VerticalAlignment="Top" KeyID="34"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="256,0,0,0" VerticalAlignment="Top" KeyID="37"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="291,0,0,0" VerticalAlignment="Top" KeyID="39"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="337,0,0,0" VerticalAlignment="Top" KeyID="42"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="368,0,0,0" VerticalAlignment="Top" KeyID="44"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="399,0,0,0" VerticalAlignment="Top" KeyID="46"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="445,0,0,0" VerticalAlignment="Top" KeyID="49" Width="20"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="480,0,0,0" VerticalAlignment="Top" KeyID="51"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="526,0,0,0" VerticalAlignment="Top" KeyID="54"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="557,0,0,0" VerticalAlignment="Top" KeyID="56"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="588,0,0,0" VerticalAlignment="Top" KeyID="58"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="634,0,0,0" VerticalAlignment="Top" KeyID="61" Width="20"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="669,0,0,0" VerticalAlignment="Top" KeyID="63"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="715,0,0,0" VerticalAlignment="Top" KeyID="66"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="746,0,0,0" VerticalAlignment="Top" KeyID="68"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="777,0,0,0" VerticalAlignment="Top" KeyID="70"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="823,0,0,0" VerticalAlignment="Top" KeyID="73" Width="20"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="858,0,0,0" VerticalAlignment="Top" KeyID="75"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="904,0,0,0" VerticalAlignment="Top" KeyID="78"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="935,0,0,0" VerticalAlignment="Top" KeyID="80"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="966,0,0,0" VerticalAlignment="Top" KeyID="82"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="1012,0,0,0" VerticalAlignment="Top" KeyID="85" Width="20"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="1047,0,0,0" VerticalAlignment="Top" KeyID="87"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="1093,0,0,0" VerticalAlignment="Top" KeyID="90"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="1124,0,0,0" VerticalAlignment="Top" KeyID="92"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="1155,0,0,0" VerticalAlignment="Top" KeyID="94"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="1201,0,0,0" VerticalAlignment="Top" KeyID="97" Width="20"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="1236,0,0,0" VerticalAlignment="Top" KeyID="99"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="1282,0,0,0" VerticalAlignment="Top" KeyID="102"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="1313,0,0,0" VerticalAlignment="Top" KeyID="104"/>
+            <local:BlackKey HorizontalAlignment="Left" Margin="1344,0,0,0" VerticalAlignment="Top" KeyID="106"/>
+        </Grid>
+        <Grid>
+            <!--Transpose-->
+            <local:TransposeNotification x:Name="Notify" x:FieldModifier="private" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" IsHitTestVisible="False"/>
+        </Grid>
 
     </Grid>
 </UserControl>

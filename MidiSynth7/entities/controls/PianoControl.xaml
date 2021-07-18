@@ -10,7 +10,7 @@
 
 
     <Grid>
-        <Grid x:Name="contentGrid">
+        <Grid x:Name="contentGrid" x:FieldModifier="private">
 
             <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="21"/>
             <local:WhiteKey HorizontalAlignment="Left" VerticalAlignment="Top" Height="145" Width="27" KeyID="23" Margin="27,0,0,0"/>
