@@ -500,13 +500,14 @@ namespace MidiSynth7.components
                     if(inDevice != null)
                     {
                         if (inDevice.IsDisposed) return;
+
                         inDevice.StopRecording();
                         inDevice.Close();
                         inDevice = null;
                     }
                     if (inDevice2 != null)
                     {
-                        if (inDevice.IsDisposed) return;
+                        if (inDevice2.IsDisposed) return;
 
                         inDevice2.StopRecording();
                         inDevice2.Close();
