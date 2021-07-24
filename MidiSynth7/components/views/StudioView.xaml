@@ -15,14 +15,18 @@
     <Grid>
         <GroupBox Header="MIDI Output" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="205" Width="248" BorderThickness="2" BorderBrush="#FF0008A6" Padding="0">
             <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="61*"/>
+                    <ColumnDefinition Width="59*"/>
+                </Grid.ColumnDefinitions>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <GradientStop Color="#FF000B2A" Offset="1"/>
                         <GradientStop Color="#FF0C0C0C"/>
                     </LinearGradientBrush>
                 </Grid.Background>
-                <TextBlock HorizontalAlignment="Left" Margin="4,40,0,0" TextWrapping="Wrap" Text="Device:" VerticalAlignment="Top"/>
-                <ComboBox x:Name="cb_Devices" HorizontalAlignment="Left" Margin="47,38,0,0" VerticalAlignment="Top" Width="189" BorderBrush="Black" Foreground="White" BorderThickness="2" SelectionChanged="Cb_Devices_SelectionChanged" Focusable="False">
+                <TextBlock HorizontalAlignment="Left" Margin="4,40,0,0" TextWrapping="Wrap" Text="Device:" VerticalAlignment="Top" Height="16" Width="38"/>
+                <ComboBox x:Name="cb_Devices" HorizontalAlignment="Left" Margin="47,38,0,0" VerticalAlignment="Top" Width="189" BorderBrush="Black" Foreground="White" BorderThickness="2" SelectionChanged="Cb_Devices_SelectionChanged" Focusable="False" Grid.ColumnSpan="2" Height="22">
                     <ComboBox.Background>
                         <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                             <GradientStop Color="#FFD8D8D8" Offset="1"/>
@@ -32,16 +36,27 @@
                         </LinearGradientBrush>
                     </ComboBox.Background>
                 </ComboBox>
-                <Button x:Name="MIO_bn_stop" Content="STOP" HorizontalAlignment="Left" Margin="124,73,0,0" VerticalAlignment="Top" Width="112" Height="22" Background="#FF380000" BorderBrush="Red" Focusable="False" Click="MIO_bn_stop_Click"/>
-                <Button x:Name="MIO_bn_outputlog" Content="Output Log" HorizontalAlignment="Left" Margin="124,100,0,0" VerticalAlignment="Top" Width="112" Height="22" Background="#FF002C02" Focusable="False"/>
-                <Button x:Name="MIO_bn_pluginsui" Content="Plugins" HorizontalAlignment="Left" Margin="124,127,0,0" VerticalAlignment="Top" Width="112" Height="21" Background="#FF00042C" Focusable="False" Foreground="#FF2C2C2C" IsEnabled="False">
+                <Button x:Name="MIO_bn_stop" Content="STOP" HorizontalAlignment="Left" Margin="4,73,0,0" VerticalAlignment="Top" Width="112" Height="22" Background="#FF380000" BorderBrush="Red" Focusable="False" Click="MIO_bn_stop_Click" Grid.Column="1"/>
+                <Button x:Name="MIO_bn_outputlog" Content="Output Log" HorizontalAlignment="Left" Margin="4,100,0,0" VerticalAlignment="Top" Width="112" Height="22" Background="#FF002C02" Focusable="False" Grid.Column="1"/>
+                <Button x:Name="MIO_bn_pluginsui" Content="Plugins" HorizontalAlignment="Left" Margin="4,127,0,0" VerticalAlignment="Top" Width="112" Height="21" Background="#FF00042C" Focusable="False" Foreground="#FF2C2C2C" IsEnabled="False" Grid.Column="1">
                     <Button.Effect>
-                        <BlurEffect Radius="10"/>
+                        <BlurEffect Radius="5"/>
                     </Button.Effect>
                 </Button>
-                <CheckBox x:Name="cb_internalsf2" Content="Internal Device" HorizontalAlignment="Left" Margin="4,10,0,0" VerticalAlignment="Top" Foreground="White" Width="112" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False"/>
-                <Button x:Name="MIO_bn_SetSF2" Content="Select Soundfont..." HorizontalAlignment="Left" Margin="124,3,0,0" VerticalAlignment="Top" Width="112" Height="29" Background="#FF38002E" BorderBrush="Red" Click="MIO_bn_SetSF2_Click" Focusable="False" IsEnabled="False"/>
-                <SynthGUI:DialControl x:Name="CTRL_Synth_Gain" HorizontalAlignment="Left" Margin="0,60,0,0" VerticalAlignment="Top" Text="Internal Synth. Gain" Maximum="200" ValueChanged="CTRL_ValueChanged" RenderTransformOrigin="0.5,0.5" Value="100" IsEnabled="False">
+                <CheckBox x:Name="cb_internalsf2" Content="Internal Device" HorizontalAlignment="Left" Margin="4,10,0,0" VerticalAlignment="Top" Foreground="White" Width="112" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16" IsEnabled="False">
+                    <CheckBox.Effect>
+                        <BlurEffect/>
+                    </CheckBox.Effect>
+                </CheckBox>
+                <Button x:Name="MIO_bn_SetSF2" Content="Select Soundfont..." HorizontalAlignment="Left" Margin="4,3,0,0" VerticalAlignment="Top" Width="112" Height="29" Background="#FF38002E" BorderBrush="Red" Click="MIO_bn_SetSF2_Click" Focusable="False" IsEnabled="False" Grid.Column="1">
+                    <Button.Effect>
+                        <BlurEffect/>
+                    </Button.Effect>
+                </Button>
+                <SynthGUI:DialControl x:Name="CTRL_Synth_Gain" Margin="0,60,0,0" VerticalAlignment="Top" Text="Internal Synth. Gain" Maximum="200" ValueChanged="CTRL_ValueChanged" RenderTransformOrigin="0.5,0.5" Value="100" Grid.ColumnSpan="2" Height="125" HorizontalAlignment="Left" Width="125" IsEnabled="False">
+                    <SynthGUI:DialControl.Effect>
+                        <BlurEffect/>
+                    </SynthGUI:DialControl.Effect>
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>
@@ -51,7 +66,7 @@
                         </TransformGroup>
                     </SynthGUI:DialControl.RenderTransform>
                 </SynthGUI:DialControl>
-                <Ellipse x:Name="Mio_SustainPdl" HorizontalAlignment="Left" Height="16" Margin="144,162,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_Ind_off}">
+                <Ellipse x:Name="Mio_SustainPdl" HorizontalAlignment="Left" Height="16" Margin="4,158,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_Ind_off}" Grid.Column="1">
                     <Ellipse.Stroke>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                             <GradientStop Color="#FF706868" Offset="1"/>
@@ -61,7 +76,7 @@
                         </LinearGradientBrush>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <TextBlock HorizontalAlignment="Left" Margin="165,162,0,0" TextWrapping="Wrap" Text="Sustain Pedal" VerticalAlignment="Top"/>
+                <TextBlock HorizontalAlignment="Left" Margin="25,158,0,0" TextWrapping="Wrap" Text="Sustain Pedal" VerticalAlignment="Top" Grid.Column="1" Height="16" Width="70"/>
             </Grid>
         </GroupBox>
         <GroupBox Header="Controllers" HorizontalAlignment="Left" Margin="263,0,0,0" VerticalAlignment="Top" Height="205" Width="1225" BorderThickness="2" BorderBrush="#FF3E0000" Padding="0">
