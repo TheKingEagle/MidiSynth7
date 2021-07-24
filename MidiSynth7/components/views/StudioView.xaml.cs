@@ -690,6 +690,16 @@ namespace MidiSynth7.components.views
             {
                 Config = AppContext.AppConfig;
             }
+
+            if(id == "SynthSustainCTRL_ON")
+            {
+                Mio_SustainPdl.Fill = (Brush)FindResource("CH_IND_On");
+            }
+            if (id == "SynthSustainCTRL_OFF")
+            {
+                Mio_SustainPdl.Fill = (Brush)FindResource("CH_Ind_off");
+            }
+
         }
 
         public void HandleKeyDown(object sender, KeyEventArgs e) => pianomain.UserControl_KeyDown(sender, e);
@@ -697,6 +707,17 @@ namespace MidiSynth7.components.views
         public void HandleKeyUp(object sender, KeyEventArgs e)
         {
             pianomain.UserControl_KeyUp(sender, e);
+
+            #region Studio keyboard shortcuts
+            if (e.Key == Key.O && Keyboard.Modifiers.HasFlag(ModifierKeys.Control&ModifierKeys.Alt&ModifierKeys.Shift))
+            {
+                cb_OFX_Enble.IsChecked = !cb_OFX_Enble.IsChecked.Value;
+            }
+            if (e.Key == Key.D && Keyboard.Modifiers.HasFlag(ModifierKeys.Control & ModifierKeys.Alt & ModifierKeys.Shift))
+            {
+                cb_DS_Enable.IsChecked = !cb_DS_Enable.IsChecked.Value;
+            }
+            #endregion
 
             if (e.Key == Key.Up && Config.PitchOffsets[1] < 12)
             {

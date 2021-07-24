@@ -51,23 +51,35 @@
                         </TransformGroup>
                     </SynthGUI:DialControl.RenderTransform>
                 </SynthGUI:DialControl>
+                <Ellipse x:Name="Mio_SustainPdl" HorizontalAlignment="Left" Height="16" Margin="144,162,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_Ind_off}">
+                    <Ellipse.Stroke>
+                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                            <GradientStop Color="#FF706868" Offset="1"/>
+                            <GradientStop Color="#FFB6AEAE"/>
+                            <GradientStop Color="#FF272727" Offset="0.505"/>
+                            <GradientStop Color="#FF3C3C3C" Offset="0.5"/>
+                        </LinearGradientBrush>
+                    </Ellipse.Stroke>
+                </Ellipse>
+                <TextBlock HorizontalAlignment="Left" Margin="165,162,0,0" TextWrapping="Wrap" Text="Sustain Pedal" VerticalAlignment="Top"/>
             </Grid>
         </GroupBox>
         <GroupBox Header="Controllers" HorizontalAlignment="Left" Margin="263,0,0,0" VerticalAlignment="Top" Height="205" Width="1225" BorderThickness="2" BorderBrush="#FF3E0000" Padding="0">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="200*"/>
-                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="13"/>
                     <ColumnDefinition Width="181*"/>
                     <ColumnDefinition Width="20*"/>
                     <ColumnDefinition Width="181*"/>
                     <ColumnDefinition Width="20*"/>
                     <ColumnDefinition Width="181*"/>
                     <ColumnDefinition Width="20*"/>
-                    <ColumnDefinition Width="180*"/>
+                    <ColumnDefinition Width="181*"/>
                     <ColumnDefinition Width="20*"/>
                     <ColumnDefinition Width="181*"/>
-                    <ColumnDefinition Width="13*"/>
+                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="181*"/>
+                    <ColumnDefinition Width="13"/>
                 </Grid.ColumnDefinitions>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -75,7 +87,7 @@
                         <GradientStop Color="#FF3E0000" Offset="1"/>
                     </LinearGradientBrush>
                 </Grid.Background>
-                <SynthGUI:DialControl x:Name="CTRL_Octave" HorizontalAlignment="Left" Margin="47,30,0,0" VerticalAlignment="Top" Text="Octave" Value="3" Maximum="6" TickDelay="25" ValueChanged="CTRL_ValueChanged" Height="125" Width="125" RenderTransformOrigin="0.5,0.5">
+                <SynthGUI:DialControl x:Name="CTRL_Octave" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Octave" Value="3" Maximum="6" TickDelay="25" ValueChanged="CTRL_ValueChanged" Height="125" Width="125" Grid.Column="1" RenderTransformOrigin="0.5,0.5">
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="1.45" ScaleY="1.45"/>
@@ -85,7 +97,7 @@
                         </TransformGroup>
                     </SynthGUI:DialControl.RenderTransform>
                 </SynthGUI:DialControl>
-                <SynthGUI:DialControl x:Name="CTRL_Volume" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Volume" Value="127" Maximum="127" ValueChanged="CTRL_ValueChanged" Height="125" Width="125" RenderTransformOrigin="0.5,0.5" Grid.Column="2">
+                <SynthGUI:DialControl x:Name="CTRL_Volume" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Volume" Value="127" Maximum="127" ValueChanged="CTRL_ValueChanged" Height="125" Width="125" RenderTransformOrigin="0.5,0.5" Grid.Column="3">
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="1.45" ScaleY="1.45"/>
@@ -95,7 +107,7 @@
                         </TransformGroup>
                     </SynthGUI:DialControl.RenderTransform>
                 </SynthGUI:DialControl>
-                <SynthGUI:DialControl x:Name="CTRL_Balance" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Balance (Pan)" Value="64" Maximum="127" ValueChanged="CTRL_ValueChanged" Height="125" Width="125" RenderTransformOrigin="0.5,0.5" Grid.Column="4">
+                <SynthGUI:DialControl x:Name="CTRL_Balance" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Balance (Pan)" Value="64" Maximum="127" ValueChanged="CTRL_ValueChanged" Height="125" Width="125" RenderTransformOrigin="0.5,0.5" Grid.Column="5">
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="1.45" ScaleY="1.45"/>
@@ -105,7 +117,7 @@
                         </TransformGroup>
                     </SynthGUI:DialControl.RenderTransform>
                 </SynthGUI:DialControl>
-                <SynthGUI:DialControl x:Name="CTRL_Reverb" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Reverb" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged" RenderTransformOrigin="0.5,0.5" Padding="0" Height="125" Width="125" Grid.Column="6">
+                <SynthGUI:DialControl x:Name="CTRL_Reverb" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Reverb" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged" RenderTransformOrigin="0.5,0.5" Padding="0" Height="125" Width="125" Grid.Column="7">
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="1.45" ScaleY="1.45"/>
@@ -115,7 +127,7 @@
                         </TransformGroup>
                     </SynthGUI:DialControl.RenderTransform>
                 </SynthGUI:DialControl>
-                <SynthGUI:DialControl x:Name="CTRL_Chorus" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Chorus" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged" RenderTransformOrigin="0.5,0.5" Grid.Column="8" Height="125" Width="125">
+                <SynthGUI:DialControl x:Name="CTRL_Chorus" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Chorus" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged" RenderTransformOrigin="0.5,0.5" Grid.Column="9" Height="125" Width="125">
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="1.45" ScaleY="1.45"/>
@@ -125,7 +137,7 @@
                         </TransformGroup>
                     </SynthGUI:DialControl.RenderTransform>
                 </SynthGUI:DialControl>
-                <SynthGUI:DialControl x:Name="CTRL_Modulation" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Modulation" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged" Width="125" RenderTransformOrigin="0.5,0.5" Grid.Column="10" Height="125">
+                <SynthGUI:DialControl x:Name="CTRL_Modulation" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Modulation" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged" Width="125" RenderTransformOrigin="0.5,0.5" Grid.Column="11" Height="125">
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="1.45" ScaleY="1.45"/>
@@ -137,7 +149,7 @@
                 </SynthGUI:DialControl>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Instruments" HorizontalAlignment="Left" Margin="670,208,0,0" VerticalAlignment="Top" Height="212" Width="297" BorderThickness="2" BorderBrush="#FF035507" Padding="0" FontSize="16" >
+        <GroupBox Header="Instruments" HorizontalAlignment="Left" Margin="670,208,0,0" VerticalAlignment="Top" Height="212" Width="297" BorderThickness="2" BorderBrush="#FF035507" Padding="0" FontSize="14" >
             <Grid>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -171,7 +183,7 @@
                         </ComboBox>
                     </Grid>
                 </GroupBox>
-                <CheckBox x:Name="cb__InsS_Enable" Content="" HorizontalAlignment="Left" Margin="137,82,0,0" VerticalAlignment="Top" Focusable="False" Checked="ToggleChecked" Unchecked="ToggleChecked"/>
+                <CheckBox x:Name="cb__InsS_Enable" Content="" HorizontalAlignment="Left" Margin="123,82,0,0" VerticalAlignment="Top" Focusable="False" Checked="ToggleChecked" Unchecked="ToggleChecked"/>
                 <TextBlock HorizontalAlignment="Left" Margin="17,13,0,0" TextWrapping="Wrap" Text="Bank:" VerticalAlignment="Top"/>
                 <ComboBox x:Name="cb_mBank" HorizontalAlignment="Left" Margin="67,13,0,0" VerticalAlignment="Top" Width="200" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_mBank_SelectionChanged">
                     <ComboBox.Background>
