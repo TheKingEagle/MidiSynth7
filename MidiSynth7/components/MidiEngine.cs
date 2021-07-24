@@ -496,6 +496,22 @@ namespace MidiSynth7.components
                     buildWorker.DoWork -= BuildWorker_DoWork;
                     buildWorker.RunWorkerCompleted -= BuildWorker_RunWorkerCompleted;
                     device.Close();
+                    //close input devices
+                    if(inDevice != null)
+                    {
+                        if (inDevice.IsDisposed) return;
+                        inDevice.StopRecording();
+                        inDevice.Close();
+                        inDevice = null;
+                    }
+                    if (inDevice2 != null)
+                    {
+                        if (inDevice.IsDisposed) return;
+
+                        inDevice2.StopRecording();
+                        inDevice2.Close();
+                        inDevice2 = null;
+                    }
                     device = null;
                 }
             }
