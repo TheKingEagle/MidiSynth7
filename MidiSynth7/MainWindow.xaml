@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MidiSynth7"
         mc:Ignorable="d"
-        Title="RMSoftware MIDI Synthesizer v7.0 • Standard Edition" Height="590" Width="1106" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None" Background="#000C0C0C" AllowsTransparency="True" SnapsToDevicePixels="True" Icon="syn6.png" Foreground="White" Initialized="Window_Initialized" Loaded="Window_Loaded" StateChanged="Window_StateChanged" Unloaded="Window_Unloaded" PreviewKeyDown="Window_PreviewKeyDown" PreviewKeyUp="Window_PreviewKeyUp" >
+        Title="RMSoftware MIDI Synthesizer v7.0 • Standard Edition" Height="596" Width="1106" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None" Background="#000C0C0C" AllowsTransparency="True" SnapsToDevicePixels="True" Icon="syn6.png" Foreground="White" Initialized="Window_Initialized" Loaded="Window_Loaded" StateChanged="Window_StateChanged" Unloaded="Window_Unloaded" PreviewKeyDown="Window_PreviewKeyDown" PreviewKeyUp="Window_PreviewKeyUp" SizeChanged="window_SizeChanged" >
 
     <Window.Resources>
         <ResourceDictionary Source="asset\Themes.xaml"/>
@@ -13,7 +13,7 @@
     <Window.RenderTransform>
         <ScaleTransform x:Name="MainWinTransform" ScaleX="1" ScaleY="1"></ScaleTransform>
     </Window.RenderTransform>
-    <Border Background="#FF0C0C0C" Margin="12" BorderBrush="#FF0080FF" BorderThickness="1" CornerRadius="4,4,0,0">
+    <Border x:Name="MainWinBdr" Background="#FF0C0C0C" Margin="12" BorderBrush="#FF0080FF" BorderThickness="1" CornerRadius="4,4,0,0">
         <Border.Effect>
             <DropShadowEffect Color="#FF6CB5FF" Direction="0" ShadowDepth="0" BlurRadius="12"/>
         </Border.Effect>
@@ -80,17 +80,21 @@
                 </Border>
             </Grid>
 
-            <Grid x:Name="GR_MwnContent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,40,0,0" ClipToBounds="True">
-                <Frame x:Name="FR_SynthView" NavigationUIVisibility="Hidden">
-                    <Frame.Background>
-                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                            <GradientStop Color="#FF0C0C0C" Offset="0"/>
-                            <GradientStop Color="#FF0C1222" Offset="1"/>
-                        </LinearGradientBrush>
-                    </Frame.Background>
+            <Grid x:Name="GR_MwnContent" RenderOptions.ClearTypeHint="Enabled" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,40,0,0" ClipToBounds="True" UseLayoutRounding="True" SnapsToDevicePixels="True">
+                <Grid.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FF0C0C0C" Offset="0"/>
+                        <GradientStop Color="#FF0C1218" Offset="1"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
+                <Frame x:Name="FR_SynthView" NavigationUIVisibility="Hidden" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" RenderTransformOrigin="0.5,0.5" Margin="0" Padding="0">
+                    <Frame.RenderTransform>
+                        <ScaleTransform x:Name="FrameContentScale"></ScaleTransform>
+                    </Frame.RenderTransform>
                 </Frame>
-                <Grid x:Name="GR_OverlayContent" Background="#D8000000" ClipToBounds="True" Visibility="Visible" Opacity="1" PreviewMouseUp="Gr_OverlayContent_PreviewMouseUp">
-                    <Border x:Name="BDR_SettingsFrame" HorizontalAlignment="Center" VerticalAlignment="Center" Width="520" Height="450" BorderBrush="#FF008BFF" BorderThickness="1" CornerRadius="4,4,0,0" RenderTransformOrigin="0.5,0.5">
+                <Grid x:Name="GR_OverlayContent" Background="#D8000000" RenderOptions.ClearTypeHint="Enabled" ClipToBounds="True" Visibility="Visible" Opacity="1" PreviewMouseUp="Gr_OverlayContent_PreviewMouseUp" UseLayoutRounding="True" SnapsToDevicePixels="True">
+                    <!--SETTINGS DEVICE & LAYOUT-->
+                    <Border RenderOptions.ClearTypeHint="Enabled" x:Name="BDR_SettingsFrame" HorizontalAlignment="Center" VerticalAlignment="Center" Width="520" Height="450" BorderBrush="#FF008BFF" BorderThickness="1" Visibility="Visible" CornerRadius="4,4,0,0" RenderTransformOrigin="0.5,0.5" UseLayoutRounding="false" SnapsToDevicePixels="False">
                         <Border.Background>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                 <GradientStop Color="#FF0C0C0C"/>
@@ -98,11 +102,13 @@
                                 <GradientStop Color="#FF101820" Offset="0.95"/>
                             </LinearGradientBrush>
                         </Border.Background>
+
                         <Border.Effect>
                             <DropShadowEffect Color="#FF6CB5FF" Direction="0" ShadowDepth="0" BlurRadius="12"/>
                         </Border.Effect>
-                        <Grid>
-                            <Border Height="40" VerticalAlignment="Top" HorizontalAlignment="Stretch" BorderThickness="0,0,0,1" CornerRadius="4,4,0,0" Background="#FF00163E" BorderBrush="#FF008BFF">
+                        <Grid UseLayoutRounding="True" SnapsToDevicePixels="True" RenderOptions.ClearTypeHint="Enabled">
+                            <!--#region TITLE-->
+                            <Border Height="40" VerticalAlignment="Top" HorizontalAlignment="Stretch" BorderThickness="0,0,0,1" CornerRadius="4,4,0,0" Background="#FF00163E" BorderBrush="#FF008BFF" UseLayoutRounding="True">
                                 <Grid>
                                     <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="29" RenderTransformOrigin="0.5,0.5">
                                         <Canvas.RenderTransform>
@@ -126,15 +132,18 @@
                                         </Rectangle>
                                         <TextBlock Margin="28,0,0,0" VerticalAlignment="Center" Canvas.Top="0" FontSize="20">Configuration</TextBlock>
                                     </Canvas>
-                                    <Button MinHeight="24" MinWidth="24" x:Name="CfgHelpRequested" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0" Click="CfgHelpRequested_Click">?</Button>
+                                    <Button MinHeight="24" MinWidth="24" x:Name="CfgHelpRequested" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,8,2,7" Click="CfgHelpRequested_Click">?</Button>
                                 </Grid>
                             </Border>
+                            <!--#endregion TITLE-->
+
+                            <!--#region CONTENT -->
                             <Grid Margin="0,40,0,0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="353*"/>
                                     <RowDefinition Height="55*"/>
                                 </Grid.RowDefinitions>
-                                <GroupBox Header="MIDI Input" HorizontalAlignment="Center" Margin="10,10,10,0" VerticalAlignment="Top" Height="217" Width="498" BorderBrush="#FF136600">
+                                <GroupBox Header="MIDI Input" HorizontalAlignment="Center" Margin="10,10,10,0" VerticalAlignment="Top" Height="217" Width="498" BorderBrush="#FF136600" UseLayoutRounding="True">
                                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="490">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="102*"/>
@@ -155,7 +164,7 @@
                                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" LineHeight="10"><Run Text="Relay Mode"/></TextBlock>
                                         </CheckBox>
                                         <ComboBox x:Name="cm_InputDevices2" HorizontalAlignment="Stretch" Margin="10,0,10,10" VerticalAlignment="Bottom" SelectionChanged="Cm_InputDevices_SelectionChanged" Grid.Column="1" Height="22"/>
-                                        <GroupBox x:Name="GB_AllowedParams" Grid.Column="0" Grid.ColumnSpan="2" Header="Allowed Device Control Parameters" Grid.Row="1" BorderBrush="#FFAA4110" Margin="10,0,10,10" PreviewMouseUp="GB_AllowedParams_PreviewMouseUp">
+                                        <GroupBox x:Name="GB_AllowedParams" Grid.Column="0" Grid.ColumnSpan="2" Header="Allowed Device Control Parameters" Grid.Row="1" BorderBrush="#FFAA4110" Margin="10,0,10,10" PreviewMouseUp="GB_AllowedParams_PreviewMouseUp" UseLayoutRounding="True">
                                             <WrapPanel x:Name="WP_AllowedParams" Orientation="Horizontal" >
                                                 <CheckBox Margin="8" Foreground="White" x:Name="CFGCB_AllowPitchWheel">
                                                     <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left">Pitch wheel</TextBlock>
@@ -184,20 +193,78 @@
                                                 <CheckBox Margin="8" Foreground="White" x:Name="CFGCB_AllowCTRLModulation">
                                                     <TextBlock>Modulation</TextBlock>
                                                 </CheckBox>
-                                                
+
                                             </WrapPanel>
                                         </GroupBox>
                                     </Grid>
                                 </GroupBox>
-                                <GroupBox x:Name="groupBox" Header="Synthezier Layout" HorizontalAlignment="Center" Margin="10,232,10,10" Width="498" BorderBrush="#FF003489">
+                                <GroupBox x:Name="groupBox" Header="Synthezier Layout" HorizontalAlignment="Center" Margin="10,232,10,10" Width="498" BorderBrush="#FF003489" UseLayoutRounding="True">
                                     <Grid Margin="0,0,0,0">
                                         <RadioButton x:Name="rb_syncfg_Micro" Content="Compact - Best for small displays.                                  [1024x768 recommended]" HorizontalAlignment="Left" Margin="10,17,0,0" VerticalAlignment="Top" GroupName="rb_cfg_SynLayout" Foreground="White"/>
                                         <RadioButton x:Name="rb_syncfg_Standard" Content="Standard - Best for average displays.                              [1280x720 recommended]" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" GroupName="rb_cfg_SynLayout" IsChecked="True" Foreground="White"/>
                                         <RadioButton x:Name="rb_syncfg_Extended" Content="Studio - Full range keyboard. Best on large displays.     [1600x900 recommended]" HorizontalAlignment="Left" Margin="10,59,0,0" VerticalAlignment="Top" GroupName="rb_cfg_SynLayout" Foreground="White"/>
                                     </Grid>
                                 </GroupBox>
-                                <Button x:Name="bn_cfgSave" Content="Save &amp; Close" HorizontalAlignment="Right"  Margin="0,14,14,14" Width="89" Background="#FF001D40" BorderBrush="White" BorderThickness="1" Click="Bn_cfgSave_Click" Grid.Row="1"/>
+                                <Button x:Name="bn_cfgSave" Content="Save &amp; Close" HorizontalAlignment="Right"  Margin="0,14,14,14" Width="auto" Background="#FF001D40" BorderBrush="White" BorderThickness="1" Click="Bn_cfgSave_Click" Grid.Row="1" Padding="6,0" IsDefault="True"/>
+                                <Button x:Name="bn_cfgLaunchInsdef" Content="Instrument Definitions..." HorizontalAlignment="Right"  Margin="0,14,102,14" Background="#FF001D40" BorderBrush="White" BorderThickness="1" Grid.Row="1" Padding="6,0" Click="bn_cfgLaunchInsdef_Click"/>
                             </Grid>
+                            <!--#endregion [CONTENT]-->
+                        </Grid>
+                    </Border>
+
+                    <!--Instrument Definition-->
+                    <Border x:Name="BDR_InstrumentDefinitionsFrame" HorizontalAlignment="Center" Visibility="Collapsed" VerticalAlignment="Center" Width="663" Height="450" BorderBrush="#FF008BFF" BorderThickness="1" CornerRadius="4,4,0,0" RenderTransformOrigin="0.5,0.5">
+                        <Border.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="#FF0C0C0C"/>
+                                <GradientStop Color="#FF0C0C0C" Offset="0.26"/>
+                                <GradientStop Color="#FF101820" Offset="0.95"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.Effect>
+                            <DropShadowEffect Color="#FF6CB5FF" Direction="0" ShadowDepth="0" BlurRadius="12"/>
+                        </Border.Effect>
+                        <Grid>
+                            <!--#region TITLE-->
+                            <Border Height="40" VerticalAlignment="Top" HorizontalAlignment="Stretch" BorderThickness="0,0,0,1" CornerRadius="4,4,0,0" Background="#FF00163E" BorderBrush="#FF008BFF">
+                                <Grid>
+                                    <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="29" RenderTransformOrigin="0.5,0.5">
+                                        <Canvas.RenderTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                                <SkewTransform/>
+                                                <RotateTransform/>
+                                                <TranslateTransform/>
+                                            </TransformGroup>
+                                        </Canvas.RenderTransform>
+                                        <Path Fill="silver" StrokeThickness="1" Stroke="Black" Data="M 208,50 L 201,45 191,51 185,57 176,65 168,76 161,88 156,102 152,120 151,135 152,142 155,153 158,162 164,173 171,183 179,192 186,199 194,207 202,212 209,218 212,220 210,245 208,273 206,300 203,334 202,361 199,402 198,432 202,448 208,458 214,467 222,473 231,479 246,484 256,484 268,484 280,479 293,471 304,460 312,445 315,427 315,412 312,376 309,331 304,262 301,219 309,214 322,204 334,191 348,174 358,152 360,141 360,123 357,103 349,83 342,73 326,56 316,47 311,45 304,49 305,62 304,113 281,150 231,150 208,115 208,51  Z " Stretch="Uniform" Width="24" Height="29" Canvas.Left="1.75"/>
+                                        <Rectangle Fill="Maroon" Height="9" Canvas.Left="11" Stroke="Black" StrokeThickness="0.4" Canvas.Top="14" Width="3" RenderTransformOrigin="0.5,0.5">
+                                            <Rectangle.RenderTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform/>
+                                                    <SkewTransform/>
+                                                    <RotateTransform Angle="4.885"/>
+                                                    <TranslateTransform/>
+                                                </TransformGroup>
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                        <TextBlock Margin="28,0,0,0" VerticalAlignment="Center" Canvas.Top="0" FontSize="20">Instrument Definitions</TextBlock>
+                                    </Canvas>
+                                    <Button MinHeight="24" MinWidth="24" x:Name="InsDefHelpRequested" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,8,2,7" Click="CfgHelpRequested_Click">?</Button>
+                                </Grid>
+                            </Border>
+                            <!--#endregion TITLE-->
+
+                            <!--#region CONTENT -->
+                            <Grid Margin="0,40,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="353*"/>
+                                    <RowDefinition Height="55*"/>
+                                </Grid.RowDefinitions>
+
+                                <Button x:Name="bn_InsDefSave" Content="Save &amp; Close" HorizontalAlignment="Right"  Margin="0,14,14,14" Width="89" Background="#FF001D40" BorderBrush="White" BorderThickness="1" Click="Bn_cfgSave_Click" Grid.Row="1"/>
+                            </Grid>
+                            <!--#endregion [CONTENT]-->
                         </Grid>
                     </Border>
 

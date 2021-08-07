@@ -34,6 +34,8 @@ namespace MidiSynth7
         private bool _Closing = false;
         private bool _Minimized = false;
         private int appinfo_projectRevision = 0;
+        private int _width, _height = 0;
+        private double scale = 1;
         private bool _loadingView = false;
         private bool mthdinit;//todo: remove?
         private BackgroundWorker midiTaskWorker;
@@ -59,6 +61,7 @@ namespace MidiSynth7
         {
             InitializeComponent();
             #region Generate presets
+
             if (!Directory.Exists(App.PRESET_DIR))
             {
                 Directory.CreateDirectory(App.PRESET_DIR);
@@ -169,6 +172,7 @@ namespace MidiSynth7
             }
             GR_OverlayContent.Visibility = Visibility.Collapsed;
             GR_OverlayContent.Opacity = 0;
+            BDR_SettingsFrame.Visibility = Visibility.Collapsed;//start with settings disabled
             Loadview(AppConfig.DisplayMode);
             
         }
@@ -261,14 +265,17 @@ namespace MidiSynth7
 
         private void Bn_Settings_Click(object sender, RoutedEventArgs e)
         {
-            if (GR_OverlayContent.Visibility == Visibility.Visible) return;
+            if (GR_OverlayContent.Opacity == 1 && GR_OverlayContent.Visibility == Visibility.Visible) return;
+            
             FadeUI(0, 1, GR_OverlayContent);
+            //hide the other bdr windows
+            GR_OverlayContent.Children.OfType<Border>().ToList().ForEach(x => x.Visibility = Visibility.Collapsed);
             ScaleUI(0.8, 1, BDR_SettingsFrame);
         }
 
         private void Bn_Maximize_Click(object sender, RoutedEventArgs e)
         {
-
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
         }
 
         private void Bn_about_Click(object sender, RoutedEventArgs e)
@@ -432,12 +439,17 @@ namespace MidiSynth7
 
         private void Window_StateChanged(object sender, EventArgs e)
         {
-            if(window.WindowState != WindowState.Minimized)
+            if(window.WindowState == WindowState.Normal || window.WindowState == WindowState.Maximized)
             {
                 _Minimized = false;
                 FadeUI(0, 1, this);
                 ScaleUI(0.8, 1,this);
             }
+
+            MainWinBdr.Margin = WindowState == WindowState.Maximized ? new Thickness(0) : new Thickness(12);
+
+            canvasMAX.Visibility = WindowState != WindowState.Maximized ? Visibility.Visible : Visibility.Collapsed;
+            canvasRest.Visibility = WindowState == WindowState.Maximized ? Visibility.Visible : Visibility.Collapsed;
         }
         
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -471,7 +483,9 @@ namespace MidiSynth7
             {
                 case DisplayModes.Standard:
                     this.Width = 1106;
-                    this.Height = 590;
+                    this.Height = 596;
+                    _width = 1106;
+                    _height = 596;
                     Title = $"RMSoftware MIDI Synthesizer v7.0 • Standard Edition • {(Environment.Is64BitProcess ? "x64" : "x86")} rev. {appinfo_projectRevision}";
                     currentView = null;
                     currentView = new components.views.StandardView(this, ref AppConfig, ref MidiEngine);
@@ -480,7 +494,9 @@ namespace MidiSynth7
                     break;
                 case DisplayModes.Studio:
                     this.Width = 1524;
-                    this.Height = 652;
+                    this.Height = 658;
+                    _width = 1524;
+                    _height = 658;
                     Title = $"RMSoftware MIDI Synthesizer v7.0 • Studio Edition • {(Environment.Is64BitProcess ? "x64" : "x86")} rev. {appinfo_projectRevision}";
                     currentView = null;
                     currentView = new components.views.StudioView(this, ref AppConfig, ref MidiEngine);
@@ -529,17 +545,25 @@ namespace MidiSynth7
             WindowStoryboard.Begin((FrameworkElement)uielm, HandoffBehavior.Compose);
         }
 
-        public void ScaleUI(double from, double to, UIElement uielm)
+        public void ScaleUI(double from, double to, UIElement uielm, double originX = 0.5d, double originY = 0.5d)
         {
+            //ensure element is visible.
+            
+            if(from <= to)
+            {
+                uielm.Visibility = Visibility.Visible;
+            }
+            double _scale = (uielm != this &&
+                             uielm != BDR_InstrumentDefinitionsFrame &&
+                             uielm != BDR_SettingsFrame) ? scale : 1; //exclude scaling to some elements (thanks to WPF blurring :))
             ScaleTransform trans = new ScaleTransform();
             uielm.RenderTransform = trans;
-            uielm.RenderTransformOrigin = new Point(0.5d, 0.5d);
+            uielm.RenderTransformOrigin = new Point(originX,originY);
             
             if(from != to)
             {
-                DoubleAnimation scaler = new DoubleAnimation(from, to, TimeSpan.FromMilliseconds(120),FillBehavior.HoldEnd);
+                DoubleAnimation scaler = new DoubleAnimation(from * _scale, to * _scale, TimeSpan.FromMilliseconds(120),FillBehavior.HoldEnd);
                 scaler.AutoReverse = false;
-
                 CubicEase ease = new CubicEase();
                 ease.EasingMode = EasingMode.EaseInOut;
                 scaler.EasingFunction = ease;
@@ -548,7 +572,6 @@ namespace MidiSynth7
             }
             
         }
-
         private void WindowStoryboard_Completed(object sender, EventArgs e)
         {
             if(_elementFromanim.Opacity <= 0.9 && _elementFromanim != this)
@@ -671,7 +694,7 @@ namespace MidiSynth7
         public void GenerateMIDIEngine(int deviceId=0)
         {
             midiTaskWorker = new BackgroundWorker();
-            midiTaskWorker.WorkerSupportsCancellation = false;
+            midiTaskWorker.WorkerSupportsCancellation = true;
             midiTaskWorker.DoWork += MidiTaskWorker_DoWork;
             midiTaskWorker.RunWorkerCompleted += MidiTaskWorker_RunWorkerCompleted;
             midiTaskWorker.RunWorkerAsync(deviceId);
@@ -893,6 +916,29 @@ namespace MidiSynth7
                 }
                 
             }
+        }
+
+        private void window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if(WindowState == WindowState.Maximized)
+            {
+                scale = Math.Min(this.ActualWidth / _width, this.ActualHeight / _height);
+                ScaleUI(0.8, 1, FR_SynthView);
+            }
+            else
+            {
+                scale = 1;
+
+                ScaleUI(0.8, 1, FR_SynthView);
+            }
+        }
+
+        private void bn_cfgLaunchInsdef_Click(object sender, RoutedEventArgs e)
+        {
+            //FadeUI(1, 0, BDR_SettingsFrame);
+            ScaleUI(1, 0.8, BDR_SettingsFrame);
+            //FadeUI(0, 1, BDR_InstrumentDefinitionsFrame);
+            ScaleUI(0.8, 1, BDR_InstrumentDefinitionsFrame);
         }
     }
 }
