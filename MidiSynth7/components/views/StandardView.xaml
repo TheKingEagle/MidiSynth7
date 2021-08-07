@@ -6,14 +6,13 @@
       xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
       xmlns:local="clr-namespace:MidiSynth7.components.views"
       xmlns:SynthGUI="clr-namespace:MidiSynth7.entities.controls"
-      mc:Ignorable="d" 
-      d:DesignHeight="524" d:DesignWidth="1080"
-      Title="Standard" Foreground="White">
+      mc:Ignorable="d"
+      Title="Standard" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center">
     <Page.Resources>
         <ResourceDictionary Source="..\..\asset\Themes.xaml"/>
     </Page.Resources>
-    <Grid>
-        <GroupBox x:Name="gb_out" Header="MIDI Output" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Height="173" Width="248" BorderThickness="2" BorderBrush="#FF0008A6" Padding="0">
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,5,0">
+        <GroupBox x:Name="gb_out" Header="MIDI Output" HorizontalAlignment="Left" Margin="5,4,0,0" VerticalAlignment="Top" Height="173" Width="248" BorderThickness="2" BorderBrush="#FF0008A6" Padding="0">
             <Grid>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -69,7 +68,7 @@
                 <SynthGUI:DialControl x:Name="CTRL_Modulation" HorizontalAlignment="Left" Margin="660,16,0,0" VerticalAlignment="Top" Text="Modulation" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged"/>
             </Grid>
         </GroupBox>
-        <GroupBox x:Name="gb_instrument" Header="Instruments" HorizontalAlignment="Left" Margin="10,182,0,0" VerticalAlignment="Top" Height="182" Width="248" BorderThickness="2" BorderBrush="#FF035507" Padding="0">
+        <GroupBox x:Name="gb_instrument" Header="Instruments" HorizontalAlignment="Left" Margin="5,182,0,0" VerticalAlignment="Top" Height="182" Width="248" BorderThickness="2" BorderBrush="#FF035507" Padding="0">
             <Grid>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -103,7 +102,7 @@
                         </ComboBox>
                     </Grid>
                 </GroupBox>
-                <CheckBox x:Name="cb__InsS_Enable" Content="" HorizontalAlignment="Left" Margin="102,75,0,0" VerticalAlignment="Top" Focusable="False" Checked="ToggleChecked" Unchecked="ToggleChecked"/>
+                <CheckBox x:Name="cb__InsS_Enable" Content="" HorizontalAlignment="Left" Margin="101,75,0,0" VerticalAlignment="Top" Focusable="False" Checked="ToggleChecked" Unchecked="ToggleChecked"/>
                 <TextBlock HorizontalAlignment="Left" Margin="17,13,0,0" TextWrapping="Wrap" Text="Bank:" VerticalAlignment="Top"/>
                 <ComboBox x:Name="cb_mBank" HorizontalAlignment="Left" Margin="53,10,0,0" VerticalAlignment="Top" Width="173" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_mBank_SelectionChanged">
                     <ComboBox.Background>
@@ -128,7 +127,7 @@
                 </ComboBox>
             </Grid>
         </GroupBox>
-        <GroupBox x:Name="gb_riff" Header="Riff Center" HorizontalAlignment="Left" Margin="263,273,0,0" VerticalAlignment="Top" Height="91" Width="368" BorderThickness="2" BorderBrush="#FF360076" Padding="0" IsEnabled="False">
+        <GroupBox x:Name="gb_riff" Header="Riff Center" HorizontalAlignment="Left" Margin="258,273,0,0" VerticalAlignment="Top" Height="91" Width="368" BorderThickness="2" BorderBrush="#FF360076" Padding="0" IsEnabled="False">
             <Grid>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -152,7 +151,7 @@
                 <RadioButton x:Name="rb_rcp13" Content="CUSTOM" HorizontalAlignment="Left" Margin="209,27,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="RIFF" Focusable="False" Unchecked="criffenablecheck" Checked="criffenablecheck"/>
             </Grid>
         </GroupBox>
-        <GroupBox x:Name="gb_ds" Header="Drum Set" HorizontalAlignment="Left" Margin="263,182,0,0" VerticalAlignment="Top" Height="91" Width="248" BorderThickness="2" BorderBrush="#FF0047AE" Padding="0" IsEnabled="False">
+        <GroupBox x:Name="gb_ds" Header="Drum Set" HorizontalAlignment="Left" Margin="258,182,0,0" VerticalAlignment="Top" Height="91" Width="253" BorderThickness="2" BorderBrush="#FF0047AE" Padding="0" IsEnabled="False">
             <Grid>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -238,7 +237,7 @@
             </Grid>
         </GroupBox>
 
-        <GroupBox x:Name="gb_comp" Header="MIDI Composer" HorizontalAlignment="Left" Margin="636,273,0,0" VerticalAlignment="Top" Height="182" Width="434" BorderThickness="2" BorderBrush="#FF0097FF" Padding="0">
+        <GroupBox x:Name="gb_comp" Header="MIDI Composer" HorizontalAlignment="Left" Margin="631,273,0,0" VerticalAlignment="Top" Height="182" Width="439" BorderThickness="2" BorderBrush="#FF0097FF" Padding="0">
             <Grid Margin="0,0,0,-1">
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -391,13 +390,13 @@
                 </Button>
             </Grid>
         </GroupBox>
-        <SynthGUI:PianoControl x:Name="pianomain" HorizontalAlignment="Left" Margin="10,369,0,0" VerticalAlignment="Top" pKeyDown="Pianomain_pKeyDown" pKeyUp="Pianomain_pKeyUp"/>
+        <SynthGUI:PianoControl x:Name="pianomain" HorizontalAlignment="Left" Margin="5,369,0,0" VerticalAlignment="Top" pKeyDown="Pianomain_pKeyDown" pKeyUp="Pianomain_pKeyUp"/>
 
-        <CheckBox x:Name="cb_RIFF_Enable" Content="" HorizontalAlignment="Left" Margin="334,274,0,0" VerticalAlignment="Top" Focusable="False" Checked="riffcenter_toggleCheck" Unchecked="riffcenter_toggleCheck" IsTabStop="False"/>
-        <CheckBox x:Name="cb_DS_Enable" Content="" HorizontalAlignment="Left" Margin="328,183,0,0" VerticalAlignment="Top" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False"/>
+        <CheckBox x:Name="cb_RIFF_Enable" Content="" HorizontalAlignment="Left" Margin="329,274,0,0" VerticalAlignment="Top" Focusable="False" Checked="riffcenter_toggleCheck" Unchecked="riffcenter_toggleCheck" IsTabStop="False"/>
+        <CheckBox x:Name="cb_DS_Enable" Content="" HorizontalAlignment="Left" Margin="323,183,0,0" VerticalAlignment="Top" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False"/>
         <CheckBox x:Name="cb_OFX_Enble" Content="" HorizontalAlignment="Left" Margin="584,183,0,0" VerticalAlignment="Top" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False"/>
         <CheckBox x:Name="cb_NFX_Enable" Content="" HorizontalAlignment="Left" Margin="861,183,0,0" VerticalAlignment="Top" Width="16" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False"/>
-        <GroupBox x:Name="gb_chn" Header="Channels" HorizontalAlignment="Left" Margin="636,460,0,0" VerticalAlignment="Top" Height="53" Width="434" BorderBrush="#FF0008A6" BorderThickness="2" IsEnabled="False">
+        <GroupBox x:Name="gb_chn" Header="Channels" HorizontalAlignment="Left" Margin="631,460,0,0" VerticalAlignment="Top" Height="53" Width="439" BorderBrush="#FF0008A6" BorderThickness="2" IsEnabled="False">
             <Grid>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
