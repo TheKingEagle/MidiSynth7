@@ -7,9 +7,9 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
 
-                    <Border x:Name="border" BorderThickness="1" BorderBrush="#FF0060FF" >
+                    <Border x:Name="border" BorderThickness="1" BorderBrush="#FF0060FF" Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" >
 
-                        <Grid Background="{TemplateBinding Background}">
+                        <Grid >
 
                             <ContentPresenter x:Name="MyContentPresenter" 
                                           Content="{TemplateBinding Content}"
@@ -27,13 +27,16 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type Button}">
-                            <Border x:Name="border" BorderThickness="1" BorderBrush="#FF00FFFF">
-                                <Grid Background="#FF0006FF">
+
+                            <Border x:Name="border" BorderThickness="1" BorderBrush="#FF00FFFF" Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" >
+
+                                <Grid >
 
                                     <ContentPresenter x:Name="MyContentPresenter" 
                                           Content="{TemplateBinding Content}"
                                           HorizontalAlignment="Center" 
                                           VerticalAlignment="Center" />
+
                                 </Grid>
                             </Border>
                         </ControlTemplate>
@@ -45,13 +48,16 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type Button}">
-                            <Border x:Name="border" BorderThickness="1" BorderBrush="#FFFFFFFF">
-                                <Grid Background="#FF0011AA">
+
+                            <Border x:Name="border" BorderThickness="1" BorderBrush="#FFFFFFFF" Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" >
+
+                                <Grid >
 
                                     <ContentPresenter x:Name="MyContentPresenter" 
                                           Content="{TemplateBinding Content}"
                                           HorizontalAlignment="Center" 
                                           VerticalAlignment="Center" />
+
                                 </Grid>
                             </Border>
                         </ControlTemplate>
