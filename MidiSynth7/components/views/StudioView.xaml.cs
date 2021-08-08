@@ -741,7 +741,7 @@ namespace MidiSynth7.components.views
 
         }
 
-        public void HandleNoteOn_VS_Event(object sender, PKeyEventArgs e, int velocity,int channel=0) => Pianomain_pKeyDown_VelocitySense(sender, e, velocity,channel);
+        public async void HandleNoteOn_VS_Event(object sender, PKeyEventArgs e, int velocity,int channel=0) => await Dispatcher.InvokeAsync(() => Pianomain_pKeyDown_VelocitySense(sender, e, velocity,channel));
 
         #endregion
 

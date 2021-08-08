@@ -704,7 +704,7 @@ namespace MidiSynth7
                     MidiEngine.MidiEngine_Close();
                 }
                 MidiEngine = new MidiEngine(deviceId);
-                //TODO: DIAG UI THREAD
+                
                 MidiEngine.NotePlayed += MidiEngine_NotePlayed;
                 MidiEngine.NoteStopped += MidiEngine_NoteStoped;
                 MidiEngine.FileLoadComplete += MidiEngine_FileLoadComplete;
@@ -770,12 +770,12 @@ namespace MidiSynth7
 
         private void MidiEngine_NoteStoped(object sender, NoteEventArgs e)
         {
-            currentView.HandleNoteOffEvent(sender, e);
+            Dispatcher.InvokeAsync(() => currentView.HandleNoteOffEvent(sender, e));
         }
 
         private void MidiEngine_NotePlayed(object sender, NoteEventArgs e)
         {
-            currentView.HandleNoteOnEvent(sender, e);
+            Dispatcher.InvokeAsync(() => currentView.HandleNoteOnEvent(sender, e));
         }
 
         private void InDevice_ChannelMessageReceived(object sender, ChannelMessageEventArgs e)
@@ -800,7 +800,7 @@ namespace MidiSynth7
 
                     if ((sender as Sanford.Multimedia.Midi.InputDevice) == MidiEngine.inDevice2 && !AppConfig.Input2RelayMode)
                     {
-                        currentView.HandleEvent(this, e, (e.Message.Data2 >= 63 ? "SynthSustainCTRL_ON" : "SynthSustainCTRL_OFF"));
+                        Dispatcher.InvokeAsync(() => currentView.HandleEvent(this, e, (e.Message.Data2 >= 63 ? "SynthSustainCTRL_ON" : "SynthSustainCTRL_OFF")));
                         for (int i = 0; i < 16; i++)
                         {
                             //This is probably slow :D
@@ -837,12 +837,14 @@ namespace MidiSynth7
                 Dispatcher.InvokeAsync(()=>currentView.HandleNoteOnEvent(this, new NoteEventArgs(e.Message)));
                 if(sender as Sanford.Multimedia.Midi.InputDevice == MidiEngine.inDevice && !AppConfig.Input1RelayMode)
                 {
-                    currentView.HandleNoteOn_VS_Event(this, new PKeyEventArgs(e.Message.Data1), e.Message.Data2);
+                    //TODO: FIXME -- Non-relay mode still bound to ui thread.
+                    Dispatcher.InvokeAsync(() => currentView.HandleNoteOn_VS_Event(this, new PKeyEventArgs(e.Message.Data1), e.Message.Data2));
                     return;
                 }
                 if (sender as Sanford.Multimedia.Midi.InputDevice == MidiEngine.inDevice2 && !AppConfig.Input2RelayMode)
                 {
-                    currentView.HandleNoteOn_VS_Event(this, new PKeyEventArgs(e.Message.Data1), e.Message.Data2);
+                    //TODO: FIXME -- Non-relay mode still bound to ui thread.
+                    Dispatcher.InvokeAsync(() => currentView.HandleNoteOn_VS_Event(this, new PKeyEventArgs(e.Message.Data1), e.Message.Data2));
                     return;
                 }
                 else
