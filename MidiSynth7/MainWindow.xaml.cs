@@ -37,8 +37,6 @@ namespace MidiSynth7
         private int _width, _height = 0;
         private double scale = 1;
         private bool _loadingView = false;
-        private bool mthdinit;//todo: remove?
-        private BackgroundWorker midiTaskWorker;
         private UIElement _elementFromanim = null;
         private DisplayModes _switchto = DisplayModes.Standard;
         private ISynthView currentView;
@@ -280,7 +278,8 @@ namespace MidiSynth7
 
         private void Bn_about_Click(object sender, RoutedEventArgs e)
         {
-
+            Console.WriteLine("Freeze current thread");
+            System.Threading.Thread.Sleep(1000);
         }
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -691,85 +690,71 @@ namespace MidiSynth7
         #endregion
 
         #region MIDI Engine!
-        public void GenerateMIDIEngine(int deviceId=0)
+        public void GenerateMIDIEngine(ISynthView view, int deviceId=0)
         {
-            midiTaskWorker = new BackgroundWorker();
-            midiTaskWorker.WorkerSupportsCancellation = true;
-            midiTaskWorker.DoWork += MidiTaskWorker_DoWork;
-            midiTaskWorker.RunWorkerCompleted += MidiTaskWorker_RunWorkerCompleted;
-            midiTaskWorker.RunWorkerAsync(deviceId);
-            
-        }
-
-        private void MidiTaskWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (e.Error != null)
-            {
-                MessageBox.Show(e.Error.ToString());
-            }
-            //set in device
-            if (AppConfig.ActiveInputDeviceIndex < cm_InputDevices.Items.Count)
-            {
-                cm_InputDevices.SelectedIndex = AppConfig.ActiveInputDeviceIndex;
-            }
-            if (AppConfig.ActiveInputDevice2Index < cm_InputDevices2.Items.Count)
-            {
-                cm_InputDevices2.SelectedIndex = AppConfig.ActiveInputDevice2Index;
-            }
-            //tell view we updated shit
-            currentView.HandleEvent(this, new EventArgs(), "RefMainWin");
-            currentView.HandleEvent(sender, new EventArgs(), "MTaskWorker");
-            if (MidiEngine.inDevice != null)
-            {
-                MidiEngine.inDevice.StopRecording();
-                MidiEngine.inDevice.Close();
-            }
-            if (cm_InputDevices.SelectedIndex > -1)
-            {
-                MidiEngine.inDevice = new Sanford.Multimedia.Midi.InputDevice(((NumberedEntry)cm_InputDevices.SelectedItem).Index);
-                MidiEngine.inDevice.ChannelMessageReceived += InDevice_ChannelMessageReceived;
-                MidiEngine.inDevice.StartRecording();
-            }
-
-            if (MidiEngine.inDevice2 != null)
-            {
-                MidiEngine.inDevice2.StopRecording();
-                MidiEngine.inDevice2.Close();
-            }
-            if (cm_InputDevices2.SelectedIndex > -1)
-            {
-                MidiEngine.inDevice2 = new Sanford.Multimedia.Midi.InputDevice(((NumberedEntry)cm_InputDevices2.SelectedItem).Index);
-                MidiEngine.inDevice2.ChannelMessageReceived += InDevice_ChannelMessageReceived;
-                MidiEngine.inDevice2.StartRecording();
-            }
-        }
-
-        private void MidiTaskWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
+            //midiTaskWorker = new BackgroundWorker();
+            //midiTaskWorker.WorkerSupportsCancellation = true;
+            //midiTaskWorker.DoWork += MidiTaskWorker_DoWork;
+            //midiTaskWorker.RunWorkerCompleted += MidiTaskWorker_RunWorkerCompleted;
+            //midiTaskWorker.RunWorkerAsync(deviceId);
             try
             {
                 if (MidiEngine != null)
                 {
                     MidiEngine.MidiEngine_Close();
                 }
-                int d = 0;
-                void Invoker()
-                {
-                    d = (int)e.Argument;
-                }
-                Dispatcher.Invoke(Invoker);
-                MidiEngine = new MidiEngine(d);
+                MidiEngine = new MidiEngine(deviceId);
+                //TODO: DIAG UI THREAD
                 MidiEngine.NotePlayed += MidiEngine_NotePlayed;
                 MidiEngine.NoteStopped += MidiEngine_NoteStoped;
                 MidiEngine.FileLoadComplete += MidiEngine_FileLoadComplete;
                 MidiEngine.SequenceBuilder_Completed += MidiEngine_SequenceBuilder_Completed;
 
-                mthdinit = true;
+                //set in device
+                if (AppConfig.ActiveInputDeviceIndex < cm_InputDevices.Items.Count)
+                {
+                    cm_InputDevices.SelectedIndex = AppConfig.ActiveInputDeviceIndex;
+                }
+                if (AppConfig.ActiveInputDevice2Index < cm_InputDevices2.Items.Count)
+                {
+                    cm_InputDevices2.SelectedIndex = AppConfig.ActiveInputDevice2Index;
+                }
+                //tell view we updated shit
+                view.HandleEvent(this, new EventArgs(), "RefMainWin");
+                view.HandleEvent(this, new EventArgs(), "MTaskWorker");
+                if (MidiEngine.inDevice != null)
+                {
+                    MidiEngine.inDevice.StopRecording();
+                    MidiEngine.inDevice.Close();
+                }
+                if (cm_InputDevices.SelectedIndex > -1)
+                {
+                    MidiEngine.inDevice = new Sanford.Multimedia.Midi.InputDevice(((NumberedEntry)cm_InputDevices.SelectedItem).Index);
+                    MidiEngine.inDevice.PostDriverCallbackToDelegateQueue = false;
+                    MidiEngine.inDevice.PostEventsOnCreationContext = false;
+                    MidiEngine.inDevice.ChannelMessageReceived += InDevice_ChannelMessageReceived;
+                    MidiEngine.inDevice.StartRecording(); 
+                }
+
+                if (MidiEngine.inDevice2 != null)
+                {
+                    MidiEngine.inDevice2.StopRecording();
+                    MidiEngine.inDevice2.Close();
+                }
+                if (cm_InputDevices2.SelectedIndex > -1)
+                {
+                    MidiEngine.inDevice2 = new Sanford.Multimedia.Midi.InputDevice(((NumberedEntry)cm_InputDevices2.SelectedItem).Index);
+                    MidiEngine.inDevice2.PostDriverCallbackToDelegateQueue = false;
+                    MidiEngine.inDevice2.PostEventsOnCreationContext = false;
+                    MidiEngine.inDevice2.ChannelMessageReceived += InDevice_ChannelMessageReceived;
+                    MidiEngine.inDevice2.StartRecording();
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Failed to create a MIDI Engine:\r\n" + ex.Message, "MIDI Engine", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+
         }
 
         private void MidiEngine_SequenceBuilder_Completed(object sender, EventArgs e)
@@ -802,7 +787,7 @@ namespace MidiSynth7
                     if((sender as Sanford.Multimedia.Midi.InputDevice) == MidiEngine.inDevice && !AppConfig.Input1RelayMode)
                     {
                         Console.WriteLine("in1");
-                        currentView.HandleEvent(this, e, (e.Message.Data2 >= 63 ? "SynthSustainCTRL_ON" : "SynthSustainCTRL_OFF"));
+                        Dispatcher.InvokeAsync(()=>currentView.HandleEvent(this, e, (e.Message.Data2 >= 63 ? "SynthSustainCTRL_ON" : "SynthSustainCTRL_OFF")));
                         for (int i = 0; i < 16; i++)
                         {
                             //This is probably slow :D
@@ -849,7 +834,7 @@ namespace MidiSynth7
             if (e.Message.Command == ChannelCommand.NoteOn)
             {
                 //MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
-                //currentView.HandleNoteOnEvent(this, new NoteEventArgs(e.Message));
+                Dispatcher.InvokeAsync(()=>currentView.HandleNoteOnEvent(this, new NoteEventArgs(e.Message)));
                 if(sender as Sanford.Multimedia.Midi.InputDevice == MidiEngine.inDevice && !AppConfig.Input1RelayMode)
                 {
                     currentView.HandleNoteOn_VS_Event(this, new PKeyEventArgs(e.Message.Data1), e.Message.Data2);
@@ -863,14 +848,14 @@ namespace MidiSynth7
                 else
                 {
                     MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
-                    currentView.HandleNoteOnEvent(this, new NoteEventArgs(e.Message));
+                    Dispatcher.InvokeAsync(()=>currentView.HandleNoteOnEvent(this, new NoteEventArgs(e.Message)));
                     return;
                 }
             }
             if (e.Message.Command == ChannelCommand.NoteOff || (e.Message.Command == ChannelCommand.NoteOn && e.Message.Data2 == 0))
             {
                 MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
-                currentView.HandleNoteOffEvent(this,new NoteEventArgs(e.Message));
+                Dispatcher.InvokeAsync(()=>currentView.HandleNoteOffEvent(this,new NoteEventArgs(e.Message)));
             }
         }
 
@@ -908,7 +893,7 @@ namespace MidiSynth7
                             index.Fill = (Brush)wndw.FindResource("CH_Ind_off");
                         }
                     };
-                    wndw.Dispatcher.Invoke(invoker);
+                    wndw.Dispatcher.InvokeAsync(invoker);
                 }
                 catch (Exception ex)
                 {

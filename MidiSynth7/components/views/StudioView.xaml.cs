@@ -167,7 +167,7 @@ namespace MidiSynth7.components.views
             if (!cb_internalsf2.IsChecked.Value)
             {
                 Config.ActiveOutputDeviceIndex = cb_Devices.SelectedIndex;
-                AppContext.GenerateMIDIEngine(((NumberedEntry)cb_Devices.SelectedItem).Index);
+                AppContext.GenerateMIDIEngine(this,((NumberedEntry)cb_Devices.SelectedItem).Index);
             }
         }
 
