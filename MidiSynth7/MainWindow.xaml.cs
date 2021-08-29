@@ -181,49 +181,10 @@ namespace MidiSynth7
             SaveConfig();
         }
 
-        #region Window API & Helper Methods
-        public const int WM_CLBUTTONDOWN = 0xA1;
-        public const int HT_CAPTION = 0x2;
-
-        [DllImport("user32.dll")]
-        public static extern int SendMessage(IntPtr hw, int message, int wp, int lp);
-
-        [DllImport("user32.dll")]
-        public static extern bool ReleaseCapture();
-
-        public static void PostitionWindowOnScreen(Window window, double horizontalShift = 0, double verticalShift = 0)
-        {
-            System.Windows.Forms.Screen screen = System.Windows.Forms.Screen.FromHandle(new WindowInteropHelper(window).Handle);
-            window.Left = screen.WorkingArea.X + ((screen.WorkingArea.Width - window.ActualWidth) / 2) + horizontalShift;
-            window.Top = screen.WorkingArea.Y + ((screen.WorkingArea.Height - window.ActualHeight) / 2) + verticalShift;
-        }
-
-        public static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
-        {
-            if (depObj != null)
-            {
-                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
-                {
-                    DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
-                    if (child != null && child is T)
-                    {
-                        yield return (T)child;
-                    }
-
-                    foreach (T childOfChild in FindVisualChildren<T>(child))
-                    {
-                        yield return childOfChild;
-                    }
-                }
-            }
-        }
-
-        #endregion
-
         #region Window Interaction
         private void Gr_Title_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            SendMessage(new WindowInteropHelper(this).Handle, WM_CLBUTTONDOWN, HT_CAPTION, 0);
+            WindowHelper.SendMessage(new WindowInteropHelper(this).Handle, WindowHelper.WM_CLBUTTONDOWN, WindowHelper.HT_CAPTION, 0);
             e.Handled = false;
         }
 
@@ -359,7 +320,7 @@ namespace MidiSynth7
         {
 
             checkstates.Clear();
-            foreach (CheckBox item in FindVisualChildren<CheckBox>(BDR_SettingsFrame))
+            foreach (CheckBox item in WindowHelper.FindVisualChildren<CheckBox>(BDR_SettingsFrame))
             {
                 checkstates.Add((item.Name, item.IsChecked.Value));
             }
@@ -509,7 +470,7 @@ namespace MidiSynth7
                     break;
             }
 
-            MainWindow.PostitionWindowOnScreen(this);
+            WindowHelper.PostitionWindowOnScreen(this);
         }
 
         private void SwitchView(DisplayModes mode)
