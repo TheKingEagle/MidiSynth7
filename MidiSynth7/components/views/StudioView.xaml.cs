@@ -741,11 +741,11 @@ namespace MidiSynth7.components.views
             pianomain.UserControl_KeyUp(sender, e);
 
             #region Studio keyboard shortcuts
-            if (e.Key == Key.O && Keyboard.Modifiers.HasFlag(ModifierKeys.Control&ModifierKeys.Alt&ModifierKeys.Shift))
+            if (e.Key == Key.O && Keyboard.Modifiers.HasFlag(ModifierKeys.Control | ModifierKeys.Alt | ModifierKeys.Shift))
             {
                 cb_OFX_Enble.IsChecked = !cb_OFX_Enble.IsChecked.Value;
             }
-            if (e.Key == Key.D && Keyboard.Modifiers.HasFlag(ModifierKeys.Control & ModifierKeys.Alt & ModifierKeys.Shift))
+            if (e.Key == Key.D && Keyboard.Modifiers.HasFlag(ModifierKeys.Control | ModifierKeys.Alt | ModifierKeys.Shift))
             {
                 cb_DS_Enable.IsChecked = !cb_DS_Enable.IsChecked.Value;
             }
