@@ -12,13 +12,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MidiSynth7.components;
 using MidiSynth7.entities.controls;
 namespace MidiSynth7.entities
 {
     /// <summary>
     /// Interaction logic for WhiteKey.xaml
     /// </summary>
-    public partial class WhiteKey : UserControl
+    public partial class WhiteKey : UserControl, ISynthKey
     {
         public int KeyID { get; set; }
         public string NoteText { get; set; }
@@ -46,19 +47,19 @@ namespace MidiSynth7.entities
             border.Background = (Brush)this.TryFindResource("ONBrush"); 
             OnInvokeKeyDown(new PKeyEventArgs(KeyID));
         }
-        public void SendOn(bool InvokeEvent)
+        public void SendOn()
         {
             //border.Background = (Brush)this.TryFindResource("ONBrush");
             if (!down)
             {
                 down = true;
-
+                
                 OnInvokeKeyDown(new PKeyEventArgs(KeyID));
 
             }
         }
 
-        public void SendOff(bool InvokeEvent)
+        public void SendOff()
         {
             border.Background = (Brush)this.TryFindResource("OFFBrush");
 
@@ -72,20 +73,10 @@ namespace MidiSynth7.entities
         public void FSendOff()
         {
             border.Background = (Brush)this.TryFindResource("OFFBrush");
-            if (down)
-            {
-                
-            }
-           
         }
         public void FSendOn()
-        {border.Background = (Brush)this.TryFindResource("ONBrush");
-            if (!down)
-            {
-                
-                
-            }
-
+        {
+            border.Background = (Brush)this.TryFindResource("ONBrush");
         }
         public void FSendOnA()
         {

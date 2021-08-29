@@ -110,6 +110,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="components\SynthKey.cs" />
     <Compile Include="components\WindowHelper.cs" />
     <Page Include="asset\themes.xaml">
       <SubType>Designer</SubType>

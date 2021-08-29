@@ -14,12 +14,14 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Resources;
 using MidiSynth7.entities.controls;
+using MidiSynth7.components;
+
 namespace MidiSynth7.entities
 {
     /// <summary>
     /// Interaction logic for BlackKey.xaml
     /// </summary>
-    public partial class BlackKey : UserControl
+    public partial class BlackKey : UserControl, ISynthKey
     {
         public BlackKey()
         {
@@ -45,10 +47,10 @@ namespace MidiSynth7.entities
             OnInvokeKeyDown(new PKeyEventArgs(KeyID));
         }
         
-        public void SendOn(bool InvokeEvent)
+        public void SendOn()
         {
             
-            //border.Background = (Brush)this.TryFindResource("ONBrush");
+            border.Background = (Brush)this.TryFindResource("ONBrush");
             if (!down)
             {
                 down = true;
@@ -58,12 +60,10 @@ namespace MidiSynth7.entities
             }
         }
 
-        public void SendOff(bool InvokeEvent)
+        public void SendOff()
         {
-            //border.Background = (Brush)this.TryFindResource("OFFBrush");
-            
-                OnInvokeKeyUp(new PKeyEventArgs(KeyID));
-            
+            border.Background = (Brush)this.TryFindResource("OFFBrush");
+            OnInvokeKeyUp(new PKeyEventArgs(KeyID));
             if (down)
             {
                 down = false;
@@ -77,12 +77,10 @@ namespace MidiSynth7.entities
         public void FSendOn()
         {
             border.Background = (Brush)this.TryFindResource("ONBrush");
-
         }
         public void FSendOnA()
         {
             border.Background = (Brush)this.TryFindResource("ALTONBrush");
-
         }
         public void FSendOnC(Brush background)
         {

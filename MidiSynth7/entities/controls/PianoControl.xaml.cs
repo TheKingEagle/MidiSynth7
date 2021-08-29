@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using MidiSynth7.components;
 using MidiSynth7.entities;
 namespace MidiSynth7.entities.controls
 {
@@ -21,8 +22,7 @@ namespace MidiSynth7.entities.controls
     /// </summary>
     public partial class PianoControl : UserControl
     {
-        List<BlackKey> blackKeys = new List<BlackKey>();
-        List<WhiteKey> whiteKeys = new List<WhiteKey>();
+        List<(int keyID, ISynthKey keyItem)> Keys = new List<(int keyID, ISynthKey keyItem)>();
 
         public int KeyCount { get { return contentGrid.Children.Count; } }
         public PianoControl()
@@ -34,25 +34,16 @@ namespace MidiSynth7.entities.controls
                 
                 foreach (UIElement item in contentGrid.Children)
                 {
-                    if (item.GetType() == typeof(BlackKey))
+                    ISynthKey key = item as ISynthKey;
+                    if (key != null)
                     {
-                        if (((BlackKey)item).KeyID == i)
+                        if (key.KeyID == i)
                         {
-                            ((BlackKey)item).VKeyDown += PianoControl_vKeyDown; 
-                            ((BlackKey)item).VKeyUp += PianoControl_vKeyUp;
-                            blackKeys.Add((BlackKey)item);
+                            key.VKeyDown += PianoControl_vKeyDown; 
+                            key.VKeyUp += PianoControl_vKeyUp;
+                            Keys.Add((key.KeyID, key));
                         }
                     }
-                    if (item.GetType() == typeof(WhiteKey))
-                    {
-                        if (((WhiteKey)item).KeyID == i)
-                        {
-                            ((WhiteKey)item).VKeyDown += PianoControl_vKeyDown;
-                            ((WhiteKey)item).VKeyUp += PianoControl_vKeyUp; 
-                            whiteKeys.Add((WhiteKey)item);
-                        }
-                    }
-
                 }
             }
         }
@@ -119,54 +110,34 @@ namespace MidiSynth7.entities.controls
         };
         public void UserControl_KeyDown(object sender, KeyEventArgs e)
         {
-            for (int i = 0; i < KeysTable.Length; i++)
+            if (Keyboard.Modifiers != ModifierKeys.None && Keyboard.Modifiers != ModifierKeys.Shift)
             {
-                if (KeysTable[i] == (Key)e.Key)
+                return;
+            }
+            int indx = Array.IndexOf(KeysTable, e.Key);
+            if (indx > -1)
+            {
+                var key = Keys.FirstOrDefault(k => k.keyID == indx + 21).keyItem;
+                if (key != null)
                 {
-                    foreach (object item in contentGrid.Children)
-                    {
-                        if (item.GetType() == typeof(BlackKey))
-                        {
-                            if (((BlackKey)item).KeyID == i + 21)
-                            {
-                                ((BlackKey)item).SendOn(true);
-                            }
-                        }
-                        if (item.GetType() == typeof(WhiteKey))
-                        {
-                            if (((WhiteKey)item).KeyID == i + 21)
-                            {
-                                ((WhiteKey)item).SendOn(true);
-                            }
-                        }
-                    }
+                    key.SendOn();
                 }
             }
         }
 
         public void UserControl_KeyUp(object sender, KeyEventArgs e)
         {
-            for (int i = 0; i < KeysTable.Length; i++)
+            if (Keyboard.Modifiers != ModifierKeys.None && Keyboard.Modifiers != ModifierKeys.Shift)
             {
-                if (KeysTable[i] == (Key)e.Key)
+                return;
+            }
+            int indx = Array.IndexOf(KeysTable, e.Key);
+            if (indx > -1)
+            {
+                var key = Keys.FirstOrDefault(k => k.keyID == indx + 21).keyItem;
+                if (key != null)
                 {
-                    foreach (object item in contentGrid.Children)
-                    {
-                        if (item.GetType() == typeof(BlackKey))
-                        {
-                            if (((BlackKey)item).KeyID == i + 21)
-                            {
-                                ((BlackKey)item).SendOff(true);
-                            }
-                        }
-                        if (item.GetType() == typeof(WhiteKey))
-                        {
-                            if (((WhiteKey)item).KeyID == i + 21)
-                            {
-                                ((WhiteKey)item).SendOff(true);
-                            }
-                        }
-                    }
+                    key.SendOff();
                 }
             }
         }
@@ -181,21 +152,14 @@ namespace MidiSynth7.entities.controls
 
                     foreach (UIElement item in contentGrid.Children)
                     {
-                        if (item.GetType() == typeof(BlackKey))
+                        ISynthKey key = item as ISynthKey;
+                        if (key != null)
                         {
-                            if (((BlackKey)item).KeyID == i+21)
+                            if (key.KeyID == i+21)
                             {
-                                ((BlackKey)item).SetLetter(Letters[i + 12 + Transpose]);
+                                key.SetLetter(Letters[i + 12 + Transpose]);
                             }
                         }
-                        if (item.GetType() == typeof(WhiteKey))
-                        {
-                            if (((WhiteKey)item).KeyID == i+21)
-                            {
-                                ((WhiteKey)item).SetLetter(Letters[i + 12 + Transpose]);
-                            }
-                        }
-
                     }
                 }
             }
@@ -210,58 +174,35 @@ namespace MidiSynth7.entities.controls
 
         public void LightKey(int zbkeyid)
         {
-            //duh.
-            BlackKey BK_item = blackKeys.FirstOrDefault(o => o.KeyID == zbkeyid );
-            WhiteKey WK_item =  whiteKeys.FirstOrDefault(o => o.KeyID == zbkeyid );
-            if(BK_item != null)
+            var key = Keys.FirstOrDefault(k => k.keyID == zbkeyid);
+            if(key.keyItem != null)
             {
-                BK_item.FSendOn();
-            }
-            if (WK_item != null)
-            {
-                WK_item.FSendOn();
+                key.keyItem.FSendOn();
             }
         }
         public void ALTLightKey(int zbkeyid)
         {
-            //duh.
-            BlackKey BK_item = blackKeys.FirstOrDefault(o => o.KeyID == zbkeyid );
-            WhiteKey WK_item = whiteKeys.FirstOrDefault(o => o.KeyID == zbkeyid);
-            if (BK_item != null)
+            var key = Keys.FirstOrDefault(k => k.keyID == zbkeyid);
+            if (key.keyItem != null)
             {
-                BK_item.FSendOnA();
-            }
-            if (WK_item != null)
-            {
-                WK_item.FSendOnA();
+                key.keyItem.FSendOnA();
             }
         }
 
         public void CustomLightKey(int zbkeyid,LinearGradientBrush background)
         {
-            //duh.
-            BlackKey BK_item = blackKeys.FirstOrDefault(o => o.KeyID == zbkeyid);
-            WhiteKey WK_item = whiteKeys.FirstOrDefault(o => o.KeyID == zbkeyid);
-            if (BK_item != null)
+            var key = Keys.FirstOrDefault(k => k.keyID == zbkeyid);
+            if (key.keyItem != null)
             {
-                BK_item.FSendOnC(background);
-            }
-            if (WK_item != null)
-            {
-                WK_item.FSendOnC(background);
+                key.keyItem.FSendOnC(background);
             }
         }
         public void UnLightKey(int zbkeyid)
         {
-            BlackKey BK_item = blackKeys.FirstOrDefault(o => o.KeyID == zbkeyid );
-            WhiteKey WK_item = whiteKeys.FirstOrDefault(o => o.KeyID == zbkeyid );
-            if (BK_item != null)
+            var key = Keys.FirstOrDefault(k => k.keyID == zbkeyid);
+            if(key.keyItem != null)
             {
-                BK_item.FSendOff();
-            }
-            if (WK_item != null)
-            {
-                WK_item.FSendOff();
+                key.keyItem.FSendOff();
             }
         }
         #endregion
