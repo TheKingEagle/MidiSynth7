@@ -28,7 +28,7 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type Button}">
 
-                            <Border x:Name="border" BorderThickness="1" BorderBrush="#FF00FFFF" Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" >
+                            <Border x:Name="border" BorderThickness="1" BorderBrush="#FF00BBFF" Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" >
 
                                 <Grid >
 
