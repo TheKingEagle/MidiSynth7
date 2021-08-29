@@ -834,7 +834,7 @@ namespace MidiSynth7
             if (e.Message.Command == ChannelCommand.NoteOn)
             {
                 //MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
-                Dispatcher.InvokeAsync(()=>currentView.HandleNoteOnEvent(this, new NoteEventArgs(e.Message)));
+                //Dispatcher.InvokeAsync(()=>currentView.HandleNoteOnEvent(this, new NoteEventArgs(e.Message)));
                 if(sender as Sanford.Multimedia.Midi.InputDevice == MidiEngine.inDevice && !AppConfig.Input1RelayMode)
                 {
                     //TODO: FIXME -- Non-relay mode still bound to ui thread.
