@@ -61,7 +61,7 @@ namespace MidiSynth7.components.views
             }
 
             Transpose = Config.PitchOffsets[1];
-
+            CB_EnforceInstruments.IsChecked = config.EnforceInstruments;
             pianomain.SetNoteText(Transpose);
 
             #region Controls
@@ -180,6 +180,8 @@ namespace MidiSynth7.components.views
         private void ToggleChecked(object sender, RoutedEventArgs e)
         {
             //TODO: Enable/disable groupboxes based on check state
+
+           if(Config!= null) Config.EnforceInstruments = CB_EnforceInstruments?.IsChecked ?? true;
         }
 
         private void MIO_bn_SetSF2_Click(object sender, RoutedEventArgs e)
@@ -388,8 +390,11 @@ namespace MidiSynth7.components.views
                 {
                     if (rb_ofx_Std.IsChecked.Value)
                     {
-                        MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 1);
-                        MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 2);
+                        if(Config.EnforceInstruments)
+                        {
+                            MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 1);
+                            MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 2);
+                        }
                         MidiEngine.MidiNote_SetPan(1, Config.ChannelPans[1]);
                         MidiEngine.MidiNote_SetPan(2, Config.ChannelPans[2]);
                         MidiEngine.MidiNote_Play(1, -12 + Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, CTRL_Volume.Value);
@@ -397,8 +402,11 @@ namespace MidiSynth7.components.views
                     }
                     if (rb_ofx_Orchestral.IsChecked.Value)
                     {
-                        MidiEngine.MidiNote_SetProgram(0, 46, 1);
-                        MidiEngine.MidiNote_SetProgram(0, 48, 2);
+                        if(Config.EnforceInstruments)
+                        {
+                            MidiEngine.MidiNote_SetProgram(0, 46, 1);
+                            MidiEngine.MidiNote_SetProgram(0, 48, 2);
+                        }
                         MidiEngine.MidiNote_SetPan(1, 0);
                         MidiEngine.MidiNote_SetPan(2, 127);
                         MidiEngine.MidiNote_Play(1, -12 + Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, CTRL_Volume.Value);
@@ -406,8 +414,11 @@ namespace MidiSynth7.components.views
                     }
                     if (rb_ofx_custom.IsChecked.Value)
                     {
-                        MidiEngine.MidiNote_SetProgram(OFX_b1.Index, OFX_p1.Index, 1);
-                        MidiEngine.MidiNote_SetProgram(OFX_b2.Index, OFX_p2.Index, 2);
+                        if (Config.EnforceInstruments)
+                        {
+                            MidiEngine.MidiNote_SetProgram(OFX_b1.Index, OFX_p1.Index, 1);
+                            MidiEngine.MidiNote_SetProgram(OFX_b2.Index, OFX_p2.Index, 2);
+                        }
                         MidiEngine.MidiNote_SetPan(1, 0);
                         MidiEngine.MidiNote_SetPan(2, 127);
                         //offsets {g, t, ofx3_1, ofx3_2}
@@ -421,14 +432,20 @@ namespace MidiSynth7.components.views
                 {
                     if (e.KeyID <= 16)
                     {
-                        MidiEngine.MidiNote_SetProgram(sbank.Index, spatch.Index, 3);
+                        if(Config.EnforceInstruments)
+                        {
+                            MidiEngine.MidiNote_SetProgram(sbank.Index, spatch.Index, 3);
+                        }
                         MidiEngine.MidiNote_SetPan(3, CTRL_Balance.Value);
                         MidiEngine.MidiNote_Play(3, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, CTRL_Volume.Value);
                         return;
                     }
 
                 }
-                MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 0);
+                if(Config.EnforceInstruments)
+                {
+                    MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 0);
+                }
                 MidiEngine.MidiNote_SetPan(0, CTRL_Balance.Value);
                 MidiEngine.MidiNote_Play(0, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, CTRL_Volume.Value);
 
@@ -472,8 +489,11 @@ namespace MidiSynth7.components.views
                 {
                     if (rb_ofx_Std.IsChecked.Value)
                     {
-                        MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 1);
-                        MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 2);
+                        if(Config.EnforceInstruments)
+                        {
+                            MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 1);
+                            MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 2);
+                        }
                         MidiEngine.MidiNote_SetPan(1, 0);
                         MidiEngine.MidiNote_SetPan(2, 127);
                         MidiEngine.MidiNote_Play(1, -12 + Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity);
@@ -481,8 +501,11 @@ namespace MidiSynth7.components.views
                     }
                     if (rb_ofx_Orchestral.IsChecked.Value)
                     {
-                        MidiEngine.MidiNote_SetProgram(0, 46, 1);
-                        MidiEngine.MidiNote_SetProgram(0, 48, 2);
+                        if(Config.EnforceInstruments)
+                        {
+                            MidiEngine.MidiNote_SetProgram(0, 46, 1);
+                            MidiEngine.MidiNote_SetProgram(0, 48, 2);
+                        }
                         MidiEngine.MidiNote_SetPan(1, Config.ChannelPans[1]);
                         MidiEngine.MidiNote_SetPan(2, Config.ChannelPans[2]);
                         MidiEngine.MidiNote_Play(1, -12 + Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity);
@@ -490,8 +513,11 @@ namespace MidiSynth7.components.views
                     }
                     if (rb_ofx_custom.IsChecked.Value)
                     {
-                        MidiEngine.MidiNote_SetProgram(OFX_b1.Index, OFX_p1.Index, 1);
-                        MidiEngine.MidiNote_SetProgram(OFX_b2.Index, OFX_p2.Index, 2);
+                        if (Config.EnforceInstruments)
+                        {
+                            MidiEngine.MidiNote_SetProgram(OFX_b1.Index, OFX_p1.Index, 1);
+                            MidiEngine.MidiNote_SetProgram(OFX_b2.Index, OFX_p2.Index, 2);
+                        }
                         MidiEngine.MidiNote_SetPan(1, 0);
                         MidiEngine.MidiNote_SetPan(2, 127);
                         int Offset1 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.PitchOffsets[2];
@@ -504,7 +530,10 @@ namespace MidiSynth7.components.views
                 {
                     if (e.KeyID <= 16)
                     {
-                        MidiEngine.MidiNote_SetProgram(sbank.Index, spatch.Index, 3);
+                        if(Config.EnforceInstruments)
+                        {
+                            MidiEngine.MidiNote_SetProgram(sbank.Index, spatch.Index, 3);
+                        }
                         MidiEngine.MidiNote_SetPan(3, CTRL_Balance.Value);
                         MidiEngine.MidiNote_Play(3, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity);
                         return;
@@ -513,7 +542,10 @@ namespace MidiSynth7.components.views
                 }
                 if(channel == 0)
                 {
-                    MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 0);
+                    if(Config.EnforceInstruments)
+                    {
+                        MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 0);
+                    }
                     MidiEngine.MidiNote_SetPan(0, CTRL_Balance.Value);
                 }
                 

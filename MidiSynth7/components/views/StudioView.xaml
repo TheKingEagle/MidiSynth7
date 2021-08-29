@@ -164,7 +164,7 @@
             </Grid>
         </GroupBox>
         <GroupBox Header="Instruments" HorizontalAlignment="Left" Margin="670,211,0,0" VerticalAlignment="Top" Height="212" Width="297" BorderThickness="2" BorderBrush="#FF035507" Padding="0" FontSize="14" >
-            <Grid>
+            <Grid Margin="0,-2,0,0">
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <GradientStop Color="#FF0C0C0C"/>
@@ -197,7 +197,7 @@
                         </ComboBox>
                     </Grid>
                 </GroupBox>
-                <CheckBox x:Name="cb__InsS_Enable" Content="" HorizontalAlignment="Left" Margin="123,82,0,0" VerticalAlignment="Top" Focusable="False" Checked="ToggleChecked" Unchecked="ToggleChecked"/>
+                <CheckBox x:Name="cb__InsS_Enable" Content="" HorizontalAlignment="Left" Margin="122,82,0,0" VerticalAlignment="Top" Focusable="False" Checked="ToggleChecked" Unchecked="ToggleChecked"/>
                 <TextBlock HorizontalAlignment="Left" Margin="17,13,0,0" TextWrapping="Wrap" Text="Bank:" VerticalAlignment="Top"/>
                 <ComboBox x:Name="cb_mBank" HorizontalAlignment="Left" Margin="67,13,0,0" VerticalAlignment="Top" Width="200" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_mBank_SelectionChanged">
                     <ComboBox.Background>
@@ -502,6 +502,15 @@
         <CheckBox x:Name="cb_DS_Enable" Content="" HorizontalAlignment="Left" Margin="345,214,0,0" VerticalAlignment="Top" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16" Width="21"/>
         <CheckBox x:Name="cb_OFX_Enble" Content="" HorizontalAlignment="Left" Margin="449,310,0,0" VerticalAlignment="Top" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16" Width="21"/>
         <CheckBox x:Name="cb_NFX_Enable" Content="" HorizontalAlignment="Left" Margin="66,214,0,0" VerticalAlignment="Top" Width="16" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16"/>
+        <CheckBox x:Name="CB_EnforceInstruments" Content="" HorizontalAlignment="Left" Margin="761,214,0,0" VerticalAlignment="Top" Width="16" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16">
+            <CheckBox.ToolTip>
+                <TextBlock>
+                    <Run FontWeight="Bold">Enforce Instruments</Run><LineBreak/><LineBreak/>
+                    <Run>If checked, the program will set instrument on every note played.</Run><LineBreak/>
+                    <Run>Uncheck if you want an external application to control device instruments.</Run>
+                </TextBlock>
+            </CheckBox.ToolTip>
+        </CheckBox>
         <GroupBox Header="Channels" HorizontalAlignment="Left" Margin="1411,213,0,0" VerticalAlignment="Top" Height="368" Width="77" BorderBrush="#FF0008A6" BorderThickness="2">
             <Grid Margin="-2,0,-3,0">
                 <Grid.Background>
@@ -692,6 +701,7 @@
                 <TextBlock HorizontalAlignment="Left" Margin="31,318,0,0" TextWrapping="Wrap" Text="16" VerticalAlignment="Top" Height="16"/>
             </Grid>
         </GroupBox>
+        
 
 
     </Grid>
