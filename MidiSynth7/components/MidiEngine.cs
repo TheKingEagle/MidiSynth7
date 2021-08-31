@@ -731,6 +731,7 @@ namespace MidiSynth7.components
         /// </summary>
         public void MidiFile_Play()
         {
+            if (midiSequence == null) return;
             try
             {
                 for (int i = 0; i < 16; i++)

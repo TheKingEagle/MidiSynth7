@@ -397,7 +397,7 @@
                         </Ellipse.Fill>
                     </Ellipse>
                 </Button>
-                <Button x:Name="cp_bnBrowse" HorizontalAlignment="Left" Margin="286,108,0,0" VerticalAlignment="Top" Width="67" Height="52" Background="#FF151515" IsEnabled="False" RenderTransformOrigin="0.5,0.5" Click="cp_bnBrowse_Click">
+                <Button x:Name="cp_bnBrowse" HorizontalAlignment="Left" Margin="286,108,0,0" VerticalAlignment="Top" Width="67" Height="52" Background="#FF151515" IsEnabled="true" RenderTransformOrigin="0.5,0.5" Click="cp_bnBrowse_Click">
                     <Canvas Width="47" Height="47">
                         <Path Width="47" Height="47" Stretch="Uniform" Data="M 7,3 L 16,3 20,8 43,8 43,36 4,36 4,8 Z" StrokeThickness="4">
                             <Path.Stroke>
@@ -426,7 +426,7 @@
                         </Path>
                     </Canvas>
                 </Button>
-                <Button x:Name="cp_bnStop" HorizontalAlignment="Left" Margin="214,108,0,0" VerticalAlignment="Top" Width="67" Height="52" Background="#FF151515" IsEnabled="False" RenderTransformOrigin="0.5,0.5" Click="cp_bnStop_Click">
+                <Button x:Name="cp_bnStop" HorizontalAlignment="Left" Margin="214,108,0,0" VerticalAlignment="Top" Width="67" Height="52" Background="#FF151515" IsEnabled="True" RenderTransformOrigin="0.5,0.5" Click="cp_bnStop_Click">
                     <Rectangle Height="47" StrokeThickness="5" Width="47">
                         <Rectangle.Fill>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -444,7 +444,7 @@
                         </Rectangle.Stroke>
                     </Rectangle>
                 </Button>
-                <Button x:Name="cp_bnPlay" HorizontalAlignment="Left" Margin="142,108,0,0" VerticalAlignment="Top" Width="67" Height="52" Background="#FF151515" IsEnabled="False" RenderTransformOrigin="0.5,0.5" Click="cp_bnPlay_Click">
+                <Button x:Name="cp_bnPlay" HorizontalAlignment="Left" Margin="142,108,0,0" VerticalAlignment="Top" Width="67" Height="52" Background="#FF151515" IsEnabled="True" RenderTransformOrigin="0.5,0.5" Click="cp_bnPlay_Click">
                     <ed:RegularPolygon Height="47" InnerRadius="1" PointCount="3" Stretch="Fill" StrokeThickness="5" Width="47" RenderTransformOrigin="0.5,0.5">
                         <ed:RegularPolygon.RenderTransform>
                             <TransformGroup>

@@ -1,4 +1,5 @@
-﻿using MidiSynth7.entities.controls;
+﻿using Microsoft.Win32;
+using MidiSynth7.entities.controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,7 @@ namespace MidiSynth7.components.views
         MainWindow AppContext;
         private int Transpose;
         private int RiffKey;
+        private bool mfile_playing = false;
         private List<Ellipse> channelElipses = new List<Ellipse>();
         private List<MainWindow.ChInvk> channelIndicators = new List<MainWindow.ChInvk>();
 
@@ -138,7 +140,6 @@ namespace MidiSynth7.components.views
             Action invoker = delegate ()
             {
                 AppContext.channelElipses[index].Fill = (Brush)FindResource("CH_IND_On");
-                //counter shit.
                 AppContext.channelIndicators[index].CounterReset();
             };
             await Dispatcher.BeginInvoke(invoker);
@@ -193,17 +194,35 @@ namespace MidiSynth7.components.views
 
         private void cp_bnPlay_Click(object sender, RoutedEventArgs e)
         {
-
+            if(!mfile_playing)
+            {
+                MidiEngine.MidiFile_Play();
+                mfile_playing = true;
+            }
         }
 
         private void cp_bnStop_Click(object sender, RoutedEventArgs e)
         {
-
+            if (mfile_playing)
+            {
+                MidiEngine.MidiFile_Stop();
+                mfile_playing = false;
+            }
         }
 
         private void cp_bnBrowse_Click(object sender, RoutedEventArgs e)
         {
-
+            OpenFileDialog of = new OpenFileDialog();
+            of.Filter = "MIDI Files (*.mid)|*.mid";
+            of.Title = "Select MIDI File for Playback";
+            if(of.ShowDialog().Value)
+            {
+                if(MidiEngine!=null)
+                {
+                    MidiEngine.MidiFile_Add(of.FileName);
+                    
+                }
+            }
         }
 
         #endregion
@@ -731,7 +750,14 @@ namespace MidiSynth7.components.views
             {
                 Mio_SustainPdl.Fill = (Brush)FindResource("CH_Ind_off");
             }
+            if(id == "MidiEngine_FileLoadComplete")
+            {
+                cp_Info.Text = MidiEngine.Copyright;
+            }
+            if(id == "MidiEngine_SequenceBuilder_Completed")
+            {
 
+            }
         }
 
         public void HandleKeyDown(object sender, KeyEventArgs e) => pianomain.UserControl_KeyDown(sender, e);
