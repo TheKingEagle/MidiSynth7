@@ -33,6 +33,7 @@ namespace MidiSynth7.entities
         public event EventHandler<PKeyEventArgs> VKeyUp;
         public event EventHandler<PKeyEventArgs> VKeyDown;
 
+
         protected virtual void OnInvokeKeyUp(PKeyEventArgs e)
         {
             VKeyUp?.Invoke(this, e);
@@ -46,7 +47,7 @@ namespace MidiSynth7.entities
             border.Background = (Brush)this.TryFindResource("ONBrush");
             OnInvokeKeyDown(new PKeyEventArgs(KeyID));
         }
-        
+
         public void SendOn()
         {
             
@@ -54,37 +55,46 @@ namespace MidiSynth7.entities
             if (!down)
             {
                 down = true;
-             
-                    OnInvokeKeyDown(new PKeyEventArgs(KeyID));
-                
+
+                OnInvokeKeyDown(new PKeyEventArgs(KeyID));
+
             }
         }
 
         public void SendOff()
         {
             border.Background = (Brush)this.TryFindResource("OFFBrush");
+
             OnInvokeKeyUp(new PKeyEventArgs(KeyID));
+
             if (down)
             {
                 down = false;
             }
         }
+
         public void FSendOff()
         {
             border.Background = (Brush)this.TryFindResource("OFFBrush");
-            
+            down = false;
         }
         public void FSendOn()
         {
+            if (down) return;
             border.Background = (Brush)this.TryFindResource("ONBrush");
+            down = true;
         }
         public void FSendOnA()
         {
+            if (down) return;
             border.Background = (Brush)this.TryFindResource("ALTONBrush");
+            down = true;
         }
         public void FSendOnC(Brush background)
         {
+            if (down) return;
             border.Background = background;
+            down = true;
 
         }
         private void Border_MouseUp(object sender, MouseButtonEventArgs e)

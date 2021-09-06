@@ -697,13 +697,15 @@ namespace MidiSynth7.components.views
         public async void HandleNoteOnEvent(object sender, NoteEventArgs e)
         {
             await FlashChannelActivity(e.ChannelMssge.MidiChannel);
-
+            await Dispatcher.InvokeAsync(()=> pianomain.UnLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value));
 
             if (e.ChannelMssge.Data2 > 0)
             {
-
-                pianomain.LightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
-                if (e.ChannelMssge.MidiChannel != 0)
+                if(e.ChannelMssge.MidiChannel == 0)
+                {
+                    pianomain.LightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
+                }
+                if (e.ChannelMssge.MidiChannel != 0 && e.ChannelMssge.MidiChannel != 9)
                 {
                     pianomain.ALTLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
                 }

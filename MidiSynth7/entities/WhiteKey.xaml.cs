@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -49,11 +50,11 @@ namespace MidiSynth7.entities
         }
         public void SendOn()
         {
-            //border.Background = (Brush)this.TryFindResource("ONBrush");
+            border.Background = (Brush)this.TryFindResource("ONBrush");
             if (!down)
             {
                 down = true;
-                
+
                 OnInvokeKeyDown(new PKeyEventArgs(KeyID));
 
             }
@@ -73,19 +74,25 @@ namespace MidiSynth7.entities
         public void FSendOff()
         {
             border.Background = (Brush)this.TryFindResource("OFFBrush");
+            down = false;
         }
         public void FSendOn()
         {
+            if (down) return;
             border.Background = (Brush)this.TryFindResource("ONBrush");
+            down = true;
         }
         public void FSendOnA()
         {
+            if (down) return;
             border.Background = (Brush)this.TryFindResource("ALTONBrush");
-
+            down = true;
         }
         public void FSendOnC(Brush background)
         {
+            if (down) return;
             border.Background = background;
+            down = true;
 
         }
 

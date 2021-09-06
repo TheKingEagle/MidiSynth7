@@ -203,6 +203,7 @@ namespace MidiSynth7.entities.controls
             if (key.keyItem != null)
             {
                 key.keyItem.FSendOff();
+                
             }
         }
         #endregion
