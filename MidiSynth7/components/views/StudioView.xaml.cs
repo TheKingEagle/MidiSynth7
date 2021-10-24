@@ -2,6 +2,7 @@
 using MidiSynth7.entities.controls;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,6 +31,10 @@ namespace MidiSynth7.components.views
         private bool mfile_playing = false;
         private List<Ellipse> channelElipses = new List<Ellipse>();
         private List<MainWindow.ChInvk> channelIndicators = new List<MainWindow.ChInvk>();
+
+        
+
+        private List<(int c, int k, int v,int o, long d, Stopwatch w)?> NFXSavedNotes = new List<(int c, int k, int v, int o, long d, Stopwatch w)?>();
 
         public StudioView(MainWindow context, ref SystemConfig config, ref MidiEngine engine)
         {
@@ -567,7 +572,10 @@ namespace MidiSynth7.components.views
                     }
                     MidiEngine.MidiNote_SetPan(0, CTRL_Balance.Value);
                 }
-                
+                if(cb_NFX_Enable.IsChecked.Value)
+                {
+                    SaveVelocity(0, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity, 0);
+                }
                 MidiEngine.MidiNote_Play(channel, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity);
 
             }
@@ -618,53 +626,7 @@ namespace MidiSynth7.components.views
                         MidiEngine.MidiNote_Stop(2, Offset2 + Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value);
                     }
                 }
-                if (cb_NFX_Enable.IsChecked.Value)
-                {
-                    if (rb_nfx_echo.IsChecked.Value && rb_ofx_custom.IsChecked.Value && cb_NFX_Echo_OFX.IsChecked.Value)
-                    {
-                        MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 10);
-                        MidiEngine.MidiNote_SetProgram(OFX_b1.Index, OFX_p1.Index, 11);
-                        MidiEngine.MidiNote_SetProgram(OFX_b2.Index, OFX_p2.Index, 12);
-                        MidiEngine.MidiNote_PlayTimed(10, e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value, 110, 100);
-                        //offsets {g, t, ofx3_1, ofx3_2}
-                        int Offset1 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.PitchOffsets[2];
-                        int Offset2 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.PitchOffsets[3];
-                        MidiEngine.MidiNote_PlayTimed(11, (e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value) + Offset1 - 12, 110, 100);
-                        MidiEngine.MidiNote_PlayTimed(12, (e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value) + Offset2 - 12, 110, 100);
-                    }
-                    if (rb_nfx_echo.IsChecked.Value && rb_ofx_custom.IsChecked.Value && !cb_NFX_Echo_OFX.IsChecked.Value)
-                    {
-                        MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 10);
-                        MidiEngine.MidiNote_SetProgram(OFX_b1.Index, OFX_p1.Index, 11);
-                        MidiEngine.MidiNote_SetProgram(OFX_b2.Index, OFX_p2.Index, 12);
-                        MidiEngine.MidiNote_PlayTimed(10, e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value, 110, 100);
-                        //offsets {g, t, ofx3_1, ofx3_2}
-                        int Offset1 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.PitchOffsets[2];
-                        int Offset2 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.PitchOffsets[3];
-                        MidiEngine.MidiNote_PlayTimed(11, (e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value) + Offset1, 110, 100);
-                        MidiEngine.MidiNote_PlayTimed(12, (e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value) + Offset2, 110, 100);
-                    }
-
-                    if (rb_nfx_echo.IsChecked.Value && rb_ofx_Orchestral.IsChecked.Value && !cb_NFX_Echo_OFX.IsChecked.Value)
-                    {
-                        MidiEngine.MidiNote_SetProgram(0, patch.Index, 10);
-                        MidiEngine.MidiNote_SetProgram(0, 46, 11);
-                        MidiEngine.MidiNote_SetProgram(0, 48, 12);
-                        MidiEngine.MidiNote_PlayTimed(10, e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value, 110, 100);
-                        MidiEngine.MidiNote_PlayTimed(11, (e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value) - 12, 110, 100);
-                        MidiEngine.MidiNote_PlayTimed(12, (e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value) - 24, 110, 100);
-                    }
-                    if (rb_nfx_echo.IsChecked.Value && rb_ofx_Orchestral.IsChecked.Value && cb_NFX_Echo_OFX.IsChecked.Value)
-                    {
-                        MidiEngine.MidiNote_SetProgram(0, patch.Index, 10);
-                        MidiEngine.MidiNote_SetProgram(0, 46, 11);
-                        MidiEngine.MidiNote_SetProgram(0, 48, 12);
-                        MidiEngine.MidiNote_PlayTimed(10, e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value, 110, 100);
-                        MidiEngine.MidiNote_PlayTimed(11, (e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value) - 24, 110, 100);
-                        MidiEngine.MidiNote_PlayTimed(12, (e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value) - 36, 110, 100);
-                    }
-
-                }
+                
                 if (cb__InsS_Enable.IsChecked.Value)
                 {
                     if (e.KeyID <= 16)
@@ -725,6 +687,18 @@ namespace MidiSynth7.components.views
         {
             await FlashChannelActivity(e.ChannelMssge.MidiChannel);
             pianomain.UnLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
+            
+            if(cb_NFX_Enable.IsChecked.Value && rb_nfx_simple.IsChecked.Value)
+            {
+                var info = GetNoteInfo(e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1);
+                
+                if (info != null)
+                {
+                    SaveVelocity(e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, info.Value.v, 0);//resave to update duration
+                    info = GetNoteInfo(e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1);//reload again
+                    PlayKeyUpDelayedNFX(e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, info.Value.v, (int)(info.Value.d), 4, 250);
+                }
+            }
             //Pianomain_pKeyUp(sender, new PKeyEventArgs(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value));
         }
 
@@ -814,5 +788,75 @@ namespace MidiSynth7.components.views
         {
 
         }
+
+        #region NoteFX Functions
+        
+        private void SaveVelocity(int ch, int note, int velocity,int offsetTime)
+        {
+            var nfxEntity = NFXSavedNotes.FirstOrDefault(vv => vv?.c == ch && vv?.k == note);
+            long duration = 0;
+            if(nfxEntity != null)
+            {
+                duration = nfxEntity.Value.d;
+                if (nfxEntity.Value.w.IsRunning && duration == 0)
+                {
+                    nfxEntity.Value.w.Stop();
+                    duration = nfxEntity.Value.w.ElapsedMilliseconds;
+                }
+                NFXSavedNotes.Remove(nfxEntity);
+            }
+            NFXSavedNotes.Add((ch, note, velocity,offsetTime, duration, Stopwatch.StartNew()));
+        }
+
+        private (int v, long d)? GetNoteInfo(int ch, int note)
+        {
+            var nfxEntity = NFXSavedNotes.FirstOrDefault(vv => vv?.c == ch && vv?.k == note);
+            if (nfxEntity == null) return null;
+            return (nfxEntity.Value.v, nfxEntity.Value.d);
+        }
+        private void DeleteVelocity(int ch, int note, int velocity)
+        {
+            var nfxEntity = NFXSavedNotes.FirstOrDefault(vv => vv?.c == ch && vv?.k == note && vv?.v == velocity);
+            if (nfxEntity != null)
+                NFXSavedNotes.Remove(nfxEntity);
+            else
+                Console.WriteLine("Saved velocity data Not found!");
+        }
+
+        private void PlayKeyUpDelayedNFX(int ch, int note, int velocity, int duration, int count, int pause)
+        {
+            if (MidiEngine == null) return;
+
+            //thread it
+            Bank bank = (Bank)cb_mBank.SelectedItem;
+            NumberedEntry patch = (NumberedEntry)cb_mPatch.SelectedItem;
+
+            void t()
+            {
+                System.Threading.Thread.Sleep(duration);//give some delay room
+                for (int i = 0; i < count-1; i++)
+                {
+                    //System.Threading.Thread.Sleep(pause);
+                    
+
+                    if (Config.EnforceInstruments)
+                    {
+                        MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, i+1);
+                    }
+                    MidiEngine.MidiNote_Play(i+1, note, velocity,false);
+                    System.Threading.Thread.Sleep(duration);
+                    MidiEngine.MidiNote_Stop(i+1, note,false);
+                    System.Threading.Thread.Sleep(duration);
+
+                }
+                //remove finished velocity queue
+                DeleteVelocity(ch, note, velocity);
+            }
+            Task.Run(() => t());
+        }
+
+        #endregion
+
+        
     }
 }

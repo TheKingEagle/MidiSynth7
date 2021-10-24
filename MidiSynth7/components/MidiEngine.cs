@@ -240,7 +240,7 @@ namespace MidiSynth7.components
         /// <param name="channel">Midi channel. 0 - 15.</param>
         /// <param name="pitch"> Pitch of the note. 0 - 127</param>
         /// <param name="volume">Velocity of the note 0 - 127</param>
-        public void MidiNote_Play(int channel, int pitch, int volume)
+        public void MidiNote_Play(int channel, int pitch, int volume, bool send_event = true)
         {
             //throw(new Exception("test"));
             if (pitch > 127)
@@ -261,7 +261,7 @@ namespace MidiSynth7.components
                 recordSession.Record(new ChannelMessage(ChannelCommand.Controller, channel, (int)ControllerType.Volume, volume));
                 recordSession.Record(new ChannelMessage(ChannelCommand.NoteOn, channel, pitch, volume));
             }
-            onNotePlay(new NoteEventArgs(new ChannelMessage(ChannelCommand.NoteOn, channel, pitch, volume)));
+            if(send_event) onNotePlay(new NoteEventArgs(new ChannelMessage(ChannelCommand.NoteOn, channel, pitch, volume)));
         }
 
         /// <summary>
@@ -269,7 +269,7 @@ namespace MidiSynth7.components
         /// </summary>
         /// <param name="channel">the channel 0 - 15</param>
         /// <param name="pitch"> the pitch to terminate. 0 - 127</param>
-        public void MidiNote_Stop(int channel, int pitch)
+        public void MidiNote_Stop(int channel, int pitch, bool send_event = true)
         {
             if (pitch > 127)
             {
@@ -288,7 +288,7 @@ namespace MidiSynth7.components
             {
                 recordSession.Record(new ChannelMessage(ChannelCommand.NoteOff, channel, pitch));
             }
-            onNoteStopped(new NoteEventArgs(new ChannelMessage(ChannelCommand.NoteOff, channel, pitch, 0)));
+            if(send_event) onNoteStopped(new NoteEventArgs(new ChannelMessage(ChannelCommand.NoteOff, channel, pitch, 0)));
         }
 
         /// <summary>

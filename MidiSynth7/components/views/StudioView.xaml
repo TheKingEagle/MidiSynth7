@@ -310,7 +310,7 @@
                         <GradientStop Color="#FF071734" Offset="0.394"/>
                     </LinearGradientBrush>
                 </Grid.Background>
-                <RadioButton x:Name="rb_nfx_delay" Content="Delay OctaveFX" HorizontalAlignment="Left" Margin="36,39,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="NFX" IsChecked="True" RenderTransformOrigin="0.5,0.5" Focusable="False" IsEnabled="False">
+                <RadioButton x:Name="rb_nfx_ofx" Content="Custom OctaveFX Delay" HorizontalAlignment="Left" Margin="45,39,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="NFX" IsChecked="True" RenderTransformOrigin="0.5,0.5" Focusable="False" IsEnabled="False">
                     <RadioButton.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
@@ -320,7 +320,7 @@
                         </TransformGroup>
                     </RadioButton.RenderTransform>
                 </RadioButton>
-                <RadioButton x:Name="rb_nfx_echo" Content="Echo Release" HorizontalAlignment="Left" Margin="29,6,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="NFX" RenderTransformOrigin="0.5,0.5" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" IsChecked="True">
+                <RadioButton x:Name="rb_nfx_simple" Content="Simple Delay" HorizontalAlignment="Left" Margin="29,6,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="NFX" RenderTransformOrigin="0.5,0.5" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" IsChecked="True">
                     <RadioButton.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
@@ -330,7 +330,7 @@
                         </TransformGroup>
                     </RadioButton.RenderTransform>
                 </RadioButton>
-                <CheckBox x:Name="cb_NFX_Echo_OFX" Content="Octave" HorizontalAlignment="Left" Margin="163,7,0,0" VerticalAlignment="Top" Foreground="White" RenderTransformOrigin="0.5,0.5" Focusable="False">
+                <CheckBox x:Name="cb_nfx_octave" Content="Octave" HorizontalAlignment="Left" Margin="163,7,0,0" VerticalAlignment="Top" Foreground="White" RenderTransformOrigin="0.5,0.5" Focusable="False">
                     <CheckBox.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
