@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MidiSynth7.components
 {
@@ -31,11 +28,11 @@ namespace MidiSynth7.components
     /// </summary>
     public class InstrumentDefinition
     {
-        
+
         public List<Bank> Banks { get; set; }
         public List<NumberedEntry> Drumkits { get; set; }
 
-         static List<Bank> DefaultBanks()
+        private static List<Bank> DefaultBanks()
         {
             Bank defaultBank = new Bank
             {
@@ -173,7 +170,7 @@ namespace MidiSynth7.components
                     new NumberedEntry(127,"Gunshot"),
                 }.ToList()
             };
-            
+
             //TODO: Maybe add more later?
             Bank[] banks = new Bank[]
             {
@@ -182,7 +179,7 @@ namespace MidiSynth7.components
             return banks.ToList();
         }
 
-         static List<NumberedEntry> DefaultDrumKits()
+        private static List<NumberedEntry> DefaultDrumKits()
         {
             NumberedEntry[] dkits = new NumberedEntry[]
             {
@@ -201,9 +198,11 @@ namespace MidiSynth7.components
 
         public static InstrumentDefinition GetDefaultDefinition()
         {
-            InstrumentDefinition def = new InstrumentDefinition();
-            def.Banks = DefaultBanks();
-            def.Drumkits = DefaultDrumKits();
+            InstrumentDefinition def = new InstrumentDefinition
+            {
+                Banks = DefaultBanks(),
+                Drumkits = DefaultDrumKits()
+            };
             return def;
         }
 
