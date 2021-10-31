@@ -75,14 +75,14 @@ namespace MidiSynth7.components.views
 
             #region Patch & banks
 
-            foreach (Bank item in AppContext.InstrumentDefinition.Banks)
+            foreach (Bank item in AppContext.ActiveInstrumentDefinition.Banks.Where(xb=> xb.Index != 127))
             {
                 cb_mBank.Items.Add(item);
                 cb_sBank.Items.Add(item);
                 //OFX_I1BankSel.Items.Add(item);
                 //OFX_I2BankSel.Items.Add(item);
             }
-            foreach (NumberedEntry item in AppContext.InstrumentDefinition.Drumkits)
+            foreach (NumberedEntry item in AppContext.ActiveInstrumentDefinition.Banks.FirstOrDefault(xb => xb.Index == 127)?.Instruments)
             {
                 cb_dkitlist.Items.Add(item);
             }

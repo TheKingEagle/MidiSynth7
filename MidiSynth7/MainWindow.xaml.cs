@@ -21,6 +21,7 @@ using System.Reflection;
 using System.ComponentModel;
 using Sanford.Multimedia.Midi;
 using MidiSynth7.entities.controls;
+using System.Collections.ObjectModel;
 
 namespace MidiSynth7
 {
@@ -37,6 +38,7 @@ namespace MidiSynth7
         private int _width, _height = 0;
         private double scale = 1;
         private bool _loadingView = false;
+        private bool _insDefNameDirty = false;
         private UIElement _elementFromanim = null;
         private DisplayModes _switchto = DisplayModes.Standard;
         private ISynthView currentView;
@@ -44,7 +46,9 @@ namespace MidiSynth7
         private List<(string name,bool value)> checkstates = new List<(string name, bool value)>();
 
         public bool SynHelpRequested { get; private set; }
-        public InstrumentDefinition InstrumentDefinition { get; private set; }
+        public InstrumentDefinition ActiveInstrumentDefinition { get; private set; }
+
+        public List<InstrumentDefinition> Definitions { get; private set; }
         public SystemConfig AppConfig;
         public MidiEngine MidiEngine;
         public List<NumberedEntry> OutputDevices = new List<NumberedEntry>();
@@ -145,19 +149,23 @@ namespace MidiSynth7
             {
                 if (!File.Exists(AppConfig.InstrumentDefinitionPath))
                 {
-                    InstrumentDefinition = InstrumentDefinition.GetDefaultDefinition();
-                    MessageBox.Show("The specified file could not be found. The default definition will be used instead.", "Missing Instrument Definition", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    Definitions = new List<InstrumentDefinition>();
+                    Definitions.Add(InstrumentDefinition.GetDefaultDefinition());
+                    ActiveInstrumentDefinition = InstrumentDefinition.GetDefaultDefinition();//set active
+                    MessageBox.Show("The definition file was not found. The default definition will be used instead.", "Missing Instrument Definition", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 else
                 {
                     using (StreamReader sr = new StreamReader(AppConfig.InstrumentDefinitionPath))
                     {
-                        InstrumentDefinition = JsonConvert.DeserializeObject<InstrumentDefinition>(sr.ReadToEnd());
+                        Definitions = JsonConvert.DeserializeObject<List<InstrumentDefinition>>(sr.ReadToEnd());
                         Console.WriteLine("InsDef: File loaded.");
-                        if (InstrumentDefinition?.Banks.Count == 0)
+                        if (Definitions.Count == 0)
                         {
-                            InstrumentDefinition = InstrumentDefinition.GetDefaultDefinition();
-                            MessageBox.Show("The selected file has no instrument list. The default definition will be used instead.", "No Instruments!", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            Definitions = new List<InstrumentDefinition>();
+                            Definitions.Add(InstrumentDefinition.GetDefaultDefinition());
+                            ActiveInstrumentDefinition = InstrumentDefinition.GetDefaultDefinition();//set active
+                            MessageBox.Show("The definition file was invalid. The default definition will be used instead.", "No Instruments!", MessageBoxButton.OK, MessageBoxImage.Warning);
                         }
 
                     }
@@ -166,13 +174,14 @@ namespace MidiSynth7
             else
             {
                 Console.WriteLine("InsDef: Not configured.");
-                InstrumentDefinition = InstrumentDefinition.GetDefaultDefinition();
+                Definitions = new List<InstrumentDefinition>();
+                Definitions.Add(InstrumentDefinition.GetDefaultDefinition());
+                ActiveInstrumentDefinition = InstrumentDefinition.GetDefaultDefinition();//set active
             }
             GR_OverlayContent.Visibility = Visibility.Collapsed;
             GR_OverlayContent.Opacity = 0;
             BDR_SettingsFrame.Visibility = Visibility.Collapsed;//start with settings disabled
             Loadview(AppConfig.DisplayMode);
-            
         }
 
         ~MainWindow()
@@ -245,17 +254,25 @@ namespace MidiSynth7
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+            if(GR_OverlayContent.Visibility == Visibility.Visible)
+            {
+                return;
+            }
             currentView.HandleKeyDown(sender, e);
         }
 
         private void Window_PreviewKeyUp(object sender, KeyEventArgs e)
         {
+            if (GR_OverlayContent.Visibility == Visibility.Visible)
+            {
+                return;
+            }
             currentView.HandleKeyUp(sender, e);
         }
 
         #endregion
 
-        #region Config-View Interaction & Logic
+        #region Config-View Interaction
         private void Cm_InputDevices_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ////for program start
@@ -310,7 +327,7 @@ namespace MidiSynth7
                 SwitchView(AppConfig.DisplayMode);
             }
             SaveConfig();
-            
+
             ScaleUI(1, 0.8, BDR_SettingsFrame);
             FadeUI(1, 0, GR_OverlayContent);
 
@@ -318,16 +335,14 @@ namespace MidiSynth7
 
         private void CfgHelpRequested_Click(object sender, RoutedEventArgs e)
         {
-
             checkstates.Clear();
             foreach (CheckBox item in WindowHelper.FindVisualChildren<CheckBox>(BDR_SettingsFrame))
             {
                 checkstates.Add((item.Name, item.IsChecked.Value));
             }
-            
+
             SynHelpRequested = !SynHelpRequested;
-            this.Cursor = SynHelpRequested ? Cursors.Help : Cursors.Arrow;
-            
+            Cursor = SynHelpRequested ? Cursors.Help : Cursors.Arrow;
         }
 
         private void RelayMode_Click(object sender, RoutedEventArgs e)
@@ -369,13 +384,168 @@ namespace MidiSynth7
             }
         }
 
-        private void CfgHelpRequest_RestoreCheckStates()
+        private void Bn_cfgLaunchInsdef_Click(object sender, RoutedEventArgs e)
         {
-            foreach (var item in checkstates)
+            PopulateSavedDefinitions();
+            ScaleUI(1, 0.8, BDR_SettingsFrame);
+            ScaleUI(0.8, 1, BDR_InstrumentDefinitionsFrame);
+        }
+
+        #endregion
+
+        #region InsDef-View Interaction
+
+        private void Bn_InsDefDel_Click(object sender, RoutedEventArgs e)
+        {
+            if (LB_SavedDefs.SelectedItem == null)
             {
-                CheckBox cb = this.FindName(item.name) as CheckBox;
-                cb.IsChecked = item.value;
+                return;
             }
+            if ((string)((ListBoxItem)LB_SavedDefs.SelectedItem).Content == "Default")
+            {
+                MessageBox.Show("You may not delete the default definition.", "Invalid Operation", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+        }
+
+        private void LB_SavedDefs_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (LB_SavedDefs.SelectedItem == null) return;
+            InsDefSetEditor((ListBoxItem)LB_SavedDefs.SelectedItem, Definitions.FirstOrDefault(x => x.Name == (string)((ListBoxItem)LB_SavedDefs.SelectedItem).Content));
+        }
+
+        private void Bn_InsDefAdd_Click(object sender, RoutedEventArgs e)
+        {
+            InstrumentDefinition def = new InstrumentDefinition()
+            {
+                Name = "Definition " + (LB_SavedDefs.Items.Count + 1),
+                Banks = new ObservableCollection<Bank>(),
+                AssociatedDeviceIndex = -1
+            };
+            Definitions.Add(def);
+            LB_SavedDefs.Items.Add(new ListBoxItem() { Content = def.Name });
+            LB_SavedDefs.SelectedIndex = LB_SavedDefs.Items.Count - 1;
+            InsDefSetEditor((ListBoxItem)LB_SavedDefs.SelectedItem, Definitions.FirstOrDefault(x => x.Name == (string)((ListBoxItem)LB_SavedDefs.SelectedItem).Content));
+        }
+
+        private void Lv_banks_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (lv_banks.SelectedItems.Count != 1)
+            {
+                lv_patches.ItemsSource = null;
+                return;
+            }
+            if ((lv_banks.SelectedItem as Bank) == null) { return; }
+            InsDefPopulatePatches(Definitions.FirstOrDefault(x => x.Name == tb_defName.Text), ((Bank)lv_banks.SelectedItem).Index);
+
+        }
+
+        private void Tb_defName_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            _insDefNameDirty = true;
+        }
+
+        //TODO: Add/delete banks, patches, and save
+        private void Bn_InsDefAddBank_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Bn_InsDefDelBank_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Bn_InsDefAddPatch_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Bn_InsDefDelPatch_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Bn_InsDefRename_Click(object sender, RoutedEventArgs e)
+        {
+            InstrumentDefinition d = Definitions.FirstOrDefault(x => x.Name == (string)((ListBoxItem)LB_SavedDefs.SelectedItem).Content);
+            InstrumentDefinition n = Definitions.FirstOrDefault(x => x.Name == tb_defName.Text);
+            if (n != null && _insDefNameDirty)
+            {
+                MessageBox.Show("A definition with this name already exists. Please try again.", "Duplicate Entry", MessageBoxButton.OK, MessageBoxImage.Error);
+                tb_defName.Text = (string)((ListBoxItem)LB_SavedDefs.SelectedItem).Content;
+                _insDefNameDirty = false;
+                return;
+            }
+            if (d != null)
+            {
+                d.Name = tb_defName.Text;
+                int inx = LB_SavedDefs.SelectedIndex;
+                PopulateSavedDefinitions();
+                LB_SavedDefs.SelectedIndex = inx;
+                _insDefNameDirty = false;
+                return;
+            }
+        }
+
+        private void Cm_InsDefDevices_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (Definitions == null || LB_SavedDefs.SelectedItem == null || cm_InsDefDevices.SelectedItem == null) return;
+            InstrumentDefinition def = Definitions.FirstOrDefault(x => x.Name == (string)((ListBoxItem)LB_SavedDefs.SelectedItem).Content);
+            if (def == null) return;
+            def.AssociatedDeviceIndex = ((NumberedEntry)cm_InsDefDevices.SelectedItem).Index;
+        }
+
+        #endregion
+
+        #region Instrument Definition Logic
+
+        private void PopulateSavedDefinitions()
+        {
+            LB_SavedDefs.Items.Clear();
+
+            foreach (InstrumentDefinition item in Definitions)
+            {
+                LB_SavedDefs.Items.Add(new ListBoxItem() { Content = item.Name });
+            }
+            LB_SavedDefs.SelectedIndex = LB_SavedDefs.SelectedIndex = LB_SavedDefs.Items.Count - 1;
+        }
+
+        private void InsDefSetEditor(ListBoxItem lvItem, InstrumentDefinition insdf)
+        {
+            if (lvItem == null)
+            {
+                gb_InsDefEditor.IsEnabled = false;
+                return;
+            }
+            gb_InsDefEditor.IsEnabled = true;
+            bool EnableEdit = (string)lvItem.Content != "Default";
+
+            tb_defName.IsEnabled = EnableEdit;
+            tb_defName.Text = (string)lvItem.Content;
+            _insDefNameDirty = false;
+            bn_InsDefAddBank.IsEnabled = EnableEdit;
+            bn_InsDefDelBank.IsEnabled = EnableEdit;
+            bn_InsDefAddPatch.IsEnabled = EnableEdit;
+            bn_InsDefDelPatch.IsEnabled = EnableEdit;
+            bn_InsDefRename.IsEnabled = EnableEdit;
+            bn_InsDefSetActiveDevice.IsEnabled = EnableEdit;
+            cm_InsDefDevices.IsEnabled = EnableEdit;
+            cm_InsDefDevices.SelectedItem = cm_InsDefDevices.Items.Cast<NumberedEntry>().FirstOrDefault(xx => xx.Index == insdf.AssociatedDeviceIndex);
+            lv_banks.IsReadOnly = !EnableEdit;
+            lv_patches.IsReadOnly = !EnableEdit;
+
+            InsDefPopulateBanks(insdf);
+        }
+
+        private void InsDefPopulatePatches(InstrumentDefinition def, int bank)
+        {
+            lv_patches.ItemsSource = def.Banks.FirstOrDefault(x => x.Index == bank)?.Instruments;
+        }
+
+        private void InsDefPopulateBanks(InstrumentDefinition def)
+        {
+            lv_banks.ItemsSource = def.Banks;
         }
 
         #endregion
@@ -395,6 +565,19 @@ namespace MidiSynth7
                 cm_InputDevices.Items.Add(item);
                 cm_InputDevices2.Items.Add(item);
             }
+
+            foreach (string item in MidiEngine.GetOutputDevices())
+            {
+                OutputDevices.Add(new NumberedEntry(midiInIndex, item));
+                midiInIndex++;
+            }
+            foreach (NumberedEntry item in OutputDevices)
+            {
+                cm_InsDefDevices.Items.Add(item);
+            }
+            //add unused
+            cm_InsDefDevices.Items.Insert(0, new NumberedEntry(-1, "Unassigned"));
+            cm_InsDefDevices.SelectedIndex = 0;
         }
 
         private void Window_StateChanged(object sender, EventArgs e)
@@ -411,7 +594,7 @@ namespace MidiSynth7
             canvasMAX.Visibility = WindowState != WindowState.Maximized ? Visibility.Visible : Visibility.Collapsed;
             canvasRest.Visibility = WindowState == WindowState.Maximized ? Visibility.Visible : Visibility.Collapsed;
         }
-        
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             ScaleUI(0.8, 1,this);
@@ -434,6 +617,21 @@ namespace MidiSynth7
 
             // close all active threads
             Environment.Exit(0);
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (WindowState == WindowState.Maximized)
+            {
+                scale = Math.Min(this.ActualWidth / _width, this.ActualHeight / _height);
+                ScaleUI(0.8, 1, FR_SynthView);
+            }
+            else
+            {
+                scale = 1;
+
+                ScaleUI(0.8, 1, FR_SynthView);
+            }
         }
 
         private void Loadview(DisplayModes mode)
@@ -532,6 +730,7 @@ namespace MidiSynth7
             }
             
         }
+
         private void WindowStoryboard_Completed(object sender, EventArgs e)
         {
             if(_elementFromanim.Opacity <= 0.9 && _elementFromanim != this)
@@ -605,6 +804,22 @@ namespace MidiSynth7
             }
         }
 
+        public string SaveInsDef(string path)
+        {
+            try
+            {
+                using (StreamWriter sw = new StreamWriter(path))
+                {
+                    sw.WriteLine(JsonConvert.SerializeObject(Definitions));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Write Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            return path;
+        }
+
         public SystemConfig LoadConfig()
         {
             if(!File.Exists(App.APP_DATA_DIR+"synth7.config"))
@@ -648,9 +863,18 @@ namespace MidiSynth7
             }
         }
 
+        private void CfgHelpRequest_RestoreCheckStates()
+        {
+            foreach (var item in checkstates)
+            {
+                CheckBox cb = this.FindName(item.name) as CheckBox;
+                cb.IsChecked = item.value;
+            }
+        }
+
         #endregion
 
-        #region MIDI Engine!
+        #region MIDI Engine Logic
         public void GenerateMIDIEngine(ISynthView view, int deviceId=0)
         {
             //midiTaskWorker = new BackgroundWorker();
@@ -741,27 +965,26 @@ namespace MidiSynth7
 
         private void InDevice_ChannelMessageReceived(object sender, ChannelMessageEventArgs e)
         {
-            if (e.Message.Command == Sanford.Multimedia.Midi.ChannelCommand.Controller)
+            if (e.Message.Command == ChannelCommand.Controller)
             {
                 if (e.Message.Data1 == (int)ControllerType.HoldPedal1)
                 {
                     if((sender as Sanford.Multimedia.Midi.InputDevice) == MidiEngine.inDevice && !AppConfig.Input1RelayMode)
                     {
                         Console.WriteLine("in1");
-                        Dispatcher.InvokeAsync(()=>currentView.HandleEvent(this, e, (e.Message.Data2 >= 63 ? "SynthSustainCTRL_ON" : "SynthSustainCTRL_OFF")));
+                        Dispatcher.InvokeAsync(()=>currentView.HandleEvent(this, e, e.Message.Data2 >= 63 ? "SynthSustainCTRL_ON" : "SynthSustainCTRL_OFF"));
                         for (int i = 0; i < 16; i++)
                         {
                             //This is probably slow :D
                             MidiEngine.MidiNote_SetControl(ControllerType.HoldPedal1, i, e.Message.Data2);
 
-                            
                         }
                         return;
                     }
 
                     if ((sender as Sanford.Multimedia.Midi.InputDevice) == MidiEngine.inDevice2 && !AppConfig.Input2RelayMode)
                     {
-                        Dispatcher.InvokeAsync(() => currentView.HandleEvent(this, e, (e.Message.Data2 >= 63 ? "SynthSustainCTRL_ON" : "SynthSustainCTRL_OFF")));
+                        Dispatcher.InvokeAsync(() => currentView.HandleEvent(this, e, e.Message.Data2 >= 63 ? "SynthSustainCTRL_ON" : "SynthSustainCTRL_OFF"));
                         for (int i = 0; i < 16; i++)
                         {
                             //This is probably slow :D
@@ -773,18 +996,18 @@ namespace MidiSynth7
 
                 }
                 MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
-                
+
             }
-            if (e.Message.Command == Sanford.Multimedia.Midi.ChannelCommand.PitchWheel)
+            if (e.Message.Command == ChannelCommand.PitchWheel)
             {
                 //MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
                 //TODO: Add settings to toggle some controls off
             }
-            if (e.Message.Command == Sanford.Multimedia.Midi.ChannelCommand.PolyPressure)
+            if (e.Message.Command == ChannelCommand.PolyPressure)
             {
                 MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
             }
-            if (e.Message.Command == Sanford.Multimedia.Midi.ChannelCommand.ChannelPressure)
+            if (e.Message.Command == ChannelCommand.ChannelPressure)
             {
                 MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
             }
@@ -819,7 +1042,6 @@ namespace MidiSynth7
             {
                 MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
                 Dispatcher.InvokeAsync(()=>currentView.HandleNoteOffEvent(this,new NoteEventArgs(e.Message)));
-                
             }
         }
 
@@ -863,31 +1085,9 @@ namespace MidiSynth7
                 {
                     Console.WriteLine("gracefully continue... but: "+ex.Message);
                 }
-                
+
             }
         }
 
-        private void window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if(WindowState == WindowState.Maximized)
-            {
-                scale = Math.Min(this.ActualWidth / _width, this.ActualHeight / _height);
-                ScaleUI(0.8, 1, FR_SynthView);
-            }
-            else
-            {
-                scale = 1;
-
-                ScaleUI(0.8, 1, FR_SynthView);
-            }
-        }
-
-        private void bn_cfgLaunchInsdef_Click(object sender, RoutedEventArgs e)
-        {
-            //FadeUI(1, 0, BDR_SettingsFrame);
-            ScaleUI(1, 0.8, BDR_SettingsFrame);
-            //FadeUI(0, 1, BDR_InstrumentDefinitionsFrame);
-            ScaleUI(0.8, 1, BDR_InstrumentDefinitionsFrame);
-        }
     }
 }
