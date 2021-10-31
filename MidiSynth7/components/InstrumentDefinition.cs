@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.ObjectModel;
 
 namespace MidiSynth7.components
 {
@@ -7,7 +6,7 @@ namespace MidiSynth7.components
     {
         public int Index { get; set; }
         public string Name { get; set; }
-        public List<NumberedEntry> Instruments { get; set; }
+        public ObservableCollection<NumberedEntry> Instruments { get; set; }
 
         public override string ToString()
         {
@@ -20,7 +19,7 @@ namespace MidiSynth7.components
             //this is only temporary
             Index = index;
             Name = name;
-            Instruments = new List<NumberedEntry>();
+            Instruments = new ObservableCollection<NumberedEntry>();
         }
     }
     /// <summary>
@@ -28,17 +27,18 @@ namespace MidiSynth7.components
     /// </summary>
     public class InstrumentDefinition
     {
+        public string Name { get; set; }
+        public ObservableCollection<Bank> Banks { get; set; }
 
-        public List<Bank> Banks { get; set; }
-        public List<NumberedEntry> Drumkits { get; set; }
+        public int AssociatedDeviceIndex { get; set; }
 
-        private static List<Bank> DefaultBanks()
+        private static ObservableCollection<Bank> DefaultBanks()
         {
             Bank defaultBank = new Bank
             {
                 Index = 0,
                 Name = "General MIDI",
-                Instruments = new NumberedEntry[]
+                Instruments = new ObservableCollection<NumberedEntry>(new NumberedEntry[]
                 {
                     new NumberedEntry(0,"Acoustic Grand Piano"),
                     new NumberedEntry(1,"Bright Acoustic Piano"),
@@ -168,32 +168,34 @@ namespace MidiSynth7.components
                     new NumberedEntry(125,"Helicopter"),
                     new NumberedEntry(126,"Applause"),
                     new NumberedEntry(127,"Gunshot"),
-                }.ToList()
+                }),
+            };
+
+            Bank percussion = new Bank()
+            {
+                Index = 127,
+                Name = "General MIDI Drums",
+                Instruments = new ObservableCollection<NumberedEntry>(new NumberedEntry[]
+                {
+                    new NumberedEntry(0, "Standard"),
+                    new NumberedEntry(8, "Room"),
+                    new NumberedEntry(16, "Power"),
+                    new NumberedEntry(24, "Electronic"),
+                    new NumberedEntry(25, "TR-808"),
+                    new NumberedEntry(32, "Jazz"),
+                    new NumberedEntry(40, "Brush"),
+                    new NumberedEntry(48, "Orchestra"),
+                    new NumberedEntry(56, "SFX"),
+                })
             };
 
             //TODO: Maybe add more later?
             Bank[] banks = new Bank[]
             {
-                defaultBank
+                defaultBank,
+                percussion
             };
-            return banks.ToList();
-        }
-
-        private static List<NumberedEntry> DefaultDrumKits()
-        {
-            NumberedEntry[] dkits = new NumberedEntry[]
-            {
-                new NumberedEntry(0, "Standard"),
-                new NumberedEntry(8, "Room"),
-                new NumberedEntry(16, "Power"),
-                new NumberedEntry(24, "Electronic"),
-                new NumberedEntry(25, "TR-808"),
-                new NumberedEntry(32, "Jazz"),
-                new NumberedEntry(40, "Brush"),
-                new NumberedEntry(48, "Orchestra"),
-                new NumberedEntry(56, "SFX"),
-            };
-            return dkits.ToList();
+            return new ObservableCollection<Bank>(banks);
         }
 
         public static InstrumentDefinition GetDefaultDefinition()
@@ -201,9 +203,15 @@ namespace MidiSynth7.components
             InstrumentDefinition def = new InstrumentDefinition
             {
                 Banks = DefaultBanks(),
-                Drumkits = DefaultDrumKits()
+                Name = "Default",
+                AssociatedDeviceIndex = -1
             };
             return def;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
 
     }
