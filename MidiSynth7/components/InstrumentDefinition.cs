@@ -32,7 +32,7 @@ namespace MidiSynth7.components
 
         public int AssociatedDeviceIndex { get; set; }
 
-        private static ObservableCollection<Bank> DefaultBanks()
+        public static ObservableCollection<Bank> DefaultBanks()
         {
             Bank defaultBank = new Bank
             {
