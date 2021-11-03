@@ -46,7 +46,7 @@ namespace MidiSynth7
         private List<(string name,bool value)> checkstates = new List<(string name, bool value)>();
 
         public bool SynHelpRequested { get; private set; }
-        public InstrumentDefinition ActiveInstrumentDefinition { get; private set; }
+        public InstrumentDefinition ActiveInstrumentDefinition { get; set; }
 
         public List<InstrumentDefinition> Definitions { get; private set; }
         public SystemConfig AppConfig;
@@ -167,7 +167,7 @@ namespace MidiSynth7
                             ActiveInstrumentDefinition = InstrumentDefinition.GetDefaultDefinition();//set active
                             MessageBox.Show("The definition file was invalid. The default definition will be used instead.", "No Instruments!", MessageBoxButton.OK, MessageBoxImage.Warning);
                         }
-
+                       
                     }
                 }
             }
@@ -406,6 +406,9 @@ namespace MidiSynth7
                 MessageBox.Show("You may not delete the default definition.", "Invalid Operation", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+            InstrumentDefinition def = Definitions.FirstOrDefault(x => x.Name == (string)((ListBoxItem)LB_SavedDefs.SelectedItem).Content);
+            Definitions.Remove(def);
+            LB_SavedDefs.Items.Remove(LB_SavedDefs.SelectedItem);
         }
 
         private void LB_SavedDefs_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -430,13 +433,15 @@ namespace MidiSynth7
 
         private void Lv_banks_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (LB_SavedDefs.SelectedItem == null) return;
+            InstrumentDefinition def = Definitions.FirstOrDefault(x => x.Name == (string)((ListBoxItem)LB_SavedDefs.SelectedItem).Content);
             if (lv_banks.SelectedItems.Count != 1)
             {
                 lv_patches.ItemsSource = null;
                 return;
             }
             if ((lv_banks.SelectedItem as Bank) == null) { return; }
-            InsDefPopulatePatches(Definitions.FirstOrDefault(x => x.Name == tb_defName.Text), ((Bank)lv_banks.SelectedItem).Index);
+            InsDefPopulatePatches(def, ((Bank)lv_banks.SelectedItem).Index);
 
         }
 
@@ -448,22 +453,39 @@ namespace MidiSynth7
         //TODO: Add/delete banks, patches, and save
         private void Bn_InsDefAddBank_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            InstrumentDefinition def = Definitions.FirstOrDefault(x => x.Name == (string)((ListBoxItem)LB_SavedDefs.SelectedItem).Content);
+            def.Banks.Add(new Bank(def.Banks.Count, "Bank " + (def.Banks.Count+1)));
         }
 
         private void Bn_InsDefDelBank_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            if (lv_banks.SelectedItems.Count <= 0) return;
+            InstrumentDefinition def = Definitions.FirstOrDefault(x => x.Name == (string)((ListBoxItem)LB_SavedDefs.SelectedItem).Content);
+           
+            while (lv_banks.SelectedItems.Count > 0)
+            {
+                def.Banks.RemoveAt(lv_banks.SelectedIndex);
+            }
         }
 
         private void Bn_InsDefAddPatch_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            if (lv_banks.SelectedItem == null) return;
+            Bank b = (Bank)lv_banks.SelectedItem;
+            b.Instruments.Add(new NumberedEntry(b.Instruments.Count, "Instrument " + (b.Instruments.Count+1)));
+
         }
 
         private void Bn_InsDefDelPatch_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            if (lv_banks.SelectedItem == null) return;
+            if (lv_patches.SelectedItems.Count < 0) return;
+            Bank b = (Bank)lv_banks.SelectedItem;
+
+            while (lv_patches.SelectedItems.Count > 0)
+            {
+                b.Instruments.RemoveAt(lv_patches.SelectedIndex);
+            }
         }
 
         private void Bn_InsDefRename_Click(object sender, RoutedEventArgs e)
@@ -490,10 +512,36 @@ namespace MidiSynth7
 
         private void Cm_InsDefDevices_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            NumberedEntry prv = null;
+            if(e.RemovedItems.Count > 0)
+            {
+                prv = (NumberedEntry)e.RemovedItems[0];
+            }
             if (Definitions == null || LB_SavedDefs.SelectedItem == null || cm_InsDefDevices.SelectedItem == null) return;
-            InstrumentDefinition def = Definitions.FirstOrDefault(x => x.Name == (string)((ListBoxItem)LB_SavedDefs.SelectedItem).Content);
-            if (def == null) return;
-            def.AssociatedDeviceIndex = ((NumberedEntry)cm_InsDefDevices.SelectedItem).Index;
+            InstrumentDefinition currentDef = Definitions.FirstOrDefault(x => x.Name == (string)((ListBoxItem)LB_SavedDefs.SelectedItem).Content);
+
+            int ProposedIndex = ((NumberedEntry)cm_InsDefDevices.SelectedItem).Index;
+
+            InstrumentDefinition CheckDupe = Definitions.FirstOrDefault(x => x.AssociatedDeviceIndex == ProposedIndex);
+
+            
+            if (currentDef == null) return;
+            if (CheckDupe != null )
+            {
+                if (CheckDupe != currentDef && ProposedIndex != -1)
+                {
+                    var name = ((NumberedEntry)cm_InsDefDevices.SelectedItem).EntryName;
+                    var confirm = MessageBox.Show($"{name} already has definition '{CheckDupe.Name}' assigned. Are you sure you want reassign definitions?", "Definition Association", MessageBoxButton.YesNo,MessageBoxImage.Warning);
+                    if (confirm != MessageBoxResult.Yes)
+                    {
+                        cm_InsDefDevices.SelectedItem = prv;
+                        return;
+                    }
+                    CheckDupe.AssociatedDeviceIndex = -1;
+                }
+            }
+
+            currentDef.AssociatedDeviceIndex = ((NumberedEntry)cm_InsDefDevices.SelectedItem).Index;
         }
 
         #endregion
@@ -540,6 +588,7 @@ namespace MidiSynth7
 
         private void InsDefPopulatePatches(InstrumentDefinition def, int bank)
         {
+            if(def == null) return;//oops?
             lv_patches.ItemsSource = def.Banks.FirstOrDefault(x => x.Index == bank)?.Instruments;
         }
 
@@ -565,11 +614,11 @@ namespace MidiSynth7
                 cm_InputDevices.Items.Add(item);
                 cm_InputDevices2.Items.Add(item);
             }
-
+            int midiOutIndex = 0;
             foreach (string item in MidiEngine.GetOutputDevices())
             {
-                OutputDevices.Add(new NumberedEntry(midiInIndex, item));
-                midiInIndex++;
+                OutputDevices.Add(new NumberedEntry(midiOutIndex, item));
+                midiOutIndex++;
             }
             foreach (NumberedEntry item in OutputDevices)
             {
@@ -1045,7 +1094,132 @@ namespace MidiSynth7
             }
         }
 
+
+
         #endregion
+
+        private void lv_banks_CurrentCellChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void Lv_banks_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            if((string)e.Column.Header == "Index")//Is there a more solid way?
+            {
+                InstrumentDefinition def = Definitions.FirstOrDefault(x => x.Name == (string)((ListBoxItem)LB_SavedDefs.SelectedItem).Content);
+                TextBox t = e.EditingElement as TextBox;
+                Bank DataContext = (Bank)t.DataContext;
+                
+                bn_InsDefSave.IsEnabled = false;
+               
+                if (!int.TryParse(t.Text, out int triedval))
+                {
+                    MessageBox.Show("Value must be integer.", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Error);
+                    e.Cancel = true;
+                    return;
+                }
+
+                if (triedval < 0)
+                {
+                    MessageBox.Show("Value must be positive integer", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Error);
+                    e.Cancel = true;
+                    return;
+                }
+
+                Bank f = def.Banks.FirstOrDefault(xx => xx.Index == triedval);
+
+                if (f != null && DataContext != f)
+                {
+                    MessageBox.Show("Cannot have multiple items with the same index.", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Error);
+                    e.Cancel = true;
+                    return;
+                }
+
+                bn_InsDefSave.IsEnabled = true;
+            }
+        }
+
+        private void lv_banks_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
+        {
+
+        }
+
+        private void Lv_patches_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            if ((string)e.Column.Header == "Index")//Is there a more solid way?
+            {
+                Bank dfbank = (Bank)lv_banks.SelectedItem;
+                TextBox t = e.EditingElement as TextBox;
+                NumberedEntry DataContext = (NumberedEntry)t.DataContext;
+
+                bn_InsDefSave.IsEnabled = false;
+
+                if (!int.TryParse(t.Text, out int triedval))
+                {
+                    MessageBox.Show("Value must be integer.", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Error);
+                    e.Cancel = true;
+                    return;
+                }
+
+                if (triedval < 0)
+                {
+                    MessageBox.Show("Value must be positive integer", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Error);
+                    e.Cancel = true;
+                    return;
+                }
+
+                NumberedEntry f = dfbank.Instruments.FirstOrDefault(xx => xx.Index == triedval);
+
+                if (f != null && DataContext != f)
+                {
+                    MessageBox.Show("Cannot have multiple items with the same index.", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Error);
+                    e.Cancel = true;
+                    return;
+                }
+
+                bn_InsDefSave.IsEnabled = true;
+            }
+        }
+
+        private void Mi_PopGenMIDI_Click(object sender, RoutedEventArgs e)
+        {
+            if (LB_SavedDefs.SelectedItem == null) return;
+            if (lv_banks.SelectedItem == null) return;
+            InstrumentDefinition def = Definitions.FirstOrDefault(x => x.Name == (string)((ListBoxItem)LB_SavedDefs.SelectedItem).Content);
+            Bank b = (Bank)lv_banks.SelectedItem;
+
+            b.Instruments = InstrumentDefinition.DefaultBanks().FirstOrDefault(x => x.Index == 0).Instruments;
+            InsDefPopulatePatches(def, b.Index);
+        }
+
+        private void Mi_PopGenDRUM_Click(object sender, RoutedEventArgs e)
+        {
+            if (LB_SavedDefs.SelectedItem == null) return;
+            if (lv_banks.SelectedItem == null) return;
+            InstrumentDefinition def = Definitions.FirstOrDefault(x => x.Name == (string)((ListBoxItem)LB_SavedDefs.SelectedItem).Content);
+            Bank b = (Bank)lv_banks.SelectedItem;
+
+            b.Instruments = InstrumentDefinition.DefaultBanks().FirstOrDefault(x => x.Index == 127).Instruments;
+            InsDefPopulatePatches(def, b.Index);
+        }
+
+        private void Bn_InsDefSave_Click(object sender, RoutedEventArgs e)
+        {
+            AppConfig.InstrumentDefinitionPath = SaveInsDef(App.APP_DATA_DIR + "Instruments.def");
+            SaveConfig();
+
+            currentView.HandleEvent(this, new EventArgs(), "InsDEF_Changed");
+            ScaleUI(1, 0.8, BDR_InstrumentDefinitionsFrame);
+            FadeUI(1, 0, GR_OverlayContent);
+        }
+
+        private void Bn_InsDefSetActiveDevice_Click(object sender, RoutedEventArgs e)
+        {
+
+            cm_InsDefDevices.SelectedItem = cm_InsDefDevices.Items.OfType<NumberedEntry>().FirstOrDefault(x=>x.Index == AppConfig.ActiveOutputDeviceIndex);
+
+        }
 
         public class ChInvk
         {
