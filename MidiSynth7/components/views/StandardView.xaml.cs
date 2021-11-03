@@ -75,34 +75,7 @@ namespace MidiSynth7.components.views
 
             #region Patch & banks
 
-            foreach (Bank item in AppContext.ActiveInstrumentDefinition.Banks.Where(xb=> xb.Index != 127))
-            {
-                cb_mBank.Items.Add(item);
-                cb_sBank.Items.Add(item);
-                //OFX_I1BankSel.Items.Add(item);
-                //OFX_I2BankSel.Items.Add(item);
-            }
-            foreach (NumberedEntry item in AppContext.ActiveInstrumentDefinition.Banks.FirstOrDefault(xb => xb.Index == 127)?.Instruments)
-            {
-                cb_dkitlist.Items.Add(item);
-            }
-            //OFX_I1BankSel.SelectedIndex = 0;
-            //OFX_I2BankSel.SelectedIndex = 0;
-            cb_mBank.SelectedIndex = 0;
-            cb_sBank.SelectedIndex = 0;
-
-            config.ChannelBanks[0] = (cb_mBank.Items.Count >= config.ChannelBanks[0]) ? config.ChannelBanks[0] : 0;
-            config.ChannelInstruments[0] = (cb_mPatch.Items.Count >= config.ChannelInstruments[0]) ? config.ChannelInstruments[0] : 0;
-            config.ChannelBanks[4] = (cb_sBank.Items.Count >= config.ChannelBanks[4]) ? config.ChannelBanks[4] : 0;
-            config.ChannelInstruments[4] = (cb_sPatch.Items.Count >= config.ChannelInstruments[4]) ? config.ChannelInstruments[4] : 0;
-
-            //OFX_I1BankSel.SelectedIndex = mainCG.IT_Octave3BankIndex1;
-            //OFX_I2BankSel.SelectedIndex = mainCG.IT_Octave3BankIndex2;
-            cb_mBank.SelectedIndex = config.ChannelBanks[0];
-            cb_sBank.SelectedIndex = config.ChannelBanks[4];
-
-            cb_mPatch.SelectedIndex = config.ChannelInstruments[0];
-            cb_sPatch.SelectedIndex = config.ChannelInstruments[4];
+            UpdateInstrumentSelection(config);
             #endregion
 
             #region ADD ellipses
@@ -131,6 +104,43 @@ namespace MidiSynth7.components.views
             }
             #endregion
 
+        }
+
+        private void UpdateInstrumentSelection(SystemConfig config)
+        {
+            cb_mBank.Items.Clear();
+            cb_sBank.Items.Clear();
+            cb_dkitlist.Items.Clear();
+            foreach (Bank item in AppContext.ActiveInstrumentDefinition.Banks.Where(xb => xb.Index != 127))
+            {
+                cb_mBank.Items.Add(item);
+                cb_sBank.Items.Add(item);
+                //OFX_I1BankSel.Items.Add(item);
+                //OFX_I2BankSel.Items.Add(item);
+            }
+            foreach (NumberedEntry item in AppContext.ActiveInstrumentDefinition.Banks.FirstOrDefault(xb => xb.Index == 127)?.Instruments)
+            {
+                cb_dkitlist.Items.Add(item);
+            }
+            //OFX_I1BankSel.SelectedIndex = 0;
+            //OFX_I2BankSel.SelectedIndex = 0;
+            cb_mBank.SelectedIndex = 0;
+            cb_sBank.SelectedIndex = 0;
+            cb_dkitlist.SelectedIndex = 0;
+            config.ChannelBanks[0] = (cb_mBank.Items.Count >= config.ChannelBanks[0]) ? config.ChannelBanks[0] : 0;
+            config.ChannelInstruments[0] = (cb_mPatch.Items.Count >= config.ChannelInstruments[0]) ? config.ChannelInstruments[0] : 0;
+            config.ChannelBanks[4] = (cb_sBank.Items.Count >= config.ChannelBanks[4]) ? config.ChannelBanks[4] : 0;
+            config.ChannelInstruments[4] = (cb_sPatch.Items.Count >= config.ChannelInstruments[4]) ? config.ChannelInstruments[4] : 0;
+            config.ChannelInstruments[9] = (cb_dkitlist.Items.Count >= config.ChannelInstruments[9]) ? config.ChannelInstruments[9] : 0;
+            //OFX_I1BankSel.SelectedIndex = mainCG.IT_Octave3BankIndex1;
+            //OFX_I2BankSel.SelectedIndex = mainCG.IT_Octave3BankIndex2;
+            cb_mBank.SelectedIndex = config.ChannelBanks[0];
+            cb_sBank.SelectedIndex = config.ChannelBanks[4];
+
+            cb_mPatch.SelectedIndex = config.ChannelInstruments[0];
+            cb_sPatch.SelectedIndex = config.ChannelInstruments[4];
+
+            cb_dkitlist.SelectedIndex = config.ChannelInstruments[9];
         }
 
         async Task FlashChannelActivity(int index)
@@ -168,6 +178,9 @@ namespace MidiSynth7.components.views
             {
                 Config.ActiveOutputDeviceIndex = cb_Devices.SelectedIndex;
                 AppContext.GenerateMIDIEngine(this,((NumberedEntry)cb_Devices.SelectedItem).Index);
+                //Set definition
+                AppContext.ActiveInstrumentDefinition = AppContext.Definitions.FirstOrDefault(x => x.AssociatedDeviceIndex == ((NumberedEntry)cb_Devices.SelectedItem).Index) ?? AppContext.Definitions[0];//associated or default
+                UpdateInstrumentSelection(AppContext.AppConfig);
             }
         }
 
@@ -277,6 +290,8 @@ namespace MidiSynth7.components.views
 
         private void Cb_mPatch_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (cb_mBank.SelectedItem == null) { return; }
+
             if (MidiEngine != null)
             {
                 Bank bank = (Bank)cb_mBank.SelectedItem;
@@ -302,6 +317,8 @@ namespace MidiSynth7.components.views
 
         private void Cb_sPatch_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (cb_sBank.SelectedItem == null) { return; }
+
             if (MidiEngine != null)
             {
                 Bank bank = (Bank)cb_sBank.SelectedItem;
@@ -686,6 +703,12 @@ namespace MidiSynth7.components.views
             if (id == "RefAppConfig")
             {
                 Config = AppContext.AppConfig;
+            }
+
+            if (id == "InsDEF_Changed")
+            {
+                AppContext.ActiveInstrumentDefinition = AppContext.Definitions.FirstOrDefault(x => x.AssociatedDeviceIndex == ((NumberedEntry)cb_Devices.SelectedItem).Index) ?? AppContext.Definitions[0];//associated or default
+                UpdateInstrumentSelection(AppContext.AppConfig);
             }
         }
 
