@@ -82,53 +82,29 @@ namespace MidiSynth7.components
         #endregion
 
         #region EventHandles
-        private void onMidiInit(EventArgs e)
+        private void OnMidiInit(EventArgs e)
         {
-            EventHandler<EventArgs> temp = MidiInitalized;
-            if (temp != null)
-            {
-                temp(this, e);
-            }
+            MidiInitalized?.Invoke(this, e);
         }
-        private void onNotePlay(NoteEventArgs e)
+        private void OnNotePlay(NoteEventArgs e)
         {
-            EventHandler<NoteEventArgs> temp = NotePlayed;
-            if (temp != null)
-            {
-                temp(this, e);
-            }
+            NotePlayed?.Invoke(this, e);
         }
-        private void onNoteStopped(NoteEventArgs e)
+        private void OnNoteStopped(NoteEventArgs e)
         {
-            EventHandler<NoteEventArgs> temp = NoteStopped;
-            if (temp != null)
-            {
-                temp(this, e);
-            }
+            NoteStopped?.Invoke(this, e);
         }
-        private void onFileLoadComplete(EventArgs e)
+        private void OnFileLoadComplete(EventArgs e)
         {
-            EventHandler<EventArgs> temp = FileLoadComplete;
-            if (temp != null)
-            {
-                temp(this, e);
-            }
+            FileLoadComplete?.Invoke(this, e);
         }
-        private void onMidiClose(EventArgs e)
+        private void OnMidiClose(EventArgs e)
         {
-            EventHandler<EventArgs> temp = MidiClosed;
-            if (temp != null)
-            {
-                temp(this, e);
-            }
+            MidiClosed?.Invoke(this, e);
         }
-        private void onSequenceBuildComplete(EventArgs e)
+        private void OnSequenceBuildComplete(EventArgs e)
         {
-            EventHandler<EventArgs> temp = SequenceBuilder_Completed;
-            if (temp != null)
-            {
-                temp(this, e);
-            }
+            SequenceBuilder_Completed?.Invoke(this, e);
         }
         #endregion
 
@@ -140,10 +116,9 @@ namespace MidiSynth7.components
         {
             try
             {
-                Console.WriteLine("HIHIHIHIHI");
                 Generatepresets();
                 device = new OutputDevice(DeviceIndex);
-                onMidiInit(new EventArgs());
+                OnMidiInit(new EventArgs());
                 GenerateSequencer();
                 GenerateSequence();
                 buildWorker.DoWork += BuildWorker_DoWork;
@@ -152,12 +127,10 @@ namespace MidiSynth7.components
                 MetaParserWorker.WorkerSupportsCancellation = false;
                 MetaParserWorker.DoWork += MetaParserWorker_DoWork;
                 MetaParserWorker.RunWorkerCompleted += MetaParserWorker_RunWorkerCompleted;
-
-
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                MessageBox.Show(ex.ToString(),"MIDI Engine Failure",MessageBoxButton.OK,MessageBoxImage.Error);
             }
         }
 
@@ -178,7 +151,7 @@ namespace MidiSynth7.components
             //ERROR
             if (devlist.Count() == 0)
             {
-                MessageBox.Show("No output devices installed.");
+                MessageBox.Show("No output devices installed.", "MIDI Engine", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return devlist;
         }
@@ -198,7 +171,8 @@ namespace MidiSynth7.components
             //ERROR
             if (devlist.Count() == 0)
             {
-                MessageBox.Show("no input devices detected. Studio mode will be almost useless without an external midi controller/keyboard.");
+                MessageBox.Show("No input devices detected. Studio mode will be almost useless without an external midi controller/keyboard.",
+                     "MIDI Engine", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return devlist;
         }
@@ -261,7 +235,7 @@ namespace MidiSynth7.components
                 recordSession.Record(new ChannelMessage(ChannelCommand.Controller, channel, (int)ControllerType.Volume, volume));
                 recordSession.Record(new ChannelMessage(ChannelCommand.NoteOn, channel, pitch, volume));
             }
-            if(send_event) onNotePlay(new NoteEventArgs(new ChannelMessage(ChannelCommand.NoteOn, channel, pitch, volume)));
+            if(send_event) OnNotePlay(new NoteEventArgs(new ChannelMessage(ChannelCommand.NoteOn, channel, pitch, volume)));
         }
 
         /// <summary>
@@ -288,7 +262,7 @@ namespace MidiSynth7.components
             {
                 recordSession.Record(new ChannelMessage(ChannelCommand.NoteOff, channel, pitch));
             }
-            if(send_event) onNoteStopped(new NoteEventArgs(new ChannelMessage(ChannelCommand.NoteOff, channel, pitch, 0)));
+            if(send_event) OnNoteStopped(new NoteEventArgs(new ChannelMessage(ChannelCommand.NoteOff, channel, pitch, 0)));
         }
 
         /// <summary>
@@ -489,7 +463,7 @@ namespace MidiSynth7.components
             {
                 if (device != null)
                 {
-                    onMidiClose(new EventArgs());
+                    OnMidiClose(new EventArgs());
                     midiSequencer.ChannelMessagePlayed -= MidiSequencer_ChannelMessagePlayed;
                     midiSequencer.MetaMessagePlayed -= MidiSequencer_MetaMessagePlayed;
                     midiSequence.LoadCompleted -= MidiSequence_LoadCompleted;
@@ -518,7 +492,7 @@ namespace MidiSynth7.components
             }
             if (InternalSF2)
             {
-                onMidiClose(new EventArgs());
+                OnMidiClose(new EventArgs());
                 midiSequencer.ChannelMessagePlayed -= MidiSequencer_ChannelMessagePlayed;
                 midiSequencer.MetaMessagePlayed -= MidiSequencer_MetaMessagePlayed;
                 midiSequence.LoadCompleted -= MidiSequence_LoadCompleted;
@@ -850,7 +824,7 @@ namespace MidiSynth7.components
             {
 
                 device.Send(e.Message);
-                onNotePlay(new NoteEventArgs(e.Message));
+                OnNotePlay(new NoteEventArgs(e.Message));
             }
             catch (Exception)
             {
@@ -864,7 +838,7 @@ namespace MidiSynth7.components
             {
                 ErrorHandler.ShowError(e.Error);
             }
-            onFileLoadComplete(new EventArgs());
+            OnFileLoadComplete(new EventArgs());
         }
 
         private void MetaParserWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -897,7 +871,7 @@ namespace MidiSynth7.components
             {
                 ErrorHandler.ShowError(e.Error);
             }
-            onSequenceBuildComplete(new EventArgs());
+            OnSequenceBuildComplete(new EventArgs());
         }
 
         private void BuildWorker_DoWork(object sender, DoWorkEventArgs e)
