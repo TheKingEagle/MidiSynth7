@@ -485,6 +485,10 @@ namespace MidiSynth7.components.views
                 {
                     MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 0);
                 }
+                if (cb_NFX_Enable.IsChecked.Value)
+                {
+                    SaveVelocity(0, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, 127, 0);
+                }
                 MidiEngine.MidiNote_SetPan(0, CTRL_Balance.Value);
                 MidiEngine.MidiNote_Play(0, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, CTRL_Volume.Value);
 
@@ -696,6 +700,10 @@ namespace MidiSynth7.components.views
             {
                 pianomain.UnLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
             }
+            if(cb_NFX_Enable.IsChecked.Value)
+            {
+                Dispatcher.InvokeAsync(() => PlayDelayedNFX(e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, e.ChannelMssge.Data2, 280, 2));
+            }
         }
 
         public async void HandleNoteOffEvent(object sender, NoteEventArgs e)
@@ -703,57 +711,34 @@ namespace MidiSynth7.components.views
             await FlashChannelActivity(e.ChannelMssge.MidiChannel);
             pianomain.UnLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
             
-            if(cb_NFX_Enable.IsChecked.Value && rb_nfx_simple.IsChecked.Value)
+            if (cb_NFX_Enable.IsChecked.Value)
             {
-                var info = GetNoteInfo(e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1);
-                
-                if (info != null)
-                {
-                    SaveVelocity(e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, info.Value.v, 0);//resave to update duration
-                    info = GetNoteInfo(e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1);//reload again
-                    PlayKeyUpDelayedNFX(e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, info.Value.v, (int)(info.Value.d), 4, 250);
-                }
+                Dispatcher.InvokeAsync(() => StopDelayedNFX(e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, 280, 2));
+
             }
             //Pianomain_pKeyUp(sender, new PKeyEventArgs(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value));
         }
 
         public void HandleEvent(object sender, EventArgs e, string id = "generic")
-        {
-            //placeholder for now?
-            if (id == "RefMainWin")
-            {
-                AppContext = (MainWindow)sender;
-            }
-            if (id == "MTaskWorker")
-            {
-                MidiEngine = AppContext.MidiEngine;
-            }
-            if (id == "RefAppConfig")
-            {
-                Config = AppContext.AppConfig;
-            }
-
-            if(id == "SynthSustainCTRL_ON")
-            {
-                Mio_SustainPdl.Fill = (Brush)FindResource("CH_IND_On");
-            }
-            if (id == "SynthSustainCTRL_OFF")
-            {
-                Mio_SustainPdl.Fill = (Brush)FindResource("CH_Ind_off");
-            }
-            if(id == "MidiEngine_FileLoadComplete")
-            {
-                cp_Info.Text = MidiEngine.Copyright;
-            }
-            if(id == "MidiEngine_SequenceBuilder_Completed")
-            {
-
-            }
-
-            if(id == "InsDEF_Changed")
+        {           
+            void InsDefUpdate()
             {
                 AppContext.ActiveInstrumentDefinition = AppContext.Definitions.FirstOrDefault(x => x.AssociatedDeviceIndex == ((NumberedEntry)cb_Devices.SelectedItem).Index) ?? AppContext.Definitions[0];//associated or default
                 UpdateInstrumentSelection(AppContext.AppConfig);
+            }
+
+            switch (id)
+            {
+                case "RefMainWin": AppContext = (MainWindow)sender;break;
+                case "MTaskWorker": MidiEngine = AppContext.MidiEngine; break;
+                case "RefAppConfig": Config = AppContext.AppConfig; break;
+                case "SynthSustainCTRL_ON": Mio_SustainPdl.Fill = (Brush)FindResource("CH_IND_On"); break;
+                case "SynthSustainCTRL_OFF": Mio_SustainPdl.Fill = (Brush)FindResource("CH_Ind_off"); break;
+                case "MidiEngine_FileLoadComplete": cp_Info.Text = MidiEngine.Copyright;break;
+                case "MidiEngine_SequenceBuilder_Completed": break;
+                case "InsDEF_Changed": InsDefUpdate(); break;
+                default: Console.WriteLine("Unrecognized event string: {0}... lol",id);
+                    break;
             }
         }
 
@@ -824,7 +809,7 @@ namespace MidiSynth7.components.views
                     nfxEntity.Value.w.Stop();
                     duration = nfxEntity.Value.w.ElapsedMilliseconds;
                 }
-                NFXSavedNotes.Remove(nfxEntity);
+                //NFXSavedNotes.Remove(nfxEntity);
             }
             NFXSavedNotes.Add((ch, note, velocity,offsetTime, duration, Stopwatch.StartNew()));
         }
@@ -844,40 +829,66 @@ namespace MidiSynth7.components.views
                 Console.WriteLine("Saved velocity data Not found!");
         }
 
-        private void PlayKeyUpDelayedNFX(int ch, int note, int velocity, int duration, int count, int pause)
+        private async Task PlayDelayedNFX(int ch, int note, int velocity, int delay, int count)
         {
+            //TODO: Profile customize.
             if (MidiEngine == null) return;
-
+            if(count > 2 || count < 1)
+            {
+                throw new ArgumentException("Count must be no more than 2, no less than 1.");
+            }
             //thread it
             Bank bank = (Bank)cb_mBank.SelectedItem;
             NumberedEntry patch = (NumberedEntry)cb_mPatch.SelectedItem;
 
-            void t()
+            async Task t()
             {
-                System.Threading.Thread.Sleep(duration);//give some delay room
-                for (int i = 0; i < count-1; i++)
+                
+                int[,] channelMapper = new int[2, 4] { { 4, 5, 6, 7 },{ 8, 10, 11, 12 } };
+                
+                for (int i = 0; i < count; i++)
                 {
-                    //System.Threading.Thread.Sleep(pause);
-                    
-
+                    await Task .Delay(delay);
                     if (Config.EnforceInstruments)
                     {
-                        MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, i+1);
+                        MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, channelMapper[i, ch]);
                     }
-                    MidiEngine.MidiNote_Play(i+1, note, velocity,false);
-                    System.Threading.Thread.Sleep(duration);
-                    MidiEngine.MidiNote_Stop(i+1, note,false);
-                    System.Threading.Thread.Sleep(duration);
+                    MidiEngine.MidiNote_Play(channelMapper[i,ch], note, velocity,false);
+                    await Dispatcher.InvokeAsync(() => FlashChannelActivity(channelMapper[i, ch]));
 
                 }
-                //remove finished velocity queue
-                DeleteVelocity(ch, note, velocity);
             }
-            Task.Run(() => t());
+            await Task .Run(() => t());
+        }
+
+        private async Task StopDelayedNFX(int ch, int note, int delay, int count)
+        {
+            if (MidiEngine == null) return;
+            if (count > 2 || count < 1)
+            {
+                throw new ArgumentException("Count must be no more than 2, no less than 1.");
+            }
+            //thread it
+            Bank bank = (Bank)cb_mBank.SelectedItem;
+            NumberedEntry patch = (NumberedEntry)cb_mPatch.SelectedItem;
+
+            async Task t()
+            {
+
+                int[,] channelMapper = new int[2, 4] { { 4, 5, 6, 7 }, { 8, 10, 11, 12 } };
+                
+                for (int i = 0; i < count - 1; i++)
+                {
+                   await Task.Delay(delay);
+                    MidiEngine.MidiNote_Stop(channelMapper[i, ch], note, false);
+                    await Dispatcher.InvokeAsync(() => FlashChannelActivity(channelMapper[i, ch]));
+                }
+            }
+            await Task.Run(() => t());
         }
 
         #endregion
 
-        
+
     }
 }

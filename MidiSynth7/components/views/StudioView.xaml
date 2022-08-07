@@ -301,8 +301,9 @@
                 </GroupBox>
             </Grid>
         </GroupBox>
-        <GroupBox x:Name="gb_nfx" Header="Note FX" HorizontalAlignment="Left" Margin="5,213,0,0" VerticalAlignment="Top" Height="90" Width="267" BorderThickness="2" BorderBrush="#FF474747" Padding="0">
+        <GroupBox x:Name="gb_nfx" Header="NoteFX Delay" HorizontalAlignment="Left" Margin="5,213,0,0" VerticalAlignment="Top" Height="90" Width="267" BorderThickness="2" BorderBrush="#FF474747" Padding="0">
             <Grid>
+
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <GradientStop Color="#FF0C0C0C"/>
@@ -310,27 +311,7 @@
                         <GradientStop Color="#FF071734" Offset="0.394"/>
                     </LinearGradientBrush>
                 </Grid.Background>
-                <RadioButton x:Name="rb_nfx_ofx" Content="Custom OctaveFX Delay" HorizontalAlignment="Left" Margin="45,39,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="NFX" IsChecked="True" RenderTransformOrigin="0.5,0.5" Focusable="False" IsEnabled="False">
-                    <RadioButton.RenderTransform>
-                        <TransformGroup>
-                            <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
-                            <SkewTransform/>
-                            <RotateTransform/>
-                            <TranslateTransform/>
-                        </TransformGroup>
-                    </RadioButton.RenderTransform>
-                </RadioButton>
-                <RadioButton x:Name="rb_nfx_simple" Content="Simple Delay" HorizontalAlignment="Left" Margin="29,6,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="NFX" RenderTransformOrigin="0.5,0.5" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" IsChecked="True">
-                    <RadioButton.RenderTransform>
-                        <TransformGroup>
-                            <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
-                            <SkewTransform/>
-                            <RotateTransform/>
-                            <TranslateTransform/>
-                        </TransformGroup>
-                    </RadioButton.RenderTransform>
-                </RadioButton>
-                <CheckBox x:Name="cb_nfx_octave" Content="Octave" HorizontalAlignment="Left" Margin="163,7,0,0" VerticalAlignment="Top" Foreground="White" RenderTransformOrigin="0.5,0.5" Focusable="False">
+                <CheckBox x:Name="cb_nfx_octave" Content="OctaveFX" HorizontalAlignment="Left" Margin="160,10,0,0" VerticalAlignment="Top" Foreground="White" RenderTransformOrigin="0.5,0.5" Focusable="False" Height="16" Width="71">
                     <CheckBox.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
@@ -340,6 +321,22 @@
                         </TransformGroup>
                     </CheckBox.RenderTransform>
                 </CheckBox>
+                <ComboBox x:Name="cb_NFX_Dropdown" HorizontalAlignment="Left" Margin="63,36,0,0" VerticalAlignment="Top" Width="186" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_dkit_SelectionChanged" SelectedIndex="0" Height="27" FontSize="16">
+                    <ComboBox.Background>
+                        <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                            <GradientStop Color="#FFD8D8D8" Offset="1"/>
+                            <GradientStop Color="#FFB6B6B6" Offset="0.5"/>
+                            <GradientStop Color="#FFC1C1C1" Offset="0.5"/>
+                            <GradientStop Color="#FF5D5D5D"/>
+                        </LinearGradientBrush>
+                    </ComboBox.Background>
+                    <ComboBoxItem Content="Profile 1"/>
+                    <ComboBoxItem Content="Profile 2"/>
+                    <ComboBoxItem Content="Profile 3"/>
+                    <ComboBoxItem Content="Profile 4"/>
+                </ComboBox>
+                <Button x:Name="bn_CustomizeDelay" Content="Customize Delay" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Width="126" Background="#FF2C2C2C" Focusable="False" IsTabStop="False" Click="OFX_bn_Edit_Click" Height="27" Grid.ColumnSpan="2"/>
+                <TextBlock HorizontalAlignment="Left" Margin="10,39,0,0" TextWrapping="Wrap" Text="Profile: " VerticalAlignment="Top" FontSize="16" Grid.ColumnSpan="2" Height="21" Width="53"/>
             </Grid>
         </GroupBox>
 
@@ -501,7 +498,7 @@
         <CheckBox x:Name="cb_RIFF_Enable" Content="" HorizontalAlignment="Left" Margin="79,309,0,0" VerticalAlignment="Top" Focusable="False" Checked="riffcenter_toggleCheck" Unchecked="riffcenter_toggleCheck" IsTabStop="False" Height="16" Width="21"/>
         <CheckBox x:Name="cb_DS_Enable" Content="" HorizontalAlignment="Left" Margin="345,214,0,0" VerticalAlignment="Top" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16" Width="21"/>
         <CheckBox x:Name="cb_OFX_Enble" Content="" HorizontalAlignment="Left" Margin="449,310,0,0" VerticalAlignment="Top" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16" Width="21"/>
-        <CheckBox x:Name="cb_NFX_Enable" Content="" HorizontalAlignment="Left" Margin="66,214,0,0" VerticalAlignment="Top" Width="16" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16"/>
+        <CheckBox x:Name="cb_NFX_Enable" Content="" HorizontalAlignment="Left" Margin="95,214,0,0" VerticalAlignment="Top" Width="16" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16"/>
         <CheckBox x:Name="CB_EnforceInstruments" Content="" HorizontalAlignment="Left" Margin="761,214,0,0" VerticalAlignment="Top" Width="16" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16">
             <CheckBox.ToolTip>
                 <TextBlock>
@@ -701,7 +698,7 @@
                 <TextBlock HorizontalAlignment="Left" Margin="31,318,0,0" TextWrapping="Wrap" Text="16" VerticalAlignment="Top" Height="16"/>
             </Grid>
         </GroupBox>
-        
+
 
 
     </Grid>
