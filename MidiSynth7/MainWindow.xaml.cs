@@ -1020,7 +1020,6 @@ namespace MidiSynth7
                 {
                     if((sender as Sanford.Multimedia.Midi.InputDevice) == MidiEngine.inDevice && !AppConfig.Input1RelayMode)
                     {
-                        Console.WriteLine("in1");
                         Dispatcher.InvokeAsync(()=>currentView.HandleEvent(this, e, e.Message.Data2 >= 63 ? "SynthSustainCTRL_ON" : "SynthSustainCTRL_OFF"));
                         for (int i = 0; i < 16; i++)
                         {
