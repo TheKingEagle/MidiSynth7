@@ -5,7 +5,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-
 namespace MidiSynth7.entities.controls
 {
     /// <summary>
@@ -33,9 +32,7 @@ namespace MidiSynth7.entities.controls
         private DispatcherTimer t = new DispatcherTimer();
 
         private bool isDown = false;
-        private int mouseY;
         private bool suppressValueChange = true;
-        private float addto = 0;
         #endregion
 
         public DialControl()
@@ -56,7 +53,7 @@ namespace MidiSynth7.entities.controls
             if (i == null) { return; };
             float percent = ((float)i.Value - i.Minimum) / ((float)i.Maximum - i.Minimum);
             percent = 1 - percent;
-            float CalculatedAngle = percent * 230 + 128;
+            float CalculatedAngle = (percent * 230) + 128;
             float CalculatedAngle2 = (CalculatedAngle * 2) + (-CalculatedAngle);
             i.pi_Progressbar.Angle = (int)CalculatedAngle2;
             i.CanvasRotateTransform.Angle = -CalculatedAngle2 + 128;
@@ -65,10 +62,6 @@ namespace MidiSynth7.entities.controls
 
         private void Tick(object sender, EventArgs e)
         {
-            if (TickDelay < 1)
-            {
-                TickDelay = 1;
-            }
             isDown = GetAsyncKeyState(0x01) < 0;
             if (!isDown)
             {
@@ -79,50 +72,16 @@ namespace MidiSynth7.entities.controls
             {
                 return;
             }
-            suppressValueChange = false;
             GetCursorPos(out cursorpos cp);
-            if (cp.Y < mouseY)
-            {
-                if (Value < Maximum)
-                {
-
-                    addto += mouseY - cp.Y;
-                    if (addto >= TickDelay)
-                    {
-
-                        Value += (int)(addto / TickDelay);
-                        addto = 0;
-                    }
-                    mouseY = cp.Y;
-                }
-                la_Value.Content = Value;
-            }
-            if (cp.Y > mouseY)
-            {
-                if (Value > Minimum)
-                {
-                    addto += mouseY - cp.Y;
-                    if (addto <= -TickDelay)
-                    {
-                        Value += (int)(addto / TickDelay);
-                        addto = 0;
-                    }
-                    mouseY = cp.Y;
-                }
-                la_Value.Content = Value;
-
-            }
-            if (Value < Minimum) Value = Minimum;
-            if (Value > Maximum) Value = Maximum;
+            Value = GetValueFromPosition(new Point(cp.X,cp.Y));
         }
 
         private void el_dial_MouseDown(object sender, MouseButtonEventArgs e)
         {
             GetCursorPos(out cursorpos cp);
-            mouseY = cp.Y;
             isDown = true;
             t.Start();
-            Mouse.OverrideCursor = Cursors.ScrollNS;
+            Mouse.OverrideCursor = Cursors.Cross;
 
         }
 
@@ -225,7 +184,6 @@ namespace MidiSynth7.entities.controls
         }
         public string Text { get { return (string)la_CtrlID.Content; } set { la_CtrlID.Content = value; } }
         public bool InputCaptured { get; private set; } = false;
-        public int TickDelay { get; set; }
         #endregion
 
         #region P/invoke Methods
@@ -259,11 +217,54 @@ namespace MidiSynth7.entities.controls
         }
         #endregion
 
+        /// <summary>
+        /// converts geometrical position into value.
+        /// Heavily modified code from Jigar Desai on C-SharpCorner.com
+        /// </summary>
+        /// <param name="p">Point that is to be converted</param>
+        /// <returns>Value derived from position</returns>
+        private int GetValueFromPosition(Point p)
+        {
+            float degree = 0;
+            Point screenpt = el_dial.PointToScreen(new Point(el_dial.ActualWidth/2, el_dial.ActualHeight/2));
+
+            //DEBUGGING POSITIONS
+            //System.Drawing.Graphics g;
+            //using (g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero))
+
+            //{
+            //    g.DrawEllipse(System.Drawing.Pens.Red, (int)screenpt.X - 10, (int)screenpt.Y - 10, 20, 20);
+            //    g.DrawEllipse(System.Drawing.Pens.Red, (int)screenpt.X, (int)screenpt.Y, 1, 1);
+            //    g.DrawEllipse(System.Drawing.Pens.Red, (int)p.X - 10, (int)p.Y - 10, 20, 20);
+            //}
+            if (p.X <= screenpt.X)
+            {
+                degree = (float)(screenpt.Y - p.Y) / (float)(screenpt.X - p.X);
+                degree = (float)Math.Atan(degree);
+
+                degree = (degree * (float)(180 / Math.PI)) + (180 - 156); // Why is 156 the magic number here?
+
+            }
+            else if (p.X > screenpt.X)
+            {
+                degree = (float)(p.Y - (screenpt.Y)) / (float)(p.X - (screenpt.X));
+                degree = (float)Math.Atan(degree);
+
+                degree = (degree * (float)(180 / Math.PI)) + 360 - 156; // Why is 156 the magic number?
+            }
+
+            int v = Minimum + (int)Math.Round(degree * (Maximum - Minimum) / 230); // Why is 230 my magic number here?
+            if (v > Maximum) v = Maximum;
+            if (v < Minimum) v = Minimum;
+            return v;
+        }
+
         #region Structs
         struct cursorpos
         {
             public int X, Y;
         }
         #endregion
+
     }
 }
