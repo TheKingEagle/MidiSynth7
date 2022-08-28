@@ -73,7 +73,7 @@
                 </RadialGradientBrush>
             </Ellipse.Stroke>
         </Ellipse>
-        <Ellipse x:Name="el_dial" Margin="16,23,21,14" HorizontalAlignment="Left" Height="88" VerticalAlignment="Top" Width="88" StrokeThickness="3" RenderTransformOrigin="0.5,0.5" KeyDown="el_dial_KeyDown" MouseDown="el_dial_MouseDown" MouseMove="el_dial_MouseMove" MouseUp="el_dial_MouseUp">
+        <Ellipse x:Name="el_dial" Margin="16,23,21,14" HorizontalAlignment="Left" Height="88" VerticalAlignment="Top" Width="88" StrokeThickness="3" RenderTransformOrigin="0.5,0.5" MouseDown="el_dial_MouseDown" MouseUp="el_dial_MouseUp" MouseRightButtonUp="el_dial_MouseRightButtonUp">
             <Ellipse.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
@@ -118,12 +118,17 @@
         </Canvas>
 
         <Label x:Name="la_CtrlID" Content="CONTROL VALUE" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" FontWeight="Bold" Height="18" Padding="0" Width="121" HorizontalContentAlignment="Center"/>
-        <Label x:Name="la_Value" Content="0" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" FontWeight="Bold" Height="30" Padding="0" Width="94" HorizontalContentAlignment="Center" Margin="13,53,0,0" MouseDown="el_dial_MouseDown" MouseMove="el_dial_MouseMove" MouseUp="el_dial_MouseUp" FontSize="20">
+        
+        <Label x:Name="la_Value"  Content="0" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" FontWeight="Bold" Height="30" Padding="0" Width="94" HorizontalContentAlignment="Center" Margin="13,53,0,0" FontSize="20" Background="{x:Null}" BorderBrush="{x:Null}" IsTabStop="False" IsEnabled="False">
             <Label.Effect>
                 <DropShadowEffect Color="#FF4FC7FF" ShadowDepth="0" BlurRadius="11"/>
             </Label.Effect>
         </Label>
-
+        <TextBox x:Name="tx_Value"  Text="0" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" FontWeight="Bold" Height="30" Padding="0" Width="94" HorizontalContentAlignment="Center" Margin="13,53,0,0" FontSize="20" Background="#90252525" BorderBrush="{x:Null}" IsTabStop="False" IsEnabled="False" Visibility="Hidden" KeyDown="tx_Value_KeyDown" IsHitTestVisible="False">
+            <TextBox.Effect>
+                <DropShadowEffect Color="#FF4FC7FF" ShadowDepth="0" BlurRadius="11"/>
+            </TextBox.Effect>
+        </TextBox>
 
     </Grid>
 </UserControl>
