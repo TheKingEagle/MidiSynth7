@@ -443,8 +443,8 @@
 
                                         <GroupBox Header="Delay Setting" Height="165" Margin="5,10,10,0" VerticalAlignment="Top" BorderBrush="#FFCF5E00" Grid.Column="1">
                                             <Grid>
-                                                <controls:DialControl x:Name="Dial_NFX_StepCount" HorizontalAlignment="Left" Height="62" Width="68" Margin="10,10,0,10" Text="STEP COUNT" Value="3" Maximum="3" TickDelay="2" Minimum="1"/>
-                                                <controls:DialControl x:Name="Dial_NFX_Interval" Height="62" Width="68" Margin="140,10,0,10" Text="DELAY INTERVAL" Value="280" Maximum="2500" TickDelay="1" Minimum="20" HorizontalAlignment="Left"/>
+                                                <controls:DialControl x:Name="Dial_NFX_StepCount" HorizontalAlignment="Left" Height="62" Width="68" Margin="10,10,0,10" Text="STEP COUNT" Value="3" Maximum="3" Minimum="1"/>
+                                                <controls:DialControl x:Name="Dial_NFX_Interval" Height="62" Width="68" Margin="140,10,0,10" Text="DELAY INTERVAL" Value="280" Maximum="2500" Minimum="20" HorizontalAlignment="Left"/>
                                             </Grid>
                                         </GroupBox>
                                         <GroupBox Header="Step" Margin="10,139,5,10" BorderBrush="#FFFFE800">
@@ -453,8 +453,8 @@
 
                                         <GroupBox Header="Step Setting" Margin="0,180,10,10" BorderBrush="#FFFFE800" Grid.Column="1" HorizontalAlignment="Right" Width="283">
                                             <Grid>
-                                                <controls:DialControl x:Name="Dial_NFX_Pitch" HorizontalAlignment="Left" Height="62" Width="68" Margin="10,10,0,0" Text="RELATIVE PITCH" Maximum="36" TickDelay="2" Minimum="-36" VerticalAlignment="Top"/>
-                                                <controls:DialControl x:Name="Dial_NFX_Decay" Height="62" Width="68" Margin="140,10,0,0" Text="DECAY" Maximum="100" TickDelay="2" VerticalAlignment="Top" HorizontalAlignment="Left" Value="12"/>
+                                                <controls:DialControl x:Name="Dial_NFX_Pitch" HorizontalAlignment="Left" Height="62" Width="68" Margin="10,10,0,0" Text="RELATIVE PITCH" Maximum="36" Minimum="-36" VerticalAlignment="Top"/>
+                                                <controls:DialControl x:Name="Dial_NFX_Decay" Height="62" Width="68" Margin="140,10,0,0" Text="DECAY" Maximum="100" VerticalAlignment="Top" HorizontalAlignment="Left" Value="12"/>
                                             </Grid>
                                         </GroupBox>
                                     </Grid>

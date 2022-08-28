@@ -60,7 +60,7 @@
                         <GradientStop Color="#FF3E0000" Offset="1"/>
                     </LinearGradientBrush>
                 </Grid.Background>
-                <SynthGUI:DialControl x:Name="CTRL_Octave" HorizontalAlignment="Left" Margin="8,16,0,0" VerticalAlignment="Top" Text="Octave" Value="3" Maximum="6" TickDelay="8" ValueChanged="CTRL_ValueChanged" TextPromptStateChanged="Dials_TextPromptStateChanged"/>
+                <SynthGUI:DialControl x:Name="CTRL_Octave" HorizontalAlignment="Left" Margin="8,16,0,0" VerticalAlignment="Top" Text="Octave" Value="3" Maximum="6" ValueChanged="CTRL_ValueChanged" TextPromptStateChanged="Dials_TextPromptStateChanged"/>
                 <SynthGUI:DialControl x:Name="CTRL_Volume" HorizontalAlignment="Left" Margin="138,16,0,0" VerticalAlignment="Top" Text="Volume" Value="127" Maximum="127" ValueChanged="CTRL_ValueChanged" TextPromptStateChanged="Dials_TextPromptStateChanged"/>
                 <SynthGUI:DialControl x:Name="CTRL_Balance" HorizontalAlignment="Left" Margin="268,16,0,0" VerticalAlignment="Top" Text="Balance (Pan)" Value="64" Maximum="127" ValueChanged="CTRL_ValueChanged" TextPromptStateChanged="Dials_TextPromptStateChanged"/>
                 <SynthGUI:DialControl x:Name="CTRL_Reverb" HorizontalAlignment="Left" Margin="400,16,0,0" VerticalAlignment="Top" Text="Reverb" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged" TextPromptStateChanged="Dials_TextPromptStateChanged"/>

@@ -14,13 +14,9 @@ namespace MidiSynth7.components
         /// </summary>
         public int Delay { get; set; }
         /// <summary>
-        /// Property used to determine both octave, and note count.
+        /// Property used to determine pitch and velocity at step.
         /// </summary>
-        public int[] OffsetMap { get; set; }
-        /// <summary>
-        /// Decrease relative volume per note by x%
-        /// </summary>
-        public int FalloffPercentage { get; set; }
+        public (int pitch,int decay)[] OffsetMap { get; set; }
         /// <summary>
         /// Reverse Offset map
         /// </summary>
