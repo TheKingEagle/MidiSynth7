@@ -106,7 +106,7 @@
                 </TransformGroup>
             </Canvas.RenderTransform>
 
-            <Ellipse x:Name="DOT" HorizontalAlignment="Left" Height="8" Stroke="Black" StrokeThickness="0" VerticalAlignment="Top" Width="8" RenderTransformOrigin="0,0" Canvas.Left="69" Canvas.Top="53" >
+            <Ellipse x:Name="DOT" HorizontalAlignment="Left" Height="8" Stroke="Black" StrokeThickness="0" VerticalAlignment="Top" Width="8" RenderTransformOrigin="0,0" Canvas.Left="69" Canvas.Top="53" IsHitTestVisible="False" >
                 <Ellipse.Fill>
                     <RadialGradientBrush>
                         <GradientStop Color="#FF000729" Offset="1"/>
