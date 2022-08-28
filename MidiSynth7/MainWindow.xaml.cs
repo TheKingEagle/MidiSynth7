@@ -1220,6 +1220,14 @@ namespace MidiSynth7
 
         }
 
+        private void bn_NFXProfSave_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO: Save config
+            currentView.HandleEvent(this, new EventArgs(), "NFX_DelayUpdated");
+            ScaleUI(1, 0.8, BDR_NFXDelayCustomizationFrame);
+            FadeUI(1, 0, GR_OverlayContent);
+        }
+
         public class ChInvk
         {
             Ellipse index;

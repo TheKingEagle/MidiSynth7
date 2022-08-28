@@ -29,6 +29,8 @@ namespace MidiSynth7.components.views
         private List<Ellipse> channelElipses = new List<Ellipse>();
         private List<MainWindow.ChInvk> channelIndicators = new List<MainWindow.ChInvk>();
 
+        public bool HaltKeyboardInput { get; private set; }
+
         public StandardView(MainWindow context, ref SystemConfig config, ref MidiEngine engine)
         {
             InitializeComponent();
@@ -743,5 +745,10 @@ namespace MidiSynth7.components.views
         public void HandleNoteOn_VS_Event(object sender, PKeyEventArgs e, int velocity, int channel) => Pianomain_pKeyDown_VelocitySense(sender, e, velocity, channel);
 
         #endregion
+
+        private void Dials_TextPromptStateChanged(object sender, EventArgs e)
+        {
+            HaltKeyboardInput = ((DialControl)sender).InputCaptured;
+        }
     }
 }

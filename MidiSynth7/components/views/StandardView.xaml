@@ -40,7 +40,7 @@
                 </Button>
                 <CheckBox x:Name="cb_internalsf2" Content="Internal Device" HorizontalAlignment="Left" Margin="4,10,0,0" VerticalAlignment="Top" Foreground="White" Width="112" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False"/>
                 <Button x:Name="MIO_bn_SetSF2" Content="Select Soundfont..." HorizontalAlignment="Left" Margin="124,3,0,0" VerticalAlignment="Top" Width="112" Height="29" Background="#FF38002E" BorderBrush="Red" Click="MIO_bn_SetSF2_Click" Focusable="False" IsEnabled="False"/>
-                <SynthGUI:DialControl x:Name="CTRL_Synth_Gain" HorizontalAlignment="Left" Margin="-18,46,0,-18" VerticalAlignment="Top" Text="Internal Synth. Gain" Maximum="200" ValueChanged="CTRL_ValueChanged" RenderTransformOrigin="0.5,0.5" Value="100" IsEnabled="False">
+                <SynthGUI:DialControl x:Name="CTRL_Synth_Gain" HorizontalAlignment="Left" Margin="-18,46,0,-18" VerticalAlignment="Top" Text="Internal Synth. Gain" Maximum="200" ValueChanged="CTRL_ValueChanged" RenderTransformOrigin="0.5,0.5" Value="100" IsEnabled="False" TextPromptStateChanged="Dials_TextPromptStateChanged">
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
@@ -60,12 +60,12 @@
                         <GradientStop Color="#FF3E0000" Offset="1"/>
                     </LinearGradientBrush>
                 </Grid.Background>
-                <SynthGUI:DialControl x:Name="CTRL_Octave" HorizontalAlignment="Left" Margin="8,16,0,0" VerticalAlignment="Top" Text="Octave" Value="3" Maximum="6" TickDelay="8" ValueChanged="CTRL_ValueChanged"/>
-                <SynthGUI:DialControl x:Name="CTRL_Volume" HorizontalAlignment="Left" Margin="138,16,0,0" VerticalAlignment="Top" Text="Volume" Value="127" Maximum="127" ValueChanged="CTRL_ValueChanged"/>
-                <SynthGUI:DialControl x:Name="CTRL_Balance" HorizontalAlignment="Left" Margin="268,16,0,0" VerticalAlignment="Top" Text="Balance (Pan)" Value="64" Maximum="127" ValueChanged="CTRL_ValueChanged"/>
-                <SynthGUI:DialControl x:Name="CTRL_Reverb" HorizontalAlignment="Left" Margin="400,16,0,0" VerticalAlignment="Top" Text="Reverb" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged"/>
-                <SynthGUI:DialControl x:Name="CTRL_Chorus" HorizontalAlignment="Left" Margin="530,16,0,0" VerticalAlignment="Top" Text="Chorus" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged"/>
-                <SynthGUI:DialControl x:Name="CTRL_Modulation" HorizontalAlignment="Left" Margin="660,16,0,0" VerticalAlignment="Top" Text="Modulation" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged"/>
+                <SynthGUI:DialControl x:Name="CTRL_Octave" HorizontalAlignment="Left" Margin="8,16,0,0" VerticalAlignment="Top" Text="Octave" Value="3" Maximum="6" TickDelay="8" ValueChanged="CTRL_ValueChanged" TextPromptStateChanged="Dials_TextPromptStateChanged"/>
+                <SynthGUI:DialControl x:Name="CTRL_Volume" HorizontalAlignment="Left" Margin="138,16,0,0" VerticalAlignment="Top" Text="Volume" Value="127" Maximum="127" ValueChanged="CTRL_ValueChanged" TextPromptStateChanged="Dials_TextPromptStateChanged"/>
+                <SynthGUI:DialControl x:Name="CTRL_Balance" HorizontalAlignment="Left" Margin="268,16,0,0" VerticalAlignment="Top" Text="Balance (Pan)" Value="64" Maximum="127" ValueChanged="CTRL_ValueChanged" TextPromptStateChanged="Dials_TextPromptStateChanged"/>
+                <SynthGUI:DialControl x:Name="CTRL_Reverb" HorizontalAlignment="Left" Margin="400,16,0,0" VerticalAlignment="Top" Text="Reverb" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged" TextPromptStateChanged="Dials_TextPromptStateChanged"/>
+                <SynthGUI:DialControl x:Name="CTRL_Chorus" HorizontalAlignment="Left" Margin="530,16,0,0" VerticalAlignment="Top" Text="Chorus" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged" TextPromptStateChanged="Dials_TextPromptStateChanged"/>
+                <SynthGUI:DialControl x:Name="CTRL_Modulation" HorizontalAlignment="Left" Margin="660,16,0,0" VerticalAlignment="Top" Text="Modulation" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged" TextPromptStateChanged="Dials_TextPromptStateChanged"/>
             </Grid>
         </GroupBox>
         <GroupBox x:Name="gb_instrument" Header="Instruments" HorizontalAlignment="Left" Margin="5,182,0,0" VerticalAlignment="Top" Height="182" Width="248" BorderThickness="2" BorderBrush="#FF035507" Padding="0">
