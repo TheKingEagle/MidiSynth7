@@ -321,7 +321,7 @@
                         </TransformGroup>
                     </CheckBox.RenderTransform>
                 </CheckBox>
-                <ComboBox x:Name="cb_NFX_Dropdown" HorizontalAlignment="Left" Margin="63,36,0,0" VerticalAlignment="Top" Width="186" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_dkit_SelectionChanged" SelectedIndex="0" Height="27" FontSize="16">
+                <ComboBox x:Name="cb_NFX_Dropdown" HorizontalAlignment="Left" Margin="63,36,0,0" VerticalAlignment="Top" Width="186" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_nfx_ProfileSel_SelectionChanged" SelectedIndex="0" Height="27" FontSize="16">
                     <ComboBox.Background>
                         <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                             <GradientStop Color="#FFD8D8D8" Offset="1"/>

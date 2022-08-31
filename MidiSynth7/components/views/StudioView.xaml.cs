@@ -88,6 +88,15 @@ namespace MidiSynth7.components.views
             UpdateInstrumentSelection(config);
             #endregion
 
+            #region NFX Profiles
+            cb_NFX_Dropdown.Items.Clear();
+            foreach (NFXDelayProfile item in AppContext.NFXProfiles)
+            {
+                cb_NFX_Dropdown.Items.Add(item);
+            }
+            cb_NFX_Dropdown.SelectedIndex = 0;
+            #endregion
+
             #region ADD ellipses
             AppContext.channelIndicators.Clear();
             AppContext.channelElipses.Clear();
@@ -487,10 +496,6 @@ namespace MidiSynth7.components.views
                 {
                     MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 0);
                 }
-                if (cb_NFX_Enable.IsChecked.Value)
-                {
-                    SaveVelocity(0, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, 127, 0);
-                }
                 MidiEngine.MidiNote_SetPan(0, CTRL_Balance.Value);
                 MidiEngine.MidiNote_Play(0, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, CTRL_Volume.Value);
 
@@ -593,16 +598,12 @@ namespace MidiSynth7.components.views
                     }
                     MidiEngine.MidiNote_SetPan(0, CTRL_Balance.Value);
                 }
-                if (cb_NFX_Enable.IsChecked.Value)
-                {
-                    SaveVelocity(0, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity, 0);
-                }
                 MidiEngine.MidiNote_Play(channel, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity);
 
             }
         }
 
-        private void Pianomain_pKeyUp(object sender, entities.controls.PKeyEventArgs e)
+        private void Pianomain_pKeyUp(object sender, PKeyEventArgs e)
         {
             if (MidiEngine != null)
             {
@@ -704,7 +705,7 @@ namespace MidiSynth7.components.views
             }
             if (cb_NFX_Enable.IsChecked.Value)
             {
-                Dispatcher.InvokeAsync(() => PlayDelayedNFX(e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, e.ChannelMssge.Data2, 280, 2));
+                Dispatcher.InvokeAsync(() => PlayDelayedNFX(e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, e.ChannelMssge.Data2, AppContext.ActiveNFXProfile.Delay, AppContext.ActiveNFXProfile.OffsetMap.Count));
             }
         }
 
@@ -715,7 +716,7 @@ namespace MidiSynth7.components.views
 
             if (cb_NFX_Enable.IsChecked.Value)
             {
-                Dispatcher.InvokeAsync(() => StopDelayedNFX(e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, 280, 2));
+                Dispatcher.InvokeAsync(() => StopDelayedNFX(e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, AppContext.ActiveNFXProfile.Delay, AppContext.ActiveNFXProfile.OffsetMap.Count));
 
             }
             //Pianomain_pKeyUp(sender, new PKeyEventArgs(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value));
@@ -802,46 +803,13 @@ namespace MidiSynth7.components.views
         }
 
         #region NoteFX Functions
-        
-        private void SaveVelocity(int ch, int note, int velocity,int offsetTime)
-        {
-            var nfxEntity = NFXSavedNotes.FirstOrDefault(vv => vv?.c == ch && vv?.k == note);
-            long duration = 0;
-            if(nfxEntity != null)
-            {
-                duration = nfxEntity.Value.d;
-                if (nfxEntity.Value.w.IsRunning && duration == 0)
-                {
-                    nfxEntity.Value.w.Stop();
-                    duration = nfxEntity.Value.w.ElapsedMilliseconds;
-                }
-                //NFXSavedNotes.Remove(nfxEntity);
-            }
-            NFXSavedNotes.Add((ch, note, velocity,offsetTime, duration, Stopwatch.StartNew()));
-        }
-
-        private (int v, long d)? GetNoteInfo(int ch, int note)
-        {
-            var nfxEntity = NFXSavedNotes.FirstOrDefault(vv => vv?.c == ch && vv?.k == note);
-            if (nfxEntity == null) return null;
-            return (nfxEntity.Value.v, nfxEntity.Value.d);
-        }
-        private void DeleteVelocity(int ch, int note, int velocity)
-        {
-            var nfxEntity = NFXSavedNotes.FirstOrDefault(vv => vv?.c == ch && vv?.k == note && vv?.v == velocity);
-            if (nfxEntity != null)
-                NFXSavedNotes.Remove(nfxEntity);
-            else
-                Console.WriteLine("Saved velocity data Not found!");
-        }
 
         private async Task PlayDelayedNFX(int ch, int note, int velocity, int delay, int count)
         {
-            //TODO: Profile customize.
             if (MidiEngine == null) return;
-            if(count > 2 || count < 1)
+            if(count > 3 || count < 1)
             {
-                throw new ArgumentException("Count must be no more than 2, no less than 1.");
+                throw new ArgumentException("Count must be no more than 3, no less than 1.");
             }
             //thread it
             Bank bank = (Bank)cb_mBank.SelectedItem;
@@ -850,7 +818,8 @@ namespace MidiSynth7.components.views
             async Task t()
             {
                 
-                int[,] channelMapper = new int[2, 4] { { 4, 5, 6, 7 },{ 8, 10, 11, 12 } };
+                int[,] channelMapper = new int[3, 4] { { 4, 5, 6, 7 },{ 8, 10, 11, 12 }, { 13, 14, 15, 4 } };
+
                 
                 for (int i = 0; i < count; i++)
                 {
@@ -859,7 +828,9 @@ namespace MidiSynth7.components.views
                     {
                         MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, channelMapper[i, ch]);
                     }
-                    MidiEngine.MidiNote_Play(channelMapper[i,ch], note, velocity,false);
+                    int velo = velocity - (int)(velocity * (float)((float)AppContext.ActiveNFXProfile.OffsetMap[i].decay / 100));
+                    
+                    MidiEngine.MidiNote_Play(channelMapper[i,ch], note + AppContext.ActiveNFXProfile.OffsetMap[i].pitch,velo, false);
                     await Dispatcher.InvokeAsync(() => FlashChannelActivity(channelMapper[i, ch]));
 
                 }
@@ -870,9 +841,9 @@ namespace MidiSynth7.components.views
         private async Task StopDelayedNFX(int ch, int note, int delay, int count)
         {
             if (MidiEngine == null) return;
-            if (count > 2 || count < 1)
+            if (count > 3 || count < 1)
             {
-                throw new ArgumentException("Count must be no more than 2, no less than 1.");
+                throw new ArgumentException("Count must be no more than 3, no less than 1.");
             }
             //thread it
             Bank bank = (Bank)cb_mBank.SelectedItem;
@@ -881,25 +852,23 @@ namespace MidiSynth7.components.views
             async Task t()
             {
 
-                int[,] channelMapper = new int[2, 4] { { 4, 5, 6, 7 }, { 8, 10, 11, 12 } };
-                
+                int[,] channelMapper = new int[3, 4] { { 4, 5, 6, 7 }, { 8, 10, 11, 12 }, { 13, 14, 15, 4 } };
+
                 for (int i = 0; i < count - 1; i++)
                 {
                    await Task.Delay(delay);
-                    MidiEngine.MidiNote_Stop(channelMapper[i, ch], note, false);
+                    MidiEngine.MidiNote_Stop(channelMapper[i, ch], note + AppContext.ActiveNFXProfile.OffsetMap[i].pitch, false);
                     await Dispatcher.InvokeAsync(() => FlashChannelActivity(channelMapper[i, ch]));
                 }
             }
             await Task.Run(() => t());
         }
 
-
         #endregion
 
         private void BN_CustomizeDelay_Click(object sender, RoutedEventArgs e)
         {
-            //PopulateSavedDefinitions();
-            //AppContext.ScaleUI(1, 0.8, AppContext.BDR_SettingsFrame);
+            AppContext.PopulateSavedNFXProfiles();
             AppContext.FadeUI(0, 1, AppContext.GR_OverlayContent);
             AppContext.ScaleUI(0.8, 1, AppContext.BDR_NFXDelayCustomizationFrame);
         }
@@ -907,6 +876,16 @@ namespace MidiSynth7.components.views
         private void Dials_TextPromptStateChanged(object sender, EventArgs e)
         {
             HaltKeyboardInput = ((DialControl)sender).InputCaptured;
+        }
+
+        private void Cb_nfx_ProfileSel_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (AppContext == null) return;
+            AppContext.ActiveNFXProfile = AppContext.NFXProfiles.FirstOrDefault(x => x.ProfileName == cb_NFX_Dropdown.Text);
+            if(AppContext.ActiveNFXProfile == null)
+            {
+                AppContext.ActiveNFXProfile = AppContext.NFXProfiles[0];
+            }
         }
     }
 }

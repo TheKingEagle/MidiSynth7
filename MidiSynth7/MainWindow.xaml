@@ -416,15 +416,15 @@
                                             <GradientStop Color="#FF000F01" Offset="1"/>
                                         </LinearGradientBrush>
                                     </GroupBox.Background>
-                                    <ListBox x:Name="LB_SavedProfiles" Background="{x:Null}" BorderBrush="{x:Null}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Foreground="White">
+                                    <ListBox x:Name="LB_SavedProfiles" Background="{x:Null}" BorderBrush="{x:Null}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Foreground="White" SelectionChanged="LB_SavedProfiles_SelectionChanged">
                                         <ListBoxItem x:Name="LBI_DefaultProfile"  Content="Default"/>
                                     </ListBox>
                                 </GroupBox>
 
-                                <Button x:Name="bn_NFXProfAdd" Content="+ Add" HorizontalAlignment="Left"  Margin="10,0,0,10" Width="71" Background="#FF00400C" BorderThickness="1" BorderBrush="#FF444444" Height="20" VerticalAlignment="Bottom"/>
-                                <Button x:Name="bn_NFXProfDel" Content="- Delete" HorizontalAlignment="Left"  Margin="86,0,0,10" Width="71" Background="#FF400000" BorderThickness="1" BorderBrush="#FF444444" Height="20" VerticalAlignment="Bottom" />
+                                <Button x:Name="bn_NFXProfAdd" Content="+ Add" HorizontalAlignment="Left"  Margin="10,0,0,10" Width="71" Background="#FF00400C" BorderThickness="1" BorderBrush="#FF444444" Height="20" VerticalAlignment="Bottom" Click="bn_NFXProfAdd_Click"/>
+                                <Button x:Name="bn_NFXProfDel" Content="- Delete" HorizontalAlignment="Left"  Margin="86,0,0,10" Width="71" Background="#FF400000" BorderThickness="1" BorderBrush="#FF444444" Height="20" VerticalAlignment="Bottom" Click="bn_NFXProfDel_Click" />
 
-                                <GroupBox x:Name="gb_NFXProfEditor" Header="Editing" Margin="162,10,10,10" BorderBrush="#FF0055CF" IsEnabled="True">
+                                <GroupBox x:Name="gb_NFXProfEditor" Header="Editor" Margin="162,10,10,10" BorderBrush="#FF0055CF" IsEnabled="True">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="106*"/>
@@ -437,24 +437,51 @@
                                             </LinearGradientBrush>
                                         </Grid.Background>
 
-                                        <GroupBox Header="Profile Details" Height="124" Margin="10,10,5,0" VerticalAlignment="Top" BorderBrush="#FF00B3CF">
-                                            <Grid/>
-                                        </GroupBox>
-
-                                        <GroupBox Header="Delay Setting" Height="165" Margin="5,10,10,0" VerticalAlignment="Top" BorderBrush="#FFCF5E00" Grid.Column="1">
-                                            <Grid>
-                                                <controls:DialControl x:Name="Dial_NFX_StepCount" HorizontalAlignment="Left" Height="62" Width="68" Margin="10,10,0,10" Text="STEP COUNT" Value="3" Maximum="3" Minimum="1"/>
-                                                <controls:DialControl x:Name="Dial_NFX_Interval" Height="62" Width="68" Margin="140,10,0,10" Text="DELAY INTERVAL" Value="280" Maximum="2500" Minimum="20" HorizontalAlignment="Left"/>
+                                        <GroupBox Header="Profile Details" Height="107" Margin="10,10,5,0" VerticalAlignment="Top" BorderBrush="#FF00B3CF">
+                                            <Grid Background="#0CFFFFFF">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="32*"/>
+                                                    <ColumnDefinition Width="32*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Label Foreground="White" Margin="10,0,39,59" Padding="0,2,0,0" Height="23" VerticalAlignment="Bottom">Name:</Label>
+                                                <TextBox x:Name="TB_NFX_profile_name" HorizontalAlignment="Left" Height="23" Margin="56,0,0,59" TextWrapping="Wrap" Text="" VerticalAlignment="Bottom" Width="123" Background="#FF323232" Foreground="White" Grid.ColumnSpan="2" Padding="0,2,0,0"/>
+                                                <Button x:Name="BN_NFX_Duplicate" Content="Duplicate" Margin="10,0,2,10" VerticalAlignment="Bottom" Background="Black"/>
+                                                <Button x:Name="BN_NFX_ResetValues" Content="Reset Values" HorizontalAlignment="Left" Margin="2,0,0,10" VerticalAlignment="Bottom" Width="81" Background="#FF340000" Grid.Column="1"/>
+                                                <Button x:Name="BN_NFX_Import" Content="Import" Margin="10,0,2,33" VerticalAlignment="Bottom" Background="Black"/>
+                                                <Button x:Name="BN_NFX_Export" Content="Export" HorizontalAlignment="Left" Margin="2,0,0,33" VerticalAlignment="Bottom" Width="81" Background="Black" Grid.Column="1"/>
                                             </Grid>
                                         </GroupBox>
-                                        <GroupBox Header="Step" Margin="10,139,5,10" BorderBrush="#FFFFE800">
-                                            <Grid/>
+
+                                        <GroupBox x:Name="GB_DelaySettings" Header="Delay Setting" Height="165" Margin="5,10,10,0" VerticalAlignment="Top" BorderBrush="#FFCF5E00" Grid.Column="1" MouseUp="GroupBox_MouseUp">
+                                            <Grid Background="#0CFFFFFF">
+                                                <controls:DialControl x:Name="Dial_NFX_StepCount" HorizontalAlignment="Left" Height="62" Width="68" Margin="10,10,0,10" Text="STEP COUNT" Value="1" Maximum="3" Minimum="1" ValueChanged="Dial_NFX_ValChanged"/>
+                                                <controls:DialControl x:Name="Dial_NFX_Interval" Height="62" Width="68" Margin="140,10,0,10" Text="DELAY INTERVAL" Value="10" Maximum="2500" Minimum="10" HorizontalAlignment="Left" ValueChanged="Dial_NFX_ValChanged"/>
+                                            </Grid>
+                                        </GroupBox>
+                                        <GroupBox Header="Steps" Margin="10,122,5,10" BorderBrush="#FFFFE800">
+                                            <Grid Background="#0CFFFFFF">
+                                                <DataGrid RowHeaderWidth="0" Padding="2" x:Name="lv_steps" AutoGenerateColumns="false" Background="#FF2E2E2E" BorderBrush="#FFFFE800" SelectionChanged="Lv_steps_SelectionChanged" Foreground="White" GridLinesVisibility="None" RowBackground="#FF212020" AlternatingRowBackground="#FF303030" CanUserReorderColumns="False" CanUserSortColumns="False" CanUserDeleteRows="False" CanUserAddRows="False" CanUserResizeRows="False" SelectionMode="Single" IsReadOnly="True" Margin="0,10,0,0">
+                                                    <DataGrid.Resources>
+                                                        <Style BasedOn="{StaticResource {x:Type DataGridColumnHeader}}" TargetType="{x:Type DataGridColumnHeader}">
+                                                            <Setter Property="Background" Value="#646464" />
+                                                            <Setter Property="Foreground" Value="#fff" />
+                                                        </Style>
+                                                    </DataGrid.Resources>
+                                                    <DataGrid.Columns>
+
+                                                        <DataGridTextColumn Header="Step" Binding="{Binding Step}" MinWidth="50"/>
+                                                        <DataGridTextColumn Header="Pitch" Binding="{Binding Pitch}" MinWidth="50"/>
+                                                        <DataGridTextColumn Header="Decay" Binding="{Binding Decay}" MinWidth="50"/>
+                                                    </DataGrid.Columns>
+
+                                                </DataGrid>
+                                            </Grid>
                                         </GroupBox>
 
-                                        <GroupBox Header="Step Setting" Margin="0,180,10,10" BorderBrush="#FFFFE800" Grid.Column="1" HorizontalAlignment="Right" Width="283">
-                                            <Grid>
-                                                <controls:DialControl x:Name="Dial_NFX_Pitch" HorizontalAlignment="Left" Height="62" Width="68" Margin="10,10,0,0" Text="RELATIVE PITCH" Maximum="36" Minimum="-36" VerticalAlignment="Top"/>
-                                                <controls:DialControl x:Name="Dial_NFX_Decay" Height="62" Width="68" Margin="140,10,0,0" Text="DECAY" Maximum="100" VerticalAlignment="Top" HorizontalAlignment="Left" Value="12"/>
+                                        <GroupBox x:Name="GB_StepSettings" Header="Step Setting" Margin="0,180,10,10" BorderBrush="#FFFFE800" Grid.Column="1" HorizontalAlignment="Right" Width="283" MouseUp="GroupBox_MouseUp">
+                                            <Grid Background="#0CFFFFFF">
+                                                <controls:DialControl x:Name="Dial_NFX_Pitch" HorizontalAlignment="Left" Height="62" Width="68" Margin="10,10,0,0" Text="RELATIVE PITCH" Maximum="36" Minimum="-36" VerticalAlignment="Top" ValueChanged="Dial_NFX_STEP_ValChanged"/>
+                                                <controls:DialControl x:Name="Dial_NFX_Decay" Height="62" Width="68" Margin="140,10,0,0" Text="DECAY" Maximum="100" VerticalAlignment="Top" HorizontalAlignment="Left" Value="100" ValueChanged="Dial_NFX_STEP_ValChanged"/>
                                             </Grid>
                                         </GroupBox>
                                     </Grid>

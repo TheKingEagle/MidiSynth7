@@ -39,15 +39,20 @@ namespace MidiSynth7
         private double scale = 1;
         private bool _loadingView = false;
         private bool _insDefNameDirty = false;
+        private bool _NFXProfileNameDirty = false;
+
+        private NFXDelayProfile _backupProfile { get; set; }
+
         private UIElement _elementFromanim = null;
         private DisplayModes _switchto = DisplayModes.Standard;
         private ISynthView currentView;
         private DisplayModes CurrentViewDM;
         private List<(string name,bool value)> checkstates = new List<(string name, bool value)>();
+        
 
         public bool SynHelpRequested { get; private set; }
         public InstrumentDefinition ActiveInstrumentDefinition { get; set; }
-
+        public NFXDelayProfile ActiveNFXProfile { get; set; }
         public List<InstrumentDefinition> Definitions { get; private set; }
         public SystemConfig AppConfig;
         public MidiEngine MidiEngine;
@@ -55,7 +60,7 @@ namespace MidiSynth7
         public List<NumberedEntry> InputDevices = new List<NumberedEntry>();
         public List<Ellipse> channelElipses = new List<Ellipse>();
         public List<ChInvk> channelIndicators = new List<ChInvk>();
-
+        public List<NFXDelayProfile> NFXProfiles = new List<NFXDelayProfile>();
 
         #endregion
 
@@ -178,9 +183,44 @@ namespace MidiSynth7
                 Definitions.Add(InstrumentDefinition.GetDefaultDefinition());
                 ActiveInstrumentDefinition = InstrumentDefinition.GetDefaultDefinition();//set active
             }
+
+            if (!File.Exists(App.APP_DATA_DIR + "profiles.nfx"))
+            {
+                NFXProfiles = new List<NFXDelayProfile>();
+                NFXDelayProfile df = new NFXDelayProfile()
+                {
+                    Delay = 280,
+                    ProfileName = "Default",
+                    OffsetMap = new List<(int pitch, int decay)>() { (0, 0), (0, 0) }
+                };
+                NFXProfiles.Add(df);
+            }
+            else
+            {
+                using (StreamReader sr = new StreamReader(App.APP_DATA_DIR + "profiles.nfx"))
+                {
+                    NFXProfiles = JsonConvert.DeserializeObject<List<NFXDelayProfile>>(sr.ReadToEnd());
+                    Console.WriteLine("NFXProfiles: File loaded.");
+                    if (NFXProfiles.Count == 0)
+                    {
+                        NFXDelayProfile df = new NFXDelayProfile()
+                        {
+                            Delay = 280,
+                            ProfileName = "Default",
+                            OffsetMap = { (0, 0), (0, 0) }
+                        };
+                        NFXProfiles.Add(df);
+                        MessageBox.Show("The NFX file was invalid. The default one will be used instead.", "NFX Profile corrupt!", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+
+                }
+            }
+
             GR_OverlayContent.Visibility = Visibility.Collapsed;
             GR_OverlayContent.Opacity = 0;
-            BDR_SettingsFrame.Visibility = Visibility.Collapsed;//start with settings disabled
+            BDR_SettingsFrame.Visibility = Visibility.Collapsed;
+            BDR_NFXDelayCustomizationFrame.Visibility = Visibility.Collapsed;
+            BDR_InstrumentDefinitionsFrame.Visibility = Visibility.Collapsed;
             Loadview(AppConfig.DisplayMode);
         }
 
@@ -248,8 +288,7 @@ namespace MidiSynth7
 
         private void Bn_about_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Freeze current thread");
-            System.Threading.Thread.Sleep(1000);
+            MessageBox.Show("The ultimate music machine... This is gonna be replaced with a real about screen soon", Assembly.GetExecutingAssembly().GetName().Name);
         }
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -350,7 +389,7 @@ namespace MidiSynth7
             if(SynHelpRequested)
             {
                 CfgHelpRequest_RestoreCheckStates();
-                this.Cursor = Cursors.Arrow;
+                Cursor = Cursors.Arrow;
                 SynHelpRequested = false;
                 MessageBox.Show("If checked, MIDI messages sent by the device will be processed as they are received. " +
                     "If unchecked, the message will be modified to the parameters set by the synth (Transpose, octave, instruments, etc.)\r\n\r\n" +
@@ -556,7 +595,44 @@ namespace MidiSynth7
             {
                 LB_SavedDefs.Items.Add(new ListBoxItem() { Content = item.Name });
             }
-            LB_SavedDefs.SelectedIndex = LB_SavedDefs.SelectedIndex = LB_SavedDefs.Items.Count - 1;
+            //LB_SavedDefs.SelectedIndex = LB_SavedDefs.SelectedIndex = LB_SavedDefs.Items.Count - 1;//wtf?
+            LB_SavedDefs.SelectedIndex = LB_SavedDefs.Items.Count - 1;
+        }
+
+        internal void PopulateSavedNFXProfiles()
+        {
+            LB_SavedProfiles.Items.Clear();
+
+            foreach (NFXDelayProfile item in NFXProfiles)
+            {
+                LB_SavedProfiles.Items.Add(new ListBoxItem() { Content = item.ProfileName });
+            }
+            LB_SavedProfiles.SelectedIndex = LB_SavedProfiles.Items.Count - 1;
+        }
+        private void NFXProfileSetEditor(ListBoxItem lvItem, NFXDelayProfile profile)
+        {
+            if (lvItem == null)
+            {
+                gb_NFXProfEditor.IsEnabled = false;
+                return;
+            }
+            gb_NFXProfEditor.IsEnabled = true;
+            _backupProfile = profile;
+            
+            TB_NFX_profile_name.Text = (string)lvItem.Content;
+            _NFXProfileNameDirty = false;
+            Dial_NFX_Interval.SetValueSuppressed(profile.Delay);
+            Dial_NFX_StepCount.SetValueSuppressed(profile.OffsetMap.Count);
+            NFXPopulateSteps(profile);
+        }
+        private void NFXPopulateSteps(NFXDelayProfile selected)
+        {
+            lv_steps.Items.Clear();
+            for (int i = 0; i < selected.OffsetMap.Count; i++)
+            {
+                lv_steps.Items.Add(new { Step = i + 1, Pitch = selected.OffsetMap[i].pitch, Decay = selected.OffsetMap[i].decay });
+            }
+            lv_steps.SelectedIndex = 0;
         }
 
         private void InsDefSetEditor(ListBoxItem lvItem, InstrumentDefinition insdf)
@@ -747,8 +823,10 @@ namespace MidiSynth7
             WindowDoubleAnimation.EasingFunction = qe;
             Storyboard.SetTargetProperty(WindowStoryboard, new PropertyPath(OpacityProperty));
             Storyboard.SetTarget(WindowDoubleAnimation, uielm);
+            Timeline.SetDesiredFrameRate(WindowStoryboard, 60);
             WindowStoryboard.Children.Add(WindowDoubleAnimation);
             WindowStoryboard.Completed += WindowStoryboard_Completed;
+            WindowDoubleAnimation.Freeze();
             WindowStoryboard.Begin((FrameworkElement)uielm, HandoffBehavior.Compose);
         }
 
@@ -770,19 +848,29 @@ namespace MidiSynth7
             if(from != to)
             {
                 DoubleAnimation scaler = new DoubleAnimation(from * _scale, to * _scale, TimeSpan.FromMilliseconds(120),FillBehavior.HoldEnd);
+                scaler.Completed += (object s, EventArgs e)=> {
+                    if (from > to)
+                    {
+                        uielm.Visibility = Visibility.Collapsed;
+                    }
+                };
                 scaler.AutoReverse = false;
                 CubicEase ease = new CubicEase();
                 ease.EasingMode = EasingMode.EaseInOut;
                 scaler.EasingFunction = ease;
+                Timeline.SetDesiredFrameRate(scaler, 60);
+                scaler.Freeze();
                 trans.BeginAnimation(ScaleTransform.ScaleXProperty, scaler);
                 trans.BeginAnimation(ScaleTransform.ScaleYProperty, scaler);
             }
             
         }
 
+      
+
         private void WindowStoryboard_Completed(object sender, EventArgs e)
         {
-            if(_elementFromanim.Opacity <= 0.9 && _elementFromanim != this)
+            if(_elementFromanim.Opacity <= 0.2 && _elementFromanim != this)
             {
                 _elementFromanim.Visibility = Visibility.Collapsed;
             }
@@ -821,10 +909,6 @@ namespace MidiSynth7
                 MessageBox.Show("Configuration error: null");
                 return;
             }
-            if(File.Exists(App.APP_DATA_DIR + "synth7.config"))
-            {
-                File.Delete(App.APP_DATA_DIR + "synth7.config");
-            }
             
             using (StreamWriter sw = new StreamWriter(App.APP_DATA_DIR + "synth7.config"))
             {
@@ -859,7 +943,25 @@ namespace MidiSynth7
             {
                 using (StreamWriter sw = new StreamWriter(path))
                 {
-                    sw.WriteLine(JsonConvert.SerializeObject(Definitions));
+                    sw.WriteLine(JsonConvert.SerializeObject(Definitions,Formatting.Indented));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Write Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            return path;
+        }
+
+        public string SaveNFXProfiles()
+        {
+            string path = App.APP_DATA_DIR + "profiles.nfx";
+            try
+            {
+                using (StreamWriter sw = new StreamWriter(path))
+                {
+                    sw.WriteLine(JsonConvert.SerializeObject(NFXProfiles, Formatting.Indented));
+                    Console.WriteLine("Profiles.nfx saved");
                 }
             }
             catch (Exception ex)
@@ -926,11 +1028,6 @@ namespace MidiSynth7
         #region MIDI Engine Logic
         public void GenerateMIDIEngine(ISynthView view, int deviceId=0)
         {
-            //midiTaskWorker = new BackgroundWorker();
-            //midiTaskWorker.WorkerSupportsCancellation = true;
-            //midiTaskWorker.DoWork += MidiTaskWorker_DoWork;
-            //midiTaskWorker.RunWorkerCompleted += MidiTaskWorker_RunWorkerCompleted;
-            //midiTaskWorker.RunWorkerAsync(deviceId);
             try
             {
                 if (MidiEngine != null)
@@ -1097,11 +1194,6 @@ namespace MidiSynth7
 
         #endregion
 
-        private void lv_banks_CurrentCellChanged(object sender, EventArgs e)
-        {
-            
-        }
-
         private void Lv_banks_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             if((string)e.Column.Header == "Index")//Is there a more solid way?
@@ -1210,7 +1302,8 @@ namespace MidiSynth7
 
             currentView.HandleEvent(this, new EventArgs(), "InsDEF_Changed");
             ScaleUI(1, 0.8, BDR_InstrumentDefinitionsFrame);
-            FadeUI(1, 0, GR_OverlayContent);
+            ScaleUI(0.8, 1, BDR_SettingsFrame);
+            //FadeUI(1, 0, GR_OverlayContent);
         }
 
         private void Bn_InsDefSetActiveDevice_Click(object sender, RoutedEventArgs e)
@@ -1223,9 +1316,102 @@ namespace MidiSynth7
         private void bn_NFXProfSave_Click(object sender, RoutedEventArgs e)
         {
             //TODO: Save config
+            SaveNFXProfiles();
             currentView.HandleEvent(this, new EventArgs(), "NFX_DelayUpdated");
             ScaleUI(1, 0.8, BDR_NFXDelayCustomizationFrame);
             FadeUI(1, 0, GR_OverlayContent);
+        }
+
+        private void GroupBox_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (SynHelpRequested)
+            {
+                Cursor = Cursors.Arrow;
+                SynHelpRequested = false;
+                if (sender == GB_DelaySettings)
+                {
+                    MessageBox.Show("  • STEP COUNT: How many 'echoed' notes you will hear\r\n\r\n" +
+                        "  • DELAY INTERVAL: How long between each echo, in milliseconds", ((GroupBox)sender).Header.ToString());
+                }
+                if (sender == GB_StepSettings)
+                {
+                    MessageBox.Show("  • RELATIVE PITCH: A range between -36 and 36 half-steps (semi-tones) from the original note. Use 0 If you don't want your echoed notes to change pitch.\r\n\r\n" +
+                        "  • DECAY: A range between 0 (original volume/velocity) and 100 (silent). Use 0 If you don't want your echoed notes be quieter than the original.", ((GroupBox)sender).Header.ToString());
+                }
+                
+            }
+            
+        }
+
+        private void bn_NFXProfAdd_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void bn_NFXProfDel_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void LB_SavedProfiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (LB_SavedProfiles.SelectedItem == null) return;
+            NFXProfileSetEditor((ListBoxItem)LB_SavedProfiles.SelectedItem, NFXProfiles.FirstOrDefault(x => x.ProfileName == (string)((ListBoxItem)LB_SavedProfiles.SelectedItem).Content));
+        }
+
+        private void Lv_steps_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(lv_steps.SelectedItem == null)
+            {
+                GB_StepSettings.Header = "Step Setting";
+                return;
+            }
+            var f = new {Step = 0, Pitch=12, Decay=20 };
+            var item = Cast(f,lv_steps.SelectedItem);
+            Dial_NFX_Decay.SetValueUnsuppressed(item.Decay);
+            Dial_NFX_Pitch.SetValueUnsuppressed(item.Pitch);
+            GB_StepSettings.Header = "Step Setting (Editing step #" + item.Step + ")";
+        }
+
+        //Compiler trickery at its worst
+        private static T Cast<T>(T _, object x) => (T)x;
+
+        private void Dial_NFX_ValChanged(object sender, EventArgs e)
+        {
+            //profile
+            if (LB_SavedProfiles.SelectedItem == null) return;
+            NFXDelayProfile prof = NFXProfiles.FirstOrDefault(x => x.ProfileName == (string)((ListBoxItem)LB_SavedProfiles.SelectedItem).Content);
+            prof.Delay = Dial_NFX_Interval.Value;
+            List<(int pitch, int decay)> newSteps = new List<(int pitch, int decay)>();
+            for (int i = 0; i < Dial_NFX_StepCount.Value; i++)
+            {
+                if(prof.OffsetMap.Count > i)
+                {
+                    newSteps.Add(prof.OffsetMap[i]);
+                }
+                else
+                {
+                    newSteps.Add((0,0));
+
+                }
+            }
+            prof.OffsetMap = newSteps;
+            NFXPopulateSteps(prof);
+        }
+
+        private void Dial_NFX_STEP_ValChanged(object sender, EventArgs e)
+        {
+            if (lv_steps.SelectedIndex < 0) return;
+            if (LB_SavedProfiles.SelectedItem == null) return;
+            NFXDelayProfile prof = NFXProfiles.FirstOrDefault(x => x.ProfileName == (string)((ListBoxItem)LB_SavedProfiles.SelectedItem).Content);
+
+            var offset = prof.OffsetMap[lv_steps.SelectedIndex];
+            prof.OffsetMap.Remove(offset);
+            offset.decay = Dial_NFX_Decay.Value;
+            offset.pitch = Dial_NFX_Pitch.Value;
+            prof.OffsetMap.Insert(lv_steps.SelectedIndex, offset);
+
+
         }
 
         public class ChInvk
