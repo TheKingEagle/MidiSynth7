@@ -16,11 +16,12 @@ namespace MidiSynth7.components
         /// <summary>
         /// Property used to determine pitch and velocity at step.
         /// </summary>
-        public (int pitch,int decay)[] OffsetMap { get; set; }
-        /// <summary>
-        /// Reverse Offset map
-        /// </summary>
-        public bool Reverse { get; set; }
+        public List<(int pitch,int decay)> OffsetMap { get; set; }
+
+        public override string ToString()
+        {
+            return ProfileName;
+        }
 
     }
 }
