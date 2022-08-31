@@ -73,7 +73,7 @@ namespace MidiSynth7.entities.controls
                 return;
             }
             GetCursorPos(out cursorpos cp);
-            Value = GetValueFromPosition(new Point(cp.X,cp.Y));
+            SetValueUnsuppressed(GetValueFromPosition(new Point(cp.X, cp.Y)));
         }
 
         private void el_dial_MouseDown(object sender, MouseButtonEventArgs e)
@@ -202,6 +202,10 @@ namespace MidiSynth7.entities.controls
         #endregion
 
         #region Public Methods
+        /// <summary>
+        /// Modify the value and trigger the value changed event.
+        /// </summary>
+        /// <param name="value"></param>
         public void SetValueUnsuppressed(int value)
         {
             if (value > Maximum)
@@ -213,6 +217,24 @@ namespace MidiSynth7.entities.controls
                 return;
             }
             suppressValueChange = false;
+            Value = value;
+        }
+
+        /// <summary>
+        /// Modify the value without triggering the value changed event.
+        /// </summary>
+        /// <param name="value"></param>
+        public void SetValueSuppressed(int value)
+        {
+            if (value > Maximum)
+            {
+                return;
+            }
+            if (value < Minimum)
+            {
+                return;
+            }
+            suppressValueChange = true;
             Value = value;
         }
         #endregion
