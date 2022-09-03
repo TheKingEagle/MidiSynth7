@@ -836,7 +836,10 @@ namespace MidiSynth7
             
             if(from <= to)
             {
+                if (uielm != this)
+                {
                 uielm.Visibility = Visibility.Visible;
+                }
             }
             double _scale = (uielm != this &&
                              uielm != BDR_InstrumentDefinitionsFrame &&
@@ -851,6 +854,7 @@ namespace MidiSynth7
                 scaler.Completed += (object s, EventArgs e)=> {
                     if (from > to)
                     {
+                        if (uielm == this) return;
                         uielm.Visibility = Visibility.Collapsed;
                     }
                 };
