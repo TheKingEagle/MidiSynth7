@@ -854,7 +854,7 @@ namespace MidiSynth7.components.views
 
                 int[,] channelMapper = new int[3, 4] { { 4, 5, 6, 7 }, { 8, 10, 11, 12 }, { 13, 14, 15, 4 } };
 
-                for (int i = 0; i < count - 1; i++)
+                for (int i = 0; i < count; i++)
                 {
                    await Task.Delay(delay);
                     MidiEngine.MidiNote_Stop(channelMapper[i, ch], note + AppContext.ActiveNFXProfile.OffsetMap[i].pitch, false);
