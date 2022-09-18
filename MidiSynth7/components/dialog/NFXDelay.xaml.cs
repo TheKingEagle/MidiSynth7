@@ -26,18 +26,20 @@ namespace MidiSynth7.components.dialog
             ActiveWindow = win;
             Container = grid;
             NFXProfiles = ActiveWindow.NFXProfiles;
+            PopulateSavedNFXProfiles();
             LB_SavedProfiles.SelectedIndex = 0;
         }
 
-        MainWindow ActiveWindow;
-        Grid Container;
+        private MainWindow ActiveWindow;
+
+        private Grid Container;
+
         public event EventHandler<DialogEventArgs> DialogClosed;
 
         public List<NFXDelayProfile> NFXProfiles = new List<NFXDelayProfile>();
 
-        private NFXDelayProfile _backupProfile;
+        private NFXDelayProfile _backupProfile; //TODO: Implementation backup profile
 
-        
         public string DialogTitle { get => "Customize NoteFX Delay"; set { return; } }
 
         public bool HelpRequested { get; set; }
@@ -50,8 +52,6 @@ namespace MidiSynth7.components.dialog
             }
         }
 
-
-
         #region NFX Logic
         private void bn_NFXProfSave_Click(object sender, RoutedEventArgs e)
         {
@@ -60,20 +60,15 @@ namespace MidiSynth7.components.dialog
             DialogClosed?.Invoke(this, new DialogEventArgs(ActiveWindow, Container));
         }
 
-        private void GroupBox_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            
-
-        }
 
         private void bn_NFXProfAdd_Click(object sender, RoutedEventArgs e)
         {
-
+            //TODO: new profile
         }
 
         private void bn_NFXProfDel_Click(object sender, RoutedEventArgs e)
         {
-
+            //TODO: Delete profile
         }
 
         private void LB_SavedProfiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -149,6 +144,7 @@ namespace MidiSynth7.components.dialog
             }
             LB_SavedProfiles.SelectedIndex = LB_SavedProfiles.Items.Count - 1;
         }
+
         private void NFXProfileSetEditor(ListBoxItem lvItem, NFXDelayProfile profile)
         {
             if (lvItem == null)
@@ -164,6 +160,7 @@ namespace MidiSynth7.components.dialog
             Dial_NFX_StepCount.SetValueSuppressed(profile.OffsetMap.Count);
             NFXPopulateSteps(profile);
         }
+        
         private void NFXPopulateSteps(NFXDelayProfile selected)
         {
             lv_steps.Items.Clear();
