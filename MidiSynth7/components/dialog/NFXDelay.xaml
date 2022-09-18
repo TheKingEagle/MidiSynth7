@@ -1,0 +1,121 @@
+﻿<Page x:Class="MidiSynth7.components.dialog.NFXDelay"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MidiSynth7.components.dialog" xmlns:controls="clr-namespace:MidiSynth7.entities.controls"
+
+      Title="NFXDelay" Foreground="White" SnapsToDevicePixels="True" UseLayoutRounding="True">
+    <Page.Resources>
+        <ResourceDictionary Source="..\..\asset\Themes.xaml"/>
+    </Page.Resources>
+    <Grid Width="690" Height="456" SnapsToDevicePixels="True" UseLayoutRounding="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="353*"/>
+            <RowDefinition Height="55*"/>
+        </Grid.RowDefinitions>
+
+        <GroupBox Header="Saved Profiles" Margin="10,10,0,35" BorderBrush="#FF00CF26" HorizontalAlignment="Left" Width="147">
+            <GroupBox.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FF0C0C0C" Offset="0"/>
+                    <GradientStop Color="#FF000F01" Offset="1"/>
+                </LinearGradientBrush>
+            </GroupBox.Background>
+            <ListBox x:Name="LB_SavedProfiles" Background="{x:Null}" BorderBrush="{x:Null}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" Foreground="White" SelectionChanged="LB_SavedProfiles_SelectionChanged">
+                <ListBoxItem x:Name="LBI_DefaultProfile"  Content="Default"/>
+            </ListBox>
+        </GroupBox>
+
+        <Button x:Name="bn_NFXProfAdd" Content="+ Add" HorizontalAlignment="Left"  Margin="10,0,0,10" Width="71" Background="#FF00400C" BorderThickness="1" BorderBrush="#FF444444" Height="20" VerticalAlignment="Bottom" Click="bn_NFXProfAdd_Click" ToolTip="Make a new profile"/>
+        <Button x:Name="bn_NFXProfDel" Content="- Delete" HorizontalAlignment="Left"  Margin="86,0,0,10" Width="71" Background="#FF400000" BorderThickness="1" BorderBrush="#FF444444" Height="20" VerticalAlignment="Bottom" Click="bn_NFXProfDel_Click" ToolTip="Delete the selected profile... Unless it's the default profile." />
+
+        <GroupBox x:Name="gb_NFXProfEditor" Header="Editor" Margin="162,10,10,10" BorderBrush="#FF0055CF" IsEnabled="True" SnapsToDevicePixels="True">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="106*"/>
+                    <ColumnDefinition Width="149*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FF0C0C0C" Offset="0"/>
+                        <GradientStop Color="#FF000742" Offset="1"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
+
+                <GroupBox Header="Profile Details" Height="107" Margin="10,10,5,0" VerticalAlignment="Top" BorderBrush="#FF00B3CF">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="32*"/>
+                            <ColumnDefinition Width="32*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Foreground="White" Margin="10,0,39,59" Padding="0,2,0,0" Height="23" VerticalAlignment="Bottom">Name:</Label>
+                        <TextBox x:Name="TB_NFX_profile_name" HorizontalAlignment="Left" Height="23" Margin="56,0,0,59" TextWrapping="Wrap" Text="" VerticalAlignment="Bottom" Width="123" Background="#FF323232" Foreground="White" Grid.ColumnSpan="2" Padding="0,2,0,0"/>
+                        <Button x:Name="BN_NFX_Duplicate" Content="Duplicate" Margin="10,0,2,10" VerticalAlignment="Bottom" Background="Black" ToolTip="Copy this profile into a new one"/>
+                        <Button x:Name="BN_NFX_ResetValues" Content="Revert" HorizontalAlignment="Left" Margin="2,0,0,10" VerticalAlignment="Bottom" Width="81" Background="#FF340000" Grid.Column="1" ToolTip="Undo all changes made to this profile since last save."/>
+                        <Button x:Name="BN_NFX_Import" Content="Import" Margin="10,0,2,33" VerticalAlignment="Bottom" Background="Black" ToolTip="Import settings into this profile"/>
+                        <Button x:Name="BN_NFX_Export" Content="Export" HorizontalAlignment="Left" Margin="2,0,0,33" VerticalAlignment="Bottom" Width="81" Background="Black" Grid.Column="1" ToolTip="Export current profile"/>
+                    </Grid>
+                </GroupBox>
+
+                <GroupBox x:Name="GB_DelaySettings" Header="Delay Setting" Height="165" Margin="5,10,10,0" VerticalAlignment="Top" BorderBrush="#FFCF5E00" Grid.Column="1" MouseUp="GroupBox_MouseUp">
+                    <Grid>
+                        <controls:DialControl x:Name="Dial_NFX_StepCount" HorizontalAlignment="Left" Height="62" Width="68" Margin="10,10,0,10" Text="STEP COUNT" Value="1" Maximum="3" Minimum="1" ValueChanged="Dial_NFX_ValChanged" ToolTip="How many &quot;echoed&quot; notes you will hear"/>
+                        <controls:DialControl x:Name="Dial_NFX_Interval" Height="62" Width="68" Margin="140,10,0,10" Text="DELAY INTERVAL" Value="10" Maximum="2500" Minimum="10" HorizontalAlignment="Left" ValueChanged="Dial_NFX_ValChanged" ToolTip="The delay between each echo, in milliseconds. Range: 10 - 2500"/>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Header="Echo Steps" Margin="10,122,5,10" BorderBrush="#FFFFE800">
+                    <Grid>
+                        <DataGrid RowHeaderWidth="0" Padding="2" x:Name="lv_steps" AutoGenerateColumns="false" Background="#FF2E2E2E" BorderBrush="#FFFFE800" SelectionChanged="Lv_steps_SelectionChanged" Foreground="White" GridLinesVisibility="None" RowBackground="#FF212020" AlternatingRowBackground="#FF303030" CanUserReorderColumns="False" CanUserSortColumns="False" CanUserDeleteRows="False" CanUserAddRows="False" CanUserResizeRows="False" SelectionMode="Single" IsReadOnly="True" Margin="0,10,0,0">
+                            <DataGrid.Resources>
+                                <Style BasedOn="{StaticResource {x:Type DataGridColumnHeader}}" TargetType="{x:Type DataGridColumnHeader}">
+                                    <Setter Property="Background" Value="#646464" />
+                                    <Setter Property="Foreground" Value="#fff" />
+                                </Style>
+                            </DataGrid.Resources>
+                            <DataGrid.Columns>
+
+                                <DataGridTextColumn Header="Step" Binding="{Binding Step}" MinWidth="50"/>
+                                <DataGridTextColumn Header="Pitch" Binding="{Binding Pitch}" MinWidth="50"/>
+                                <DataGridTextColumn Header="Decay" Binding="{Binding Decay}" MinWidth="50"/>
+                            </DataGrid.Columns>
+
+                        </DataGrid>
+                    </Grid>
+                </GroupBox>
+
+                <GroupBox x:Name="GB_StepSettings" Header="Step Setting" Margin="0,180,10,10" BorderBrush="#FFFFE800" Grid.Column="1" HorizontalAlignment="Right" Width="283" MouseUp="GroupBox_MouseUp">
+                    <Grid>
+                        <controls:DialControl x:Name="Dial_NFX_Pitch" Height="62" Width="68" Margin="10,10,0,0" Text="RELATIVE PITCH" Maximum="36" Minimum="-36" ValueChanged="Dial_NFX_STEP_ValChanged" VerticalAlignment="Top" HorizontalAlignment="Left" ToolTip="Pitch for the selected step (echo) in relation to the note originally played. Example: 0 will result in no change. -12 will be one octave lower."/>
+                        <controls:DialControl x:Name="Dial_NFX_Decay" Height="62" Width="68" Margin="140,10,0,0" Text="DECAY" Maximum="100" VerticalAlignment="Top" Value="100" ValueChanged="Dial_NFX_STEP_ValChanged" HorizontalAlignment="Left" ToolTip="Decay: The volume relative to the original note. Example: 0 will have no change to volume, while 50 will be 50% quieter than the original note."/>
+                    </Grid>
+                </GroupBox>
+            </Grid>
+        </GroupBox>
+        <Grid Grid.Row="1">
+            <Grid.Background>
+                <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                    <LinearGradientBrush.Transform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </LinearGradientBrush.Transform>
+                    <LinearGradientBrush.RelativeTransform>
+                        <TransformGroup>
+                            <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                            <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                            <RotateTransform CenterY="0.5" CenterX="0.5" Angle="270"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </LinearGradientBrush.RelativeTransform>
+                    <GradientStop Color="#FF0A1932" Offset="1"/>
+                    <GradientStop Color="#FF151515" Offset="0.547"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+            <Button x:Name="bn_NFXProfSave" Content="Save &amp; Close" HorizontalAlignment="Right"  Margin="0,14,10,14" Width="89" Background="#FF001D40" BorderBrush="White" BorderThickness="1" Click="bn_NFXProfSave_Click" Grid.Row="1" ToolTip="Commit to the bit... lol"/>
+        </Grid>
+    </Grid>
+</Page>

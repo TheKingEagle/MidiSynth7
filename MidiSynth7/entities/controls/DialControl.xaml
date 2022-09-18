@@ -117,7 +117,7 @@
 
         </Canvas>
 
-        <Label x:Name="la_CtrlID" Content="CONTROL VALUE" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" FontWeight="Bold" Height="18" Padding="0" Width="121" HorizontalContentAlignment="Center"/>
+        <Label x:Name="la_CtrlID" IsHitTestVisible="False" Content="CONTROL VALUE" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" FontWeight="Bold" Height="18" Padding="0" Width="121" HorizontalContentAlignment="Center"/>
         
         <Label x:Name="la_Value"  Content="0" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" FontWeight="Bold" Height="30" Padding="0" Width="94" HorizontalContentAlignment="Center" Margin="13,53,0,0" FontSize="20" Background="{x:Null}" BorderBrush="{x:Null}" IsTabStop="False" IsEnabled="False">
             <Label.Effect>

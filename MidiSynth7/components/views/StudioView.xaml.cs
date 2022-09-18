@@ -868,9 +868,7 @@ namespace MidiSynth7.components.views
 
         private void BN_CustomizeDelay_Click(object sender, RoutedEventArgs e)
         {
-            AppContext.PopulateSavedNFXProfiles();
-            AppContext.FadeUI(0, 1, AppContext.GR_OverlayContent);
-            AppContext.ScaleUI(0.8, 1, AppContext.BDR_NFXDelayCustomizationFrame);
+            AppContext.ShowNFX();
         }
 
         private void Dials_TextPromptStateChanged(object sender, EventArgs e)

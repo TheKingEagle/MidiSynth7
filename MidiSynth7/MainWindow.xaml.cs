@@ -22,6 +22,7 @@ using System.ComponentModel;
 using Sanford.Multimedia.Midi;
 using MidiSynth7.entities.controls;
 using System.Collections.ObjectModel;
+using MidiSynth7.components.dialog;
 
 namespace MidiSynth7
 {
@@ -219,7 +220,6 @@ namespace MidiSynth7
             GR_OverlayContent.Visibility = Visibility.Collapsed;
             GR_OverlayContent.Opacity = 0;
             BDR_SettingsFrame.Visibility = Visibility.Collapsed;
-            BDR_NFXDelayCustomizationFrame.Visibility = Visibility.Collapsed;
             BDR_InstrumentDefinitionsFrame.Visibility = Visibility.Collapsed;
             Loadview(AppConfig.DisplayMode);
         }
@@ -599,42 +599,6 @@ namespace MidiSynth7
             LB_SavedDefs.SelectedIndex = LB_SavedDefs.Items.Count - 1;
         }
 
-        internal void PopulateSavedNFXProfiles()
-        {
-            LB_SavedProfiles.Items.Clear();
-
-            foreach (NFXDelayProfile item in NFXProfiles)
-            {
-                LB_SavedProfiles.Items.Add(new ListBoxItem() { Content = item.ProfileName });
-            }
-            LB_SavedProfiles.SelectedIndex = LB_SavedProfiles.Items.Count - 1;
-        }
-        private void NFXProfileSetEditor(ListBoxItem lvItem, NFXDelayProfile profile)
-        {
-            if (lvItem == null)
-            {
-                gb_NFXProfEditor.IsEnabled = false;
-                return;
-            }
-            gb_NFXProfEditor.IsEnabled = true;
-            _backupProfile = profile;
-            
-            TB_NFX_profile_name.Text = (string)lvItem.Content;
-            _NFXProfileNameDirty = false;
-            Dial_NFX_Interval.SetValueSuppressed(profile.Delay);
-            Dial_NFX_StepCount.SetValueSuppressed(profile.OffsetMap.Count);
-            NFXPopulateSteps(profile);
-        }
-        private void NFXPopulateSteps(NFXDelayProfile selected)
-        {
-            lv_steps.Items.Clear();
-            for (int i = 0; i < selected.OffsetMap.Count; i++)
-            {
-                lv_steps.Items.Add(new { Step = i + 1, Pitch = selected.OffsetMap[i].pitch, Decay = selected.OffsetMap[i].decay });
-            }
-            lv_steps.SelectedIndex = 0;
-        }
-
         private void InsDefSetEditor(ListBoxItem lvItem, InstrumentDefinition insdf)
         {
             if (lvItem == null)
@@ -843,7 +807,7 @@ namespace MidiSynth7
             }
             double _scale = (uielm != this &&
                              uielm != BDR_InstrumentDefinitionsFrame &&
-                             uielm != BDR_SettingsFrame) ? scale : 1; //exclude scaling to some elements (thanks to WPF blurring :))
+                             uielm != BDR_SettingsFrame && uielm.GetType() != typeof(Dialog)) ? scale : 1; //exclude scaling to some elements (thanks to WPF blurring :))
             ScaleTransform trans = new ScaleTransform();
             uielm.RenderTransform = trans;
             uielm.RenderTransformOrigin = new Point(originX,originY);
@@ -856,6 +820,10 @@ namespace MidiSynth7
                     {
                         if (uielm == this) return;
                         uielm.Visibility = Visibility.Collapsed;
+                        if(uielm.GetType() == typeof(Dialog))
+                        {
+                            ((Dialog)uielm).OnDialogAnimationComplete(GR_OverlayContent);
+                        }
                     }
                 };
                 scaler.AutoReverse = false;
@@ -1317,105 +1285,15 @@ namespace MidiSynth7
 
         }
 
-        private void bn_NFXProfSave_Click(object sender, RoutedEventArgs e)
+        public void ShowNFX()
         {
-            //TODO: Save config
-            SaveNFXProfiles();
-            currentView.HandleEvent(this, new EventArgs(), "NFX_DelayUpdated");
-            ScaleUI(1, 0.8, BDR_NFXDelayCustomizationFrame);
-            FadeUI(1, 0, GR_OverlayContent);
-        }
-
-        private void GroupBox_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (SynHelpRequested)
+            if (GR_OverlayContent.Visibility == Visibility.Visible)
             {
-                Cursor = Cursors.Arrow;
-                SynHelpRequested = false;
-                if (sender == GB_DelaySettings)
-                {
-                    MessageBox.Show("  • STEP COUNT: How many 'echoed' notes you will hear\r\n\r\n" +
-                        "  • DELAY INTERVAL: How long between each echo, in milliseconds", ((GroupBox)sender).Header.ToString());
-                }
-                if (sender == GB_StepSettings)
-                {
-                    MessageBox.Show("  • RELATIVE PITCH: A range between -36 and 36 half-steps (semi-tones) from the original note. Use 0 If you don't want your echoed notes to change pitch.\r\n\r\n" +
-                        "  • DECAY: A range between 0 (original volume/velocity) and 100 (silent). Use 0 If you don't want your echoed notes be quieter than the original.", ((GroupBox)sender).Header.ToString());
-                }
-                
-            }
-            
-        }
-
-        private void bn_NFXProfAdd_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void bn_NFXProfDel_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void LB_SavedProfiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (LB_SavedProfiles.SelectedItem == null) return;
-            NFXProfileSetEditor((ListBoxItem)LB_SavedProfiles.SelectedItem, NFXProfiles.FirstOrDefault(x => x.ProfileName == (string)((ListBoxItem)LB_SavedProfiles.SelectedItem).Content));
-        }
-
-        private void Lv_steps_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if(lv_steps.SelectedItem == null)
-            {
-                GB_StepSettings.Header = "Step Setting";
                 return;
             }
-            var f = new {Step = 0, Pitch=12, Decay=20 };
-            var item = Cast(f,lv_steps.SelectedItem);
-            Dial_NFX_Decay.SetValueUnsuppressed(item.Decay);
-            Dial_NFX_Pitch.SetValueUnsuppressed(item.Pitch);
-            GB_StepSettings.Header = "Step Setting (Editing step #" + item.Step + ")";
-        }
-
-        //Compiler trickery at its worst
-        private static T Cast<T>(T _, object x) => (T)x;
-
-        private void Dial_NFX_ValChanged(object sender, EventArgs e)
-        {
-            //profile
-            if (LB_SavedProfiles.SelectedItem == null) return;
-            NFXDelayProfile prof = NFXProfiles.FirstOrDefault(x => x.ProfileName == (string)((ListBoxItem)LB_SavedProfiles.SelectedItem).Content);
-            prof.Delay = Dial_NFX_Interval.Value;
-            List<(int pitch, int decay)> newSteps = new List<(int pitch, int decay)>();
-            for (int i = 0; i < Dial_NFX_StepCount.Value; i++)
-            {
-                if(prof.OffsetMap.Count > i)
-                {
-                    newSteps.Add(prof.OffsetMap[i]);
-                }
-                else
-                {
-                    newSteps.Add((0,0));
-
-                }
-            }
-            prof.OffsetMap = newSteps;
-            NFXPopulateSteps(prof);
-        }
-
-        private void Dial_NFX_STEP_ValChanged(object sender, EventArgs e)
-        {
-            if (lv_steps.SelectedIndex < 0) return;
-            if (LB_SavedProfiles.SelectedItem == null) return;
-            NFXDelayProfile prof = NFXProfiles.FirstOrDefault(x => x.ProfileName == (string)((ListBoxItem)LB_SavedProfiles.SelectedItem).Content);
-
-            var offset = prof.OffsetMap[lv_steps.SelectedIndex];
-            prof.OffsetMap.Remove(offset);
-            offset.decay = Dial_NFX_Decay.Value;
-            offset.pitch = Dial_NFX_Pitch.Value;
-            prof.OffsetMap.Insert(lv_steps.SelectedIndex, offset);
-
-
+            Dialog g = new Dialog();
+            g.SnapsToDevicePixels = true;
+            g.ShowDialog(new NFXDelay(this, GR_OverlayContent), this, GR_OverlayContent);
         }
 
         public class ChInvk

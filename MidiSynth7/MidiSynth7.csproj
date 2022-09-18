@@ -110,10 +110,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="components\DialogView.cs" />
+    <Compile Include="components\dialog\NFXDelay.xaml.cs">
+      <DependentUpon>NFXDelay.xaml</DependentUpon>
+    </Compile>
     <Compile Include="components\NFXDelayProfile.cs" />
     <Compile Include="components\SynthKey.cs" />
     <Compile Include="components\WindowHelper.cs" />
     <Page Include="asset\themes.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="components\dialog\NFXDelay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -132,6 +140,10 @@
     <Page Include="entities\controls\DialControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="entities\controls\Dialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="entities\controls\PianoControl.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -173,6 +185,9 @@
     </Compile>
     <Compile Include="entities\controls\DialControl.xaml.cs">
       <DependentUpon>DialControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="entities\controls\Dialog.xaml.cs">
+      <DependentUpon>Dialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="entities\KeyTypes.cs" />
     <Compile Include="entities\controls\PianoControl.xaml.cs">
@@ -279,5 +294,6 @@
   <ItemGroup>
     <Resource Include="syn6.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
