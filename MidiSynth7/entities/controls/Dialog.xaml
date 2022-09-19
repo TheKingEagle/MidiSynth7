@@ -9,7 +9,7 @@
     </UserControl.Resources>
 
     <!--DELAY CUSTOMIZER -->
-    <Border x:Name="BDR_NFXDelayCustomizationFrame" HorizontalAlignment="Center" Visibility="Visible" VerticalAlignment="Center" Width="692" Height="498" BorderBrush="#FF008BFF" BorderThickness="1" CornerRadius="4,4,0,0" RenderTransformOrigin="0.5,0.5" Background="#FF0C0C0C" SnapsToDevicePixels="True">
+    <Border x:Name="BDR_NFXDelayCustomizationFrame" HorizontalAlignment="Center" Visibility="Visible" VerticalAlignment="Center" MinWidth="240" MinHeight="160" BorderBrush="#FF008BFF" BorderThickness="1" CornerRadius="4,4,0,0" RenderTransformOrigin="0.5,0.5" Background="#FF0C0C0C" SnapsToDevicePixels="True">
         <Border.Effect>
             <DropShadowEffect Color="#FF6CB5FF" Direction="0" ShadowDepth="0" BlurRadius="12"/>
         </Border.Effect>
@@ -17,7 +17,7 @@
             <!--#region TITLE-->
             <Border Height="40" VerticalAlignment="Top" HorizontalAlignment="Stretch" BorderThickness="0,0,0,1" CornerRadius="4,4,0,0" Background="#FF00163E" BorderBrush="#FF008BFF">
                 <Grid>
-                    <Canvas HorizontalAlignment="Stretch" RenderTransformOrigin="0.5,0.5" Margin="0,5">
+                    <Canvas HorizontalAlignment="Stretch" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Stretch">
                         <Canvas.RenderTransform>
                             <TransformGroup>
                                 <ScaleTransform ScaleX="1" ScaleY="1"/>
@@ -26,10 +26,10 @@
                                 <TranslateTransform/>
                             </TransformGroup>
                         </Canvas.RenderTransform>
-                        <Image Width="28" Height="28" HorizontalAlignment="Left" Source="/MidiSynth7;component/synthico.png" Margin="3.5,0,0,0" RenderOptions.BitmapScalingMode="Fant"/>
 
-                        <TextBlock Margin="36,0,0,0" VerticalAlignment="Center" Canvas.Top="0" FontSize="20" Text="Dialog Title" x:Name="Dlg_TitleBlock"></TextBlock>
                     </Canvas>
+                        <Image Width="28" Height="28" HorizontalAlignment="Left" Source="/MidiSynth7;component/synthico.png" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant" Margin="6,0,0,0"/>
+                        <TextBlock Margin="38,6,39,6" VerticalAlignment="Center" FontSize="20" Height="auto" Width="auto" Text="Dialog Box Text" MaxWidth="720" x:Name="Dlg_TitleBlock" TextTrimming="WordEllipsis"></TextBlock>
                     <Button MinHeight="24" MinWidth="24" x:Name="BNHelpRequested" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,8,10,7" Click="BNHelpRequested_Click" Background="#FF002A83">
                         <Run FontWeight ="Normal" Text="❓" FontFamily="Segoe UI"></Run>
                     </Button>

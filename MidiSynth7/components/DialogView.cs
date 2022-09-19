@@ -14,6 +14,8 @@ namespace MidiSynth7.components
 
         bool HelpRequested { get; set; }
 
+        bool CanRequestHelp { get; }
+
         event EventHandler<DialogEventArgs> DialogClosed;
 
         void InvokeHelpRequested(Control target);

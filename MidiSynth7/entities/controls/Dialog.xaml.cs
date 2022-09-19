@@ -1,4 +1,5 @@
 ﻿using MidiSynth7.components;
+using MidiSynth7.components.dialog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,11 +47,19 @@ namespace MidiSynth7.entities.controls
 
         public void ShowDialog(IDialogView View, MainWindow window, Grid container)
         {
-            if (shown) return;
+            if (shown)
+            {
+                //Fade out the dialog when switching from one view to the other if already shown.
+                window.FadeUI(1, 0, container);
+                window.ScaleUI(1, 0.8, this);
+            }
+
             shown = true;
             activeDialog = View;
             Dlg_TitleBlock.Text = activeDialog.DialogTitle;
-            activeDialog.DialogClosed += ActiveDialog_DialogClosed; ;
+            activeDialog.DialogClosed += ActiveDialog_DialogClosed;
+            BNHelpRequested.Visibility = activeDialog.CanRequestHelp ? Visibility.Visible : Visibility.Collapsed;
+            BNHelpRequested.IsEnabled = activeDialog.CanRequestHelp;
             FR_dialogView.Content = View;
             container.Children.Add(this);
             window.FadeUI(0, 1, container);
@@ -105,6 +114,13 @@ namespace MidiSynth7.entities.controls
         public static T GetElementUnderMouse<T>() where T : UIElement
         {
             return FindVisualParent<T>(Mouse.DirectlyOver as UIElement);
+        }
+
+        public static void Message(MainWindow win, Grid container, string text,string caption, Icons icon)
+        {
+            if (container.Visibility == Visibility.Visible) return;
+            Dialog d = new Dialog();
+            d.ShowDialog(new Message(win, container, caption, text, icon), win, container);
         }
     }
 }
