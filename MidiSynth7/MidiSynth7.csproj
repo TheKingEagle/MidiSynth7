@@ -111,8 +111,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="components\DialogView.cs" />
+    <Compile Include="components\dialog\Message.xaml.cs">
+      <DependentUpon>Message.xaml</DependentUpon>
+    </Compile>
     <Compile Include="components\dialog\NFXDelay.xaml.cs">
       <DependentUpon>NFXDelay.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="components\dialog\Settings.xaml.cs">
+      <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
     <Compile Include="components\NFXDelayProfile.cs" />
     <Compile Include="components\SynthKey.cs" />
@@ -121,7 +127,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="components\dialog\Message.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="components\dialog\NFXDelay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="components\dialog\Settings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

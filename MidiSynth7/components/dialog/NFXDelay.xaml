@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:MidiSynth7.components.dialog" xmlns:controls="clr-namespace:MidiSynth7.entities.controls"
 
-      Title="NFXDelay" Foreground="White" SnapsToDevicePixels="True" UseLayoutRounding="True">
+      Title="NFXDelay" Foreground="White" SnapsToDevicePixels="True" UseLayoutRounding="True" Background="#FF0C0C0C">
     <Page.Resources>
         <ResourceDictionary Source="..\..\asset\Themes.xaml"/>
     </Page.Resources>

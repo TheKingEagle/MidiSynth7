@@ -45,10 +45,9 @@ namespace MidiSynth7
         private NFXDelayProfile _backupProfile { get; set; }
 
         private UIElement _elementFromanim = null;
-        private DisplayModes _switchto = DisplayModes.Standard;
-        private ISynthView currentView;
-        private DisplayModes CurrentViewDM;
-        private List<(string name,bool value)> checkstates = new List<(string name, bool value)>();
+        internal DisplayModes _switchto = DisplayModes.Standard;
+        internal ISynthView currentView;
+        internal DisplayModes CurrentViewDM;
         
 
         public bool SynHelpRequested { get; private set; }
@@ -126,31 +125,7 @@ namespace MidiSynth7
 
             appinfo_projectRevision = Assembly.GetExecutingAssembly().GetName().Version.Revision;
             AppConfig = LoadConfig();
-            CFGCB_SynthRelay1.IsChecked = AppConfig.Input1RelayMode;
-            CFGCB_SynthRelay2.IsChecked = AppConfig.Input2RelayMode;
-
-            switch (AppConfig.DisplayMode)
-            {
-                case DisplayModes.Standard:
-                    rb_syncfg_Standard.IsChecked = true;
-                    break;
-                case DisplayModes.Studio:
-                    rb_syncfg_Extended.IsChecked = true;
-
-                    break;
-                case DisplayModes.Compact:
-                    rb_syncfg_Micro.IsChecked = true;
-
-                    break;
-                default:
-                    rb_syncfg_Standard.IsChecked = true;
-                    break;
-            }
-            for (int i = 0; i < 9; i++)
-            {
-                CheckBox cbparam = WP_AllowedParams.Children[i] as CheckBox;
-                cbparam.IsChecked = AppConfig.InDeviceAllowedParams[i];
-            }
+            
             if (!string.IsNullOrWhiteSpace(AppConfig.InstrumentDefinitionPath))
             {
                 if (!File.Exists(AppConfig.InstrumentDefinitionPath))
@@ -219,7 +194,6 @@ namespace MidiSynth7
 
             GR_OverlayContent.Visibility = Visibility.Collapsed;
             GR_OverlayContent.Opacity = 0;
-            BDR_SettingsFrame.Visibility = Visibility.Collapsed;
             BDR_InstrumentDefinitionsFrame.Visibility = Visibility.Collapsed;
             Loadview(AppConfig.DisplayMode);
         }
@@ -273,12 +247,10 @@ namespace MidiSynth7
 
         private void Bn_Settings_Click(object sender, RoutedEventArgs e)
         {
-            if (GR_OverlayContent.Opacity == 1 && GR_OverlayContent.Visibility == Visibility.Visible) return;
-            
-            FadeUI(0, 1, GR_OverlayContent);
-            //hide the other bdr windows
-            GR_OverlayContent.Children.OfType<Border>().ToList().ForEach(x => x.Visibility = Visibility.Collapsed);
-            ScaleUI(0.8, 1, BDR_SettingsFrame);
+            if (GR_OverlayContent.Visibility == Visibility.Visible) return;
+            Dialog g = new Dialog();
+            g.SnapsToDevicePixels = true;
+            g.ShowDialog(new Settings(AppConfig,this,g), this, GR_OverlayContent);
         }
 
         private void Bn_Maximize_Click(object sender, RoutedEventArgs e)
@@ -288,7 +260,9 @@ namespace MidiSynth7
 
         private void Bn_about_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("The ultimate music machine... This is gonna be replaced with a real about screen soon", Assembly.GetExecutingAssembly().GetName().Name);
+            Dialog.Message(this, GR_OverlayContent, 
+                "", 
+                "RMSoftware MIDI Synthesizer 7.0", Icons.Info);
         }
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -312,93 +286,15 @@ namespace MidiSynth7
         #endregion
 
         #region Config-View Interaction
-        private void Cm_InputDevices_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ////for program start
-            //if (MidiEngine.inDevice != null)
-            //{
-            //    MidiEngine.inDevice.StopRecording();
-            //    MidiEngine.inDevice.Close();
-            //}
-            //if (cm_InputDevices.SelectedIndex > -1)
-            //{
-            //    MidiEngine.inDevice = new Sanford.Multimedia.Midi.InputDevice(((NumberedEntry)cm_InputDevices.SelectedItem).Index);
-            //    MidiEngine.inDevice.ChannelMessageReceived += InDevice_ChannelMessageReceived;
-            //    MidiEngine.inDevice.StartRecording();
-            //}
-
-            //if (MidiEngine.inDevice2 != null)
-            //{
-            //    MidiEngine.inDevice2.StopRecording();
-            //    MidiEngine.inDevice2.Close();
-            //}
-            //if (cm_InputDevices2.SelectedIndex > -1)
-            //{
-            //    MidiEngine.inDevice2 = new Sanford.Multimedia.Midi.InputDevice(((NumberedEntry)cm_InputDevices2.SelectedItem).Index);
-            //    MidiEngine.inDevice2.ChannelMessageReceived += InDevice_ChannelMessageReceived;
-            //    MidiEngine.inDevice2.StartRecording();
-            //}
-        }
-
-        private void Bn_cfgSave_Click(object sender, RoutedEventArgs e)
-        {
-            AppConfig.ActiveInputDeviceIndex = cm_InputDevices.SelectedIndex;
-            AppConfig.ActiveInputDevice2Index = cm_InputDevices2.SelectedIndex;
-
-            for (int i = 0; i < 9; i++)
-            {
-                CheckBox cbcfg = WP_AllowedParams.Children[i] as CheckBox;
-                AppConfig.InDeviceAllowedParams[i] = cbcfg.IsChecked.Value;
-            }
-
-            AppConfig.DisplayMode = rb_syncfg_Extended.IsChecked.Value 
-                ? DisplayModes.Studio : rb_syncfg_Micro.IsChecked.Value 
-                ? DisplayModes.Compact : DisplayModes.Standard;
-            AppConfig.Input1RelayMode = CFGCB_SynthRelay1.IsChecked.Value;
-            AppConfig.Input2RelayMode = CFGCB_SynthRelay2.IsChecked.Value;
-            if (AppConfig.DisplayMode == CurrentViewDM)
-            {
-                currentView.HandleEvent(this, new EventArgs(), "RefMainWin");
-                currentView.HandleEvent(sender, new EventArgs(), "RefAppConfig");
-            }
-            if (AppConfig.DisplayMode != CurrentViewDM)
-            {
-                SwitchView(AppConfig.DisplayMode);
-            }
-            SaveConfig();
-
-            ScaleUI(1, 0.8, BDR_SettingsFrame);
-            FadeUI(1, 0, GR_OverlayContent);
-
-        }
 
         private void CfgHelpRequested_Click(object sender, RoutedEventArgs e)
         {
-            checkstates.Clear();
-            foreach (CheckBox item in WindowHelper.FindVisualChildren<CheckBox>(BDR_SettingsFrame))
-            {
-                checkstates.Add((item.Name, item.IsChecked.Value));
-            }
+            
 
             SynHelpRequested = !SynHelpRequested;
             Cursor = SynHelpRequested ? Cursors.Help : Cursors.Arrow;
         }
 
-        private void RelayMode_Click(object sender, RoutedEventArgs e)
-        {
-            if(SynHelpRequested)
-            {
-                CfgHelpRequest_RestoreCheckStates();
-                Cursor = Cursors.Arrow;
-                SynHelpRequested = false;
-                MessageBox.Show("If checked, MIDI messages sent by the device will be processed as they are received. " +
-                    "If unchecked, the message will be modified to the parameters set by the synth (Transpose, octave, instruments, etc.)\r\n\r\n" +
-                    "Note: Certain parameters such as instrument selection, and control changes will affect midi output " +
-                    "regardless of the setting. The difference is, when checked, control changes made within the synth will be " +
-                    "overridden by the device when the device sends an event making the change.\r\n\r\n" +
-                    "It is recommended to leave unchecked if the selected device is an external keyboard starting on the A0 key.","MIDI Device Relay Mode");
-            }
-        }
 
         private void Gr_OverlayContent_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
@@ -409,25 +305,6 @@ namespace MidiSynth7
             //    this.Cursor = Cursors.Arrow;
             //    SynHelpRequested = false;
             //}
-        }
-
-        private void GB_AllowedParams_PreviewMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            CfgHelpRequest_RestoreCheckStates();
-            e.Handled = false;
-            if (SynHelpRequested)
-            {
-                this.Cursor = Cursors.Arrow;
-                SynHelpRequested = false;
-                MessageBox.Show("Filters MIDI events sent by the device. When the device is in relay mode, these settings are ignored, meaning all events received from the device are processed by the synth.","Allowed Device Control Parameters");
-            }
-        }
-
-        private void Bn_cfgLaunchInsdef_Click(object sender, RoutedEventArgs e)
-        {
-            PopulateSavedDefinitions();
-            ScaleUI(1, 0.8, BDR_SettingsFrame);
-            ScaleUI(0.8, 1, BDR_InstrumentDefinitionsFrame);
         }
 
         #endregion
@@ -649,11 +526,7 @@ namespace MidiSynth7
                 InputDevices.Add(new NumberedEntry(midiInIndex, item));
                 midiInIndex++;
             }
-            foreach (NumberedEntry item in InputDevices)
-            {
-                cm_InputDevices.Items.Add(item);
-                cm_InputDevices2.Items.Add(item);
-            }
+            
             int midiOutIndex = 0;
             foreach (string item in MidiEngine.GetOutputDevices())
             {
@@ -760,7 +633,7 @@ namespace MidiSynth7
             WindowHelper.PostitionWindowOnScreen(this);
         }
 
-        private void SwitchView(DisplayModes mode)
+        internal void SwitchView(DisplayModes mode)
         {
             //hide the window for a minute
 
@@ -806,8 +679,7 @@ namespace MidiSynth7
                 }
             }
             double _scale = (uielm != this &&
-                             uielm != BDR_InstrumentDefinitionsFrame &&
-                             uielm != BDR_SettingsFrame && uielm.GetType() != typeof(Dialog)) ? scale : 1; //exclude scaling to some elements (thanks to WPF blurring :))
+                             uielm != BDR_InstrumentDefinitionsFrame && uielm.GetType() != typeof(Dialog)) ? scale : 1; //exclude scaling to some elements (thanks to WPF blurring :))
             ScaleTransform trans = new ScaleTransform();
             uielm.RenderTransform = trans;
             uielm.RenderTransformOrigin = new Point(originX,originY);
@@ -986,14 +858,7 @@ namespace MidiSynth7
             }
         }
 
-        private void CfgHelpRequest_RestoreCheckStates()
-        {
-            foreach (var item in checkstates)
-            {
-                CheckBox cb = this.FindName(item.name) as CheckBox;
-                cb.IsChecked = item.value;
-            }
-        }
+        
 
         #endregion
 
@@ -1013,15 +878,7 @@ namespace MidiSynth7
                 MidiEngine.FileLoadComplete += MidiEngine_FileLoadComplete;
                 MidiEngine.SequenceBuilder_Completed += MidiEngine_SequenceBuilder_Completed;
 
-                //set in device
-                if (AppConfig.ActiveInputDeviceIndex < cm_InputDevices.Items.Count)
-                {
-                    cm_InputDevices.SelectedIndex = AppConfig.ActiveInputDeviceIndex;
-                }
-                if (AppConfig.ActiveInputDevice2Index < cm_InputDevices2.Items.Count)
-                {
-                    cm_InputDevices2.SelectedIndex = AppConfig.ActiveInputDevice2Index;
-                }
+                
                 //tell view we updated shit
                 view.HandleEvent(this, new EventArgs(), "RefMainWin");
                 view.HandleEvent(this, new EventArgs(), "MTaskWorker");
@@ -1030,9 +887,9 @@ namespace MidiSynth7
                     MidiEngine.inDevice.StopRecording();
                     MidiEngine.inDevice.Close();
                 }
-                if (cm_InputDevices.SelectedIndex > -1)
+                if (AppConfig.ActiveInputDeviceIndex > -1)
                 {
-                    MidiEngine.inDevice = new Sanford.Multimedia.Midi.InputDevice(((NumberedEntry)cm_InputDevices.SelectedItem).Index);
+                    MidiEngine.inDevice = new Sanford.Multimedia.Midi.InputDevice(AppConfig.ActiveInputDeviceIndex);
                     MidiEngine.inDevice.PostDriverCallbackToDelegateQueue = false;
                     MidiEngine.inDevice.PostEventsOnCreationContext = false;
                     MidiEngine.inDevice.ChannelMessageReceived += InDevice_ChannelMessageReceived;
@@ -1044,9 +901,9 @@ namespace MidiSynth7
                     MidiEngine.inDevice2.StopRecording();
                     MidiEngine.inDevice2.Close();
                 }
-                if (cm_InputDevices2.SelectedIndex > -1)
+                if (AppConfig.ActiveInputDevice2Index > -1)
                 {
-                    MidiEngine.inDevice2 = new Sanford.Multimedia.Midi.InputDevice(((NumberedEntry)cm_InputDevices2.SelectedItem).Index);
+                    MidiEngine.inDevice2 = new Sanford.Multimedia.Midi.InputDevice(AppConfig.ActiveInputDevice2Index);
                     MidiEngine.inDevice2.PostDriverCallbackToDelegateQueue = false;
                     MidiEngine.inDevice2.PostEventsOnCreationContext = false;
                     MidiEngine.inDevice2.ChannelMessageReceived += InDevice_ChannelMessageReceived;
@@ -1269,12 +1126,12 @@ namespace MidiSynth7
 
         private void Bn_InsDefSave_Click(object sender, RoutedEventArgs e)
         {
-            AppConfig.InstrumentDefinitionPath = SaveInsDef(App.APP_DATA_DIR + "Instruments.def");
-            SaveConfig();
+            //AppConfig.InstrumentDefinitionPath = SaveInsDef(App.APP_DATA_DIR + "Instruments.def");
+            //SaveConfig();
 
             currentView.HandleEvent(this, new EventArgs(), "InsDEF_Changed");
-            ScaleUI(1, 0.8, BDR_InstrumentDefinitionsFrame);
-            ScaleUI(0.8, 1, BDR_SettingsFrame);
+            //ScaleUI(1, 0.8, BDR_InstrumentDefinitionsFrame);
+            //ScaleUI(0.8, 1, BDR_SettingsFrame);
             //FadeUI(1, 0, GR_OverlayContent);
         }
 

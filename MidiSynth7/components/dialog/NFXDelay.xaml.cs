@@ -44,6 +44,8 @@ namespace MidiSynth7.components.dialog
 
         public bool HelpRequested { get; set; }
 
+        public bool CanRequestHelp => true;
+
         public void InvokeHelpRequested(Control sender)
         {
             if(sender.ToolTip != null)

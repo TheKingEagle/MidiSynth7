@@ -729,9 +729,10 @@ namespace MidiSynth7.components.views
                 AppContext.ActiveInstrumentDefinition = AppContext.Definitions.FirstOrDefault(x => x.AssociatedDeviceIndex == ((NumberedEntry)cb_Devices.SelectedItem).Index) ?? AppContext.Definitions[0];//associated or default
                 UpdateInstrumentSelection(AppContext.AppConfig);
             }
-
+            Console.WriteLine("EventID: {0}", id);
             switch (id)
             {
+                case "RefMIDIEngine": AppContext.GenerateMIDIEngine(this,((NumberedEntry)cb_Devices.SelectedItem).Index);break;
                 case "RefMainWin": AppContext = (MainWindow)sender; break;
                 case "MTaskWorker": MidiEngine = AppContext.MidiEngine; break;
                 case "RefAppConfig": Config = AppContext.AppConfig; break;
