@@ -327,6 +327,7 @@ namespace MidiSynth7.components.views
         private void Cb_mPatch_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cb_mBank.SelectedItem == null) { return; }
+            if (cb_mPatch.SelectedItem == null) { return; }
             if (MidiEngine != null)
             {
                 Bank bank = (Bank)cb_mBank.SelectedItem;
@@ -347,7 +348,7 @@ namespace MidiSynth7.components.views
                     cb_mPatch.Items.Add(item);
                 }
             }
-            cb_sPatch.SelectedIndex = 0;
+            cb_mPatch.SelectedIndex = 0;
         }
 
         private void Cb_sPatch_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -705,7 +706,9 @@ namespace MidiSynth7.components.views
             }
             if (cb_NFX_Enable.IsChecked.Value)
             {
+#pragma warning disable CS4014 // need to continue regardless of state. because I said so 🙃
                 Dispatcher.InvokeAsync(() => PlayDelayedNFX(e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, e.ChannelMssge.Data2, AppContext.ActiveNFXProfile.Delay, AppContext.ActiveNFXProfile.OffsetMap.Count));
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
         }
 
@@ -716,7 +719,9 @@ namespace MidiSynth7.components.views
 
             if (cb_NFX_Enable.IsChecked.Value)
             {
+#pragma warning disable CS4014 // 😏
                 Dispatcher.InvokeAsync(() => StopDelayedNFX(e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, AppContext.ActiveNFXProfile.Delay, AppContext.ActiveNFXProfile.OffsetMap.Count));
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
             }
             //Pianomain_pKeyUp(sender, new PKeyEventArgs(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value));
