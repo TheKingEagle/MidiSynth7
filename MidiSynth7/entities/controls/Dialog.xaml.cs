@@ -38,6 +38,7 @@ namespace MidiSynth7.entities.controls
        
         public bool shown = false;
         bool _helpRequest = false;
+        static Grid ModalOverlay = new Grid();
         private void BNHelpRequested_Click(object sender, RoutedEventArgs e)
         {
             _helpRequest = !_helpRequest;
@@ -47,23 +48,24 @@ namespace MidiSynth7.entities.controls
 
         public void ShowDialog(IDialogView View, MainWindow window, Grid container)
         {
-            if (shown)
-            {
-                //Fade out the dialog when switching from one view to the other if already shown.
-                window.FadeUI(1, 0, container);
-                window.ScaleUI(1, 0.8, this);
-            }
-
-            shown = true;
+           
+            //fading out during view switching does not work well.
             activeDialog = View;
             Dlg_TitleBlock.Text = activeDialog.DialogTitle;
             activeDialog.DialogClosed += ActiveDialog_DialogClosed;
             BNHelpRequested.Visibility = activeDialog.CanRequestHelp ? Visibility.Visible : Visibility.Collapsed;
             BNHelpRequested.IsEnabled = activeDialog.CanRequestHelp;
             FR_dialogView.Content = View;
-            container.Children.Add(this);
-            window.FadeUI(0, 1, container);
-            window.ScaleUI(0.8, 1, this);
+            if (!shown)
+            {
+                container.Children.Add(this);
+                if (container.Visibility != Visibility.Visible) { 
+                    window.FadeUI(0, 1, container);
+                }
+                window.ScaleUI(0.8, 1, this);
+                shown = true;
+            }
+            
             
         }
 
@@ -71,6 +73,7 @@ namespace MidiSynth7.entities.controls
         {
             shown = false;
             e.Window.ScaleUI(1.0, 0.8, this);
+            if (e.Container.Children.Count > 1) return;//don't fade the container if there's more than one dialog inside.
             e.Window.FadeUI(1.0, 0, e.Container);
 
         }
@@ -116,11 +119,24 @@ namespace MidiSynth7.entities.controls
             return FindVisualParent<T>(Mouse.DirectlyOver as UIElement);
         }
 
-        public static void Message(MainWindow win, Grid container, string text,string caption, Icons icon)
+        public static void Message(MainWindow win, Grid container, string text,string caption, Icons icon, byte overlayOpacity = 0)
         {
-            if (container.Visibility == Visibility.Visible) return;
+            if (container.Children.Contains(ModalOverlay)) return;
+            ModalOverlay.Background = new SolidColorBrush(Color.FromArgb(overlayOpacity, 0, 0, 0));
+            container.Children.Add(ModalOverlay);
             Dialog d = new Dialog();
-            d.ShowDialog(new Message(win, container, caption, text, icon), win, container);
+            
+            Message v = new Message(win, container, caption, text, icon);
+            v.DialogClosed += V_DialogClosed;
+            d.ShowDialog(v, win, container);
+            
+            
+            
+        }
+
+        private static void V_DialogClosed(object sender, DialogEventArgs e)
+        {
+            e.Container.Children.Remove(ModalOverlay);
         }
     }
 }
