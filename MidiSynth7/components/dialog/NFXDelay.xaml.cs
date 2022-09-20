@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MidiSynth7.entities.controls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -59,6 +60,7 @@ namespace MidiSynth7.components.dialog
         {
             //Invoke event
             ActiveWindow.SaveNFXProfiles();
+            ActiveWindow.currentView.HandleEvent(this, new EventArgs(), "RefNFXDelay");
             DialogClosed?.Invoke(this, new DialogEventArgs(ActiveWindow, Container));
         }
 
@@ -66,17 +68,26 @@ namespace MidiSynth7.components.dialog
         private void bn_NFXProfAdd_Click(object sender, RoutedEventArgs e)
         {
             //TODO: new profile
+            NFXProfiles.Add(new NFXDelayProfile() { Delay = 280, OffsetMap = new List<(int pitch, int decay)> { (0, 0), (0, 50) }, ProfileName = "New Profile" });
+            PopulateSavedNFXProfiles();
         }
 
         private void bn_NFXProfDel_Click(object sender, RoutedEventArgs e)
         {
-            //TODO: Delete profile
+            if(LB_SavedProfiles.SelectedIndex == 0)
+            {
+                Dialog.Message(ActiveWindow, Container, "You may not delete this profile.", "Invalid Operation", Icons.Critical, 128);
+                return;
+            }
+
+            NFXProfiles.Remove((NFXDelayProfile)LB_SavedProfiles.SelectedItem);
+            PopulateSavedNFXProfiles();
         }
 
         private void LB_SavedProfiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (LB_SavedProfiles.SelectedItem == null) return;
-            NFXProfileSetEditor((ListBoxItem)LB_SavedProfiles.SelectedItem, NFXProfiles.FirstOrDefault(x => x.ProfileName == (string)((ListBoxItem)LB_SavedProfiles.SelectedItem).Content));
+            NFXProfileSetEditor((NFXDelayProfile)LB_SavedProfiles.SelectedItem);
         }
 
         private void Lv_steps_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -100,7 +111,7 @@ namespace MidiSynth7.components.dialog
         {
             //profile
             if (LB_SavedProfiles.SelectedItem == null) return;
-            NFXDelayProfile prof = NFXProfiles.FirstOrDefault(x => x.ProfileName == (string)((ListBoxItem)LB_SavedProfiles.SelectedItem).Content);
+            NFXDelayProfile prof = (NFXDelayProfile)LB_SavedProfiles.SelectedItem;
             prof.Delay = Dial_NFX_Interval.Value;
             List<(int pitch, int decay)> newSteps = new List<(int pitch, int decay)>();
             for (int i = 0; i < Dial_NFX_StepCount.Value; i++)
@@ -123,7 +134,7 @@ namespace MidiSynth7.components.dialog
         {
             if (lv_steps.SelectedIndex < 0) return;
             if (LB_SavedProfiles.SelectedItem == null) return;
-            NFXDelayProfile prof = NFXProfiles.FirstOrDefault(x => x.ProfileName == (string)((ListBoxItem)LB_SavedProfiles.SelectedItem).Content);
+            NFXDelayProfile prof = (NFXDelayProfile)LB_SavedProfiles.SelectedItem;
 
             var offset = prof.OffsetMap[lv_steps.SelectedIndex];
             prof.OffsetMap.Remove(offset);
@@ -142,22 +153,18 @@ namespace MidiSynth7.components.dialog
 
             foreach (NFXDelayProfile item in NFXProfiles)
             {
-                LB_SavedProfiles.Items.Add(new ListBoxItem() { Content = item.ProfileName });
+                LB_SavedProfiles.Items.Add(item);
             }
             LB_SavedProfiles.SelectedIndex = LB_SavedProfiles.Items.Count - 1;
         }
 
-        private void NFXProfileSetEditor(ListBoxItem lvItem, NFXDelayProfile profile)
+        private void NFXProfileSetEditor(NFXDelayProfile profile)
         {
-            if (lvItem == null)
-            {
-                gb_NFXProfEditor.IsEnabled = false;
-                return;
-            }
+            
             gb_NFXProfEditor.IsEnabled = true;
             _backupProfile = profile;
 
-            TB_NFX_profile_name.Text = (string)lvItem.Content;
+            TB_NFX_profile_name.Text = profile.ProfileName;
             Dial_NFX_Interval.SetValueSuppressed(profile.Delay);
             Dial_NFX_StepCount.SetValueSuppressed(profile.OffsetMap.Count);
             NFXPopulateSteps(profile);
@@ -173,6 +180,17 @@ namespace MidiSynth7.components.dialog
             lv_steps.SelectedIndex = 0;
         }
         #endregion
+
+        private void TB_NFX_profile_name_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                if (LB_SavedProfiles.SelectedItem == null) return;
+                NFXDelayProfile prof = NFXProfiles.FirstOrDefault(x => x.ProfileName == (string)((ListBoxItem)LB_SavedProfiles.SelectedItem).Content);
+                prof.ProfileName = TB_NFX_profile_name.Text;
+                PopulateSavedNFXProfiles();
+            }
+        }
     }
 
 }

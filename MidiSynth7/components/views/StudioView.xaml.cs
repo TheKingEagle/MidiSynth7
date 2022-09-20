@@ -88,14 +88,7 @@ namespace MidiSynth7.components.views
             UpdateInstrumentSelection(config);
             #endregion
 
-            #region NFX Profiles
-            cb_NFX_Dropdown.Items.Clear();
-            foreach (NFXDelayProfile item in AppContext.NFXProfiles)
-            {
-                cb_NFX_Dropdown.Items.Add(item);
-            }
-            cb_NFX_Dropdown.SelectedIndex = 0;
-            #endregion
+            NFXProfileUpdate();
 
             #region ADD ellipses
             AppContext.channelIndicators.Clear();
@@ -746,9 +739,20 @@ namespace MidiSynth7.components.views
                 case "MidiEngine_FileLoadComplete": cp_Info.Text = MidiEngine.Copyright; break;
                 case "MidiEngine_SequenceBuilder_Completed": break;
                 case "InsDEF_Changed": InsDefUpdate(); break;
+                case "RefNFXDelay": NFXProfileUpdate(); break;
                 default: Console.WriteLine("Unrecognized event string: {0}... lol", id);
                     break;
             }
+        }
+
+        private void NFXProfileUpdate()
+        {
+            cb_NFX_Dropdown.Items.Clear();
+            foreach (NFXDelayProfile item in AppContext.NFXProfiles)
+            {
+                cb_NFX_Dropdown.Items.Add(item);
+            }
+            cb_NFX_Dropdown.SelectedIndex = 0;
         }
 
         public void HandleKeyDown(object sender, KeyEventArgs e) {
@@ -885,7 +889,10 @@ namespace MidiSynth7.components.views
         private void Cb_nfx_ProfileSel_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (AppContext == null) return;
-            AppContext.ActiveNFXProfile = AppContext.NFXProfiles.FirstOrDefault(x => x.ProfileName == cb_NFX_Dropdown.Text);
+            if (cb_NFX_Dropdown.SelectedItem == null) return;
+            var item = cb_NFX_Dropdown.SelectedItem;
+
+            AppContext.ActiveNFXProfile = (NFXDelayProfile)item;
             if(AppContext.ActiveNFXProfile == null)
             {
                 AppContext.ActiveNFXProfile = AppContext.NFXProfiles[0];
