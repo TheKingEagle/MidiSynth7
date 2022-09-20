@@ -111,6 +111,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="components\DialogView.cs" />
+    <Compile Include="components\dialog\InstrumentDefinitions.xaml.cs">
+      <DependentUpon>InstrumentDefinitions.xaml</DependentUpon>
+    </Compile>
     <Compile Include="components\dialog\Message.xaml.cs">
       <DependentUpon>Message.xaml</DependentUpon>
     </Compile>
@@ -124,6 +127,10 @@
     <Compile Include="components\SynthKey.cs" />
     <Compile Include="components\WindowHelper.cs" />
     <Page Include="asset\themes.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="components\dialog\InstrumentDefinitions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

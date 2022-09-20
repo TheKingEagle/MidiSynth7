@@ -78,7 +78,7 @@
             </Viewbox>
         </Grid>
         <Grid Grid.Column="1">
-            <TextBlock x:Name="TX_Message" MaxWidth="600" TextWrapping="Wrap" Padding="12,18,14,18" VerticalAlignment="Center" FontSize="18">This is standard dialog Box with message.</TextBlock>
+            <TextBlock x:Name="TX_Message" MaxWidth="600" TextWrapping="Wrap" Padding="12,18,36,18" VerticalAlignment="Center" FontSize="18">This is standard dialog Box with message.</TextBlock>
         </Grid>
         <Grid Grid.Row="1" Grid.ColumnSpan="2" Height="60" VerticalAlignment="Bottom">
             <Grid.Background>

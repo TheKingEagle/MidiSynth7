@@ -21,13 +21,13 @@ namespace MidiSynth7.components.dialog
     /// </summary>
     public partial class Settings : Page, IDialogView
     {
-        Dialog Parent;
+        Dialog _parent;
         public Settings(SystemConfig appConfig, MainWindow appWindow, Dialog parent)
         {
             InitializeComponent();
             AppConfig = appConfig;
             AppContext = appWindow;
-            Parent = parent;
+            _parent = parent;
             foreach (NumberedEntry item in AppContext.InputDevices)
             {
                 cm_InputDevices.Items.Add(item);
@@ -124,7 +124,8 @@ namespace MidiSynth7.components.dialog
 
         private void Bn_cfgLaunchInsdef_Click(object sender, RoutedEventArgs e)
         {
-
+            //TODO: Improve consistency later when I'm not time constrained.
+            _parent.ShowDialog(new InstrumentDefinitions(AppContext, AppContext.GR_OverlayContent, _parent), AppContext, AppContext.GR_OverlayContent);
         }
     }
 }
