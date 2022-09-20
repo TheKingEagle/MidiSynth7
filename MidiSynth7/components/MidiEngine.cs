@@ -130,7 +130,7 @@ namespace MidiSynth7.components
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString(),"MIDI Engine Failure",MessageBoxButton.OK,MessageBoxImage.Error);
+                throw ex;
             }
         }
 
@@ -151,7 +151,7 @@ namespace MidiSynth7.components
             //ERROR
             if (devlist.Count() == 0)
             {
-                MessageBox.Show("No output devices installed.", "MIDI Engine", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new Exception("No usable MIDI devices found.");
             }
             return devlist;
         }
@@ -171,8 +171,7 @@ namespace MidiSynth7.components
             //ERROR
             if (devlist.Count() == 0)
             {
-                MessageBox.Show("No input devices detected. Studio mode will be almost useless without an external midi controller/keyboard.",
-                     "MIDI Engine", MessageBoxButton.OK, MessageBoxImage.Warning);
+                throw new WarningException("No Input devices detected.");
             }
             return devlist;
         }
@@ -654,7 +653,7 @@ namespace MidiSynth7.components
             {
                 if (midiSequence.IsBusy == true)
                 {
-                    MessageBox.Show("The sequence is busy. Please wait for the operation to finish.", "Busy", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    
                     return;
                 }
                 GenerateSequence();
