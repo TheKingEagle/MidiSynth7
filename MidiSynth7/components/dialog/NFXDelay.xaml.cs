@@ -186,7 +186,7 @@ namespace MidiSynth7.components.dialog
             if (e.Key == Key.Enter)
             {
                 if (LB_SavedProfiles.SelectedItem == null) return;
-                NFXDelayProfile prof = NFXProfiles.FirstOrDefault(x => x.ProfileName == (string)((ListBoxItem)LB_SavedProfiles.SelectedItem).Content);
+                NFXDelayProfile prof = (NFXDelayProfile)LB_SavedProfiles.SelectedItem;
                 prof.ProfileName = TB_NFX_profile_name.Text;
                 PopulateSavedNFXProfiles();
             }
