@@ -187,6 +187,12 @@ namespace MidiSynth7.components.dialog
             {
                 if (LB_SavedProfiles.SelectedItem == null) return;
                 NFXDelayProfile prof = (NFXDelayProfile)LB_SavedProfiles.SelectedItem;
+                if (string.IsNullOrWhiteSpace(TB_NFX_profile_name.Text))
+                {
+                    Dialog.Message(ActiveWindow, Container, "Please enter a meaningful name for this profile.", "Invalid Name", Icons.Warning, 128);
+                    TB_NFX_profile_name.Text = prof.ProfileName;
+                    return;
+                }
                 prof.ProfileName = TB_NFX_profile_name.Text;
                 PopulateSavedNFXProfiles();
             }
