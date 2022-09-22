@@ -176,6 +176,16 @@ namespace MidiSynth7.components
             return devlist;
         }
 
+        public static (string noteLabel, int octave) GetNote(int note)
+        {
+            string[] noteString = new string[] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+
+            int octave = (note / 12) - 1;
+            int noteIndex = note % 12;
+            string label = noteString[noteIndex];
+            return (label, octave);
+        }
+
         /// <summary>
         /// Returns the length of the sequence.
         /// </summary>

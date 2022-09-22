@@ -89,25 +89,7 @@ namespace MidiSynth7.entities.controls
                 KeyTypes.White,KeyTypes.Black,KeyTypes.White,KeyTypes.Black,KeyTypes.White,KeyTypes.White,KeyTypes.Black,KeyTypes.White,KeyTypes.Black,KeyTypes.White,KeyTypes.Black,KeyTypes.White,//87
                 KeyTypes.White,
             };
-        string[] Letters =
-        {
-            "A","A#","B","C","C#","D","D#","E","F","F#","G","G#","A","A#","B",//15
-            "C","C#","D","D#","E","F","F#","G","G#","A","A#","B",//27
-            "C","C#","D","D#","E","F","F#","G","G#","A","A#","B",//39
-            "C","C#","D","D#","E","F","F#","G","G#","A","A#","B",//51
-            "C","C#","D","D#","E","F","F#","G","G#","A","A#","B",//63
-            "C","C#","D","D#","E","F","F#","G","G#","A","A#","B",//75
-            "C","C#","D","D#","E","F","F#","G","G#","A","A#","B",//87
-            "C","C#","D","D#","E","F","F#","G","G#","A","A#","B",//99
-            "C","C#","D","D#","E","F","F#","G","G#","A","A#","B",//111
-            "C","C#","D","D#","E","F","F#","G","G#","A","A#","B",//123... Overkill, I know... I allow for transpose. for some reason...
-            "C","C#","D","D#","E","F","F#","G","G#","A","A#","B",//123... Overkill, I know... I allow for transpose. for some reason...
-            "C","C#","D","D#","E","F","F#","G","G#","A","A#","B",//123... Overkill, I know... I allow for transpose. for some reason...
-            "C","C#","D","D#","E","F","F#","G","G#","A","A#","B",//123... Overkill, I know... I allow for transpose. for some reason...
-
-
-
-        };
+        
         public void UserControl_KeyDown(object sender, KeyEventArgs e)
         {
             if (Keyboard.Modifiers != ModifierKeys.None && Keyboard.Modifiers != ModifierKeys.Shift)
@@ -157,7 +139,7 @@ namespace MidiSynth7.entities.controls
                         {
                             if (key.KeyID == i + 21)
                             {
-                                key.SetLetter(Letters[i + 12 + Transpose]);
+                                key.SetLetter(MidiEngine.GetNote(i+21 + 12 + Transpose).noteLabel);
                             }
                         }
                     }
