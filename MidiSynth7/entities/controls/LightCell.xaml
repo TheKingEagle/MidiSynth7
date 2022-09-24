@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="MidiSynth7.entities.controls.LightCell"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MidiSynth7.entities.controls" UseLayoutRounding="True" HorizontalAlignment="Left" VerticalAlignment="Top" >
+    <UserControl.Resources>
+        <ResourceDictionary Source="..\..\asset\Themes.xaml"/>
+    </UserControl.Resources>
+    <GroupBox Header="Light Group" x:Name="GB_LCBox" HorizontalAlignment="Left" VerticalAlignment="Top">
+        <WrapPanel x:Name="WP_LightsContainer" ScrollViewer.VerticalScrollBarVisibility="Disabled" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FF161B2B">
+
+        </WrapPanel>
+    </GroupBox>
+    
+    
+</UserControl>

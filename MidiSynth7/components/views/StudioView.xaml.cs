@@ -158,7 +158,7 @@ namespace MidiSynth7.components.views
         {
             Action invoker = delegate ()
             {
-                AppContext.channelElipses[index].Fill = (Brush)FindResource("CH_IND_On");
+                AppContext.channelElipses[index].Fill = (Brush)FindResource("CH_IND_ON");
                 AppContext.channelIndicators[index].CounterReset();
             };
             await Dispatcher.BeginInvoke(invoker);
@@ -301,7 +301,8 @@ namespace MidiSynth7.components.views
 
         private void BnRiff_Define_Click(object sender, RoutedEventArgs e)
         {
-
+            AppContext.ShowMPT();
+            
         }
 
         private void criffenablecheck(object sender, RoutedEventArgs e)
@@ -311,7 +312,47 @@ namespace MidiSynth7.components.views
 
         private void riffcenter_toggleCheck(object sender, RoutedEventArgs e)
         {
+            gb_riff.IsEnabled = true;
+            bool check = CB_Sequencer_Check.IsChecked ?? false;
+            if (!check)
+            {
+                LC_PatternNumber.SetLight(-1);
+                LC_PatternStep.SetLight(-1);
+            }
+            int ticksPerDot = 6; // TODO: Ensure this value is set by the sequence
+            int DotDuration = (int)((float)((2500 / (float)(Dial_RiffTempo.Value * 1000))) * (ticksPerDot*1000));
+            Console.WriteLine("DotDuration:" + DotDuration);
+            // start the task
+            Task.Run(() =>
+            {
+                
+                while (check)
+                {
+                    
+                    for (int pattern = 0; pattern < 4; pattern++)
+                    {
 
+                        Dispatcher.Invoke(() => LC_PatternNumber.SetLight(pattern));
+                        for (int step = 0; step < 32; step++)
+                        {
+                            Dispatcher.Invoke(() => check = CB_Sequencer_Check.IsChecked.Value);
+                            if (!check) return;
+                            Dispatcher.InvokeAsync(() => LC_PatternStep.SetLight(step));
+                            // ==================================
+                            //  TODO: PROCESS STEP HERE (TEMPO)
+                            // ==================================
+                            Dispatcher.InvokeAsync(() => DotDuration = (int)((float)((2500 / (float)(Dial_RiffTempo.Value * 1000))) * (ticksPerDot * 1000)));
+                            System.Threading.Thread.Sleep(DotDuration);
+                            // =================================
+                            //  TODO: PROCESS STEP HERE (NOTES)
+                            // =================================
+                        }
+
+                    }
+                    if (!check) break;
+                }
+                
+            });
         }
         #endregion
 
@@ -419,9 +460,9 @@ namespace MidiSynth7.components.views
                 Bank OFX_b2 = new Bank(0, "b2");
                 NumberedEntry OFX_p1 = new NumberedEntry(32, "p1"); ;
                 NumberedEntry OFX_p2 = new NumberedEntry(48, "p2"); ;
-                if (cb_RIFF_Enable.IsChecked.Value)
+                if (CB_Sequencer_Check.IsChecked.Value)
                 {
-                    return;
+                    //return;
                 }
                 if (cb_DS_Enable.IsChecked.Value)
                 {
@@ -518,9 +559,9 @@ namespace MidiSynth7.components.views
                 Bank OFX_b2 = new Bank(0, "b2");
                 NumberedEntry OFX_p1 = new NumberedEntry(32, "p1"); ;
                 NumberedEntry OFX_p2 = new NumberedEntry(48, "p2"); ;
-                if (cb_RIFF_Enable.IsChecked.Value)
+                if (CB_Sequencer_Check.IsChecked.Value)
                 {
-                    return;
+                    //return;
                 }
                 if (cb_DS_Enable.IsChecked.Value)
                 {
@@ -615,9 +656,9 @@ namespace MidiSynth7.components.views
                 Bank OFX_b2 = new Bank(0, "b2");
                 NumberedEntry OFX_p1 = new NumberedEntry(32, "p1"); ;
                 NumberedEntry OFX_p2 = new NumberedEntry(48, "p2"); ;
-                if (cb_RIFF_Enable.IsChecked.Value)
+                if (CB_Sequencer_Check.IsChecked.Value)
                 {
-                    return;
+                    //return;
                 }
                 if (cb_DS_Enable.IsChecked.Value)
                 {
@@ -734,8 +775,8 @@ namespace MidiSynth7.components.views
                 case "RefMainWin": AppContext = (MainWindow)sender; break;
                 case "MTaskWorker": MidiEngine = AppContext.MidiEngine; break;
                 case "RefAppConfig": Config = AppContext.AppConfig; break;
-                case "SynthSustainCTRL_ON": Mio_SustainPdl.Fill = (Brush)FindResource("CH_IND_On"); break;
-                case "SynthSustainCTRL_OFF": Mio_SustainPdl.Fill = (Brush)FindResource("CH_Ind_off"); break;
+                case "SynthSustainCTRL_ON": Mio_SustainPdl.Fill = (Brush)FindResource("CH_IND_ON"); break;
+                case "SynthSustainCTRL_OFF": Mio_SustainPdl.Fill = (Brush)FindResource("CH_IND_OFF"); break;
                 case "MidiEngine_FileLoadComplete": cp_Info.Text = MidiEngine.Copyright; break;
                 case "MidiEngine_SequenceBuilder_Completed": break;
                 case "InsDEF_Changed": InsDefUpdate(); break;

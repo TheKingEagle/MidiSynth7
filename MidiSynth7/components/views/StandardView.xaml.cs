@@ -149,7 +149,7 @@ namespace MidiSynth7.components.views
         {
             Action invoker = delegate ()
             {
-                AppContext.channelElipses[index].Fill = (Brush)FindResource("CH_IND_On");
+                AppContext.channelElipses[index].Fill = (Brush)FindResource("CH_IND_ON");
                 //counter shit.
                 AppContext.channelIndicators[index].CounterReset();
             };

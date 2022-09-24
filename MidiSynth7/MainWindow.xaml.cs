@@ -821,6 +821,18 @@ namespace MidiSynth7
             g.ShowDialog(new NFXDelay(this, GR_OverlayContent), this, GR_OverlayContent);
         }
 
+        public void ShowMPT()
+        {
+
+            if (GR_OverlayContent.Visibility == Visibility.Visible)
+            {
+                return;
+            }
+            Dialog g = new Dialog();
+            g.SnapsToDevicePixels = true;
+            g.ShowDialog(new SequenceEditor(), this, GR_OverlayContent);
+        }
+
         public class ChInvk
         {
             Ellipse index;
@@ -850,7 +862,7 @@ namespace MidiSynth7
                         if (counterval > 160)
                         {
                             counterval = 0;
-                            index.Fill = (Brush)wndw.FindResource("CH_Ind_off");
+                            index.Fill = (Brush)wndw.FindResource("CH_IND_OFF");
                         }
                     };
                     wndw.Dispatcher.InvokeAsync(invoker);

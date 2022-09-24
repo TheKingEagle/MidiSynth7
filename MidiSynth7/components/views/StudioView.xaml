@@ -65,7 +65,7 @@
                         </TransformGroup>
                     </SynthGUI:DialControl.RenderTransform>
                 </SynthGUI:DialControl>
-                <Ellipse x:Name="Mio_SustainPdl" HorizontalAlignment="Left" Height="16" Margin="4,158,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_Ind_off}" Grid.Column="1">
+                <Ellipse x:Name="Mio_SustainPdl" HorizontalAlignment="Left" Height="16" Margin="4,158,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Grid.Column="1">
                     <Ellipse.Stroke>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                             <GradientStop Color="#FF706868" Offset="1"/>
@@ -222,7 +222,7 @@
                 </ComboBox>
             </Grid>
         </GroupBox>
-        <GroupBox x:Name="gb_riff" Header="Riff Center" HorizontalAlignment="Left" Margin="5,308,0,0" VerticalAlignment="Top" Height="115" Width="368" BorderThickness="2" BorderBrush="#FF360076" Padding="0" IsEnabled="False">
+        <GroupBox x:Name="gb_riff" Header="Sequencer" HorizontalAlignment="Left" Margin="5,308,0,0" VerticalAlignment="Top" Height="115" Width="396" BorderThickness="2" BorderBrush="#FF360076" Padding="0">
             <Grid>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -230,31 +230,33 @@
                         <GradientStop Color="#FF360076" Offset="1"/>
                     </LinearGradientBrush>
                 </Grid.Background>
-                <RadioButton x:Name="rb_rcp1" Content="Preset 1" HorizontalAlignment="Left" Margin="3,2,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="RIFF" Focusable="False" Checked="rb_rcp1_Checked" IsChecked="True" FontSize="14"/>
-                <RadioButton x:Name="rb_rcp2" Content="Preset 2" HorizontalAlignment="Left" Margin="3,26,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="RIFF" Focusable="False" Checked="rb_rcp2_Checked" FontSize="14"/>
-                <RadioButton x:Name="rb_rcp5" Content="Preset 5" HorizontalAlignment="Left" Margin="74,2,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="RIFF" Focusable="False" Checked="rb_rcp5_Checked" FontSize="14"/>
-                <RadioButton x:Name="rb_rcp6" Content="Preset 6" HorizontalAlignment="Left" Margin="74,26,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="RIFF" Focusable="False" Checked="rb_rcp6_Checked" FontSize="14"/>
-                <RadioButton x:Name="rb_rcp3" Content="Preset 3" HorizontalAlignment="Left" Margin="3,50,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="RIFF" Focusable="False" Checked="rb_rcp3_Checked" FontSize="14"/>
-                <RadioButton x:Name="rb_rcp4" Content="Preset 4" HorizontalAlignment="Left" Margin="3,74,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="RIFF" Focusable="False" Checked="rb_rcp4_Checked" FontSize="14"/>
-                <RadioButton x:Name="rb_rcp7" Content="Preset 7" HorizontalAlignment="Left" Margin="74,50,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="RIFF" Focusable="False" Checked="rb_rcp7_Checked" FontSize="14"/>
-                <RadioButton x:Name="rb_rcp8" Content="Preset 8" HorizontalAlignment="Left" Margin="74,74,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="RIFF" Focusable="False" Checked="rb_rcp8_Checked" FontSize="14"/>
-                <RadioButton x:Name="rb_rcp9" Content="Preset 9" HorizontalAlignment="Left" Margin="145,2,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="RIFF" Focusable="False" Checked="rb_rcp9_Checked" FontSize="14"/>
-                <RadioButton x:Name="rb_rcp10" Content="Preset 10" HorizontalAlignment="Left" Margin="145,26,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="RIFF" Focusable="False" Checked="rb_rcp10_Checked" FontSize="14"/>
-                <RadioButton x:Name="rb_rcp11" Content="Preset 11" HorizontalAlignment="Left" Margin="145,50,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="RIFF" Focusable="False" Checked="rb_rcp11_Checked" FontSize="14"/>
-                <RadioButton x:Name="rb_rcp12" Content="Preset 12" HorizontalAlignment="Left" Margin="145,74,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="RIFF" Focusable="False" Checked="rb_rcp12_Checked" FontSize="14"/>
-                <Button Content="Define..." HorizontalAlignment="Left" Margin="275,64,0,0" VerticalAlignment="Top" Width="75" Focusable="False" Click="BnRiff_Define_Click" FontSize="14"/>
-                <RadioButton x:Name="rb_rcp13" Content="CUSTOM" HorizontalAlignment="Left" Margin="277,40,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="RIFF" Focusable="False" Unchecked="criffenablecheck" Checked="criffenablecheck" FontSize="14"/>
-                <Ellipse x:Name="riffIndicator" HorizontalAlignment="Left" Height="26" Margin="329,2,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="26" Fill="{DynamicResource CH_Ind_off}">
-                    <Ellipse.Stroke>
-                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                            <GradientStop Color="#FF706868" Offset="1"/>
-                            <GradientStop Color="#FFB6AEAE"/>
-                            <GradientStop Color="#FF272727" Offset="0.505"/>
-                            <GradientStop Color="#FF3C3C3C" Offset="0.5"/>
+                <Button Content="Edit" Margin="169,4,172,0" VerticalAlignment="Top" Focusable="False" Click="BnRiff_Define_Click" FontSize="14" Background="#FF2C2C2C" Height="30"/>
+                <Grid x:Name="dial_control_tempo" Margin="304,7,3,7">
+                    <SynthGUI:DialControl x:Name="Dial_RiffTempo" HorizontalAlignment="Left" Height="175" Margin="0,0,-90,-125" VerticalAlignment="Top" Width="140" RenderTransformOrigin="0,0" Text="TEMPO" Minimum="10" Maximum="400" Value="120">
+                        <SynthGUI:DialControl.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="0.65" ScaleY="0.65"/>
+                                <SkewTransform/>
+                                <RotateTransform/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </SynthGUI:DialControl.RenderTransform>
+                    </SynthGUI:DialControl>
+
+                </Grid>
+                <SynthGUI:LightCell x:Name="LC_PatternNumber" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="221,-4,87,61" Header="Pattern" Width="80"  />
+                <SynthGUI:LightCell x:Name="LC_PatternStep" Columns="16" Rows="2" Header="Position" Margin="5,35,0,0" />
+                <ComboBox x:Name="Cb_SequencerProfile" HorizontalAlignment="Left" Margin="5,4,0,0" VerticalAlignment="Top" Width="159" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_nfx_ProfileSel_SelectionChanged" SelectedIndex="0" Height="30" FontSize="16">
+                    <ComboBox.Background>
+                        <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                            <GradientStop Color="#FFD8D8D8" Offset="1"/>
+                            <GradientStop Color="#FFB6B6B6" Offset="0.5"/>
+                            <GradientStop Color="#FFC1C1C1" Offset="0.5"/>
+                            <GradientStop Color="#FF5D5D5D"/>
                         </LinearGradientBrush>
-                    </Ellipse.Stroke>
-                </Ellipse>
-                <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="264,4,0,0" TextWrapping="Wrap" Text="Riff Start" VerticalAlignment="Top" FontSize="16"/>
+                    </ComboBox.Background>
+                    <ComboBoxItem Content="Untitled Sequence"/>
+                </ComboBox>
             </Grid>
         </GroupBox>
         <GroupBox x:Name="gb_ds" Header="Drum Set" HorizontalAlignment="Left" Margin="277,213,0,0" VerticalAlignment="Top" Height="90" Width="388" BorderThickness="2" BorderBrush="#FF0047AE" Padding="0" IsEnabled="False">
@@ -278,7 +280,7 @@
                 </ComboBox>
             </Grid>
         </GroupBox>
-        <GroupBox x:Name="gb_ofx" Header="Octave FX" HorizontalAlignment="Left" Margin="378,309,0,0" VerticalAlignment="Top" Height="114" Width="287" BorderThickness="2" BorderBrush="#FF009371" Padding="0">
+        <GroupBox x:Name="gb_ofx" Header="Octave FX" HorizontalAlignment="Left" Margin="406,309,0,0" VerticalAlignment="Top" Height="114" Width="259" BorderThickness="2" BorderBrush="#FF009371" Padding="0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="201*"/>
@@ -290,12 +292,12 @@
                         <GradientStop Color="#FF009371" Offset="1"/>
                     </LinearGradientBrush>
                 </Grid.Background>
-                <RadioButton x:Name="rb_ofx_Std" Content="Standard" HorizontalAlignment="Left" Margin="33,5,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="OFX" IsChecked="True" Focusable="False" IsTabStop="False"/>
-                <RadioButton x:Name="rb_ofx_Orchestral" Content="Orchestral" HorizontalAlignment="Left" Margin="102,5,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="OFX" Focusable="False" IsTabStop="False"/>
-                <RadioButton x:Name="rb_ofx_custom" Content="Custom" HorizontalAlignment="Left" Margin="177,5,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="OFX" Grid.ColumnSpan="2" Focusable="False" IsTabStop="False" Checked="criffenablecheck" Unchecked="ToggleChecked"/>
-                <GroupBox x:Name="gb_CustomOFX" Header="Custom" HorizontalAlignment="Left" Margin="10,32,0,0" VerticalAlignment="Top" Height="50" Width="254" BorderThickness="2" BorderBrush="#FF001283" Padding="0" Grid.ColumnSpan="2">
+                <RadioButton x:Name="rb_ofx_Std" Content="Standard" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="OFX" IsChecked="True" Focusable="False" IsTabStop="False"/>
+                <RadioButton x:Name="rb_ofx_Orchestral" Content="Orchestral" HorizontalAlignment="Left" Margin="89,5,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="OFX" Focusable="False" IsTabStop="False" Width="75"/>
+                <RadioButton x:Name="rb_ofx_custom" Content="Custom" HorizontalAlignment="Left" Margin="183,5,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="OFX" Grid.ColumnSpan="2" Focusable="False" IsTabStop="False" Checked="criffenablecheck" Unchecked="ToggleChecked"/>
+                <GroupBox x:Name="gb_CustomOFX" Header="Custom" Margin="10,32,15,12" BorderThickness="2" BorderBrush="#FF001283" Padding="0" Grid.ColumnSpan="2">
                     <Grid>
-                        <Button x:Name="bn_Edit" Content="Edit Custom Octave" HorizontalAlignment="Left" Margin="114,5,0,0" VerticalAlignment="Top" Width="126" Background="#FF2C2C2C" Focusable="False" IsTabStop="False" Click="OFX_bn_Edit_Click"/>
+                        <Button x:Name="bn_Edit" Content="Edit..." HorizontalAlignment="Left" Margin="111,5,0,0" VerticalAlignment="Top" Width="97" Background="#FF2C2C2C" Focusable="False" IsTabStop="False" Click="OFX_bn_Edit_Click"/>
                         <CheckBox x:Name="cb_OFX_AllowOffset" Content="Octave FX" HorizontalAlignment="Left" Margin="10,6,0,0" VerticalAlignment="Top" Foreground="White" Focusable="False" IsTabStop="False"/>
                     </Grid>
                 </GroupBox>
@@ -495,9 +497,9 @@
         </GroupBox>
         <SynthGUI:PianoControlFullRange x:Name="pianomain" HorizontalAlignment="Left" Margin="5,437,0,-1" VerticalAlignment="Top" pKeyDown="Pianomain_pKeyDown" pKeyUp="Pianomain_pKeyUp" Height="150"/>
 
-        <CheckBox x:Name="cb_RIFF_Enable" Content="" HorizontalAlignment="Left" Margin="79,309,0,0" VerticalAlignment="Top" Focusable="False" Checked="riffcenter_toggleCheck" Unchecked="riffcenter_toggleCheck" IsTabStop="False" Height="16" Width="21"/>
+        <CheckBox x:Name="CB_Sequencer_Check" Content="" HorizontalAlignment="Left" Margin="79,309,0,0" VerticalAlignment="Top" Focusable="False" Checked="riffcenter_toggleCheck" Unchecked="riffcenter_toggleCheck" IsTabStop="False" Height="16" Width="21"/>
         <CheckBox x:Name="cb_DS_Enable" Content="" HorizontalAlignment="Left" Margin="345,214,0,0" VerticalAlignment="Top" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16" Width="21"/>
-        <CheckBox x:Name="cb_OFX_Enble" Content="" HorizontalAlignment="Left" Margin="449,310,0,0" VerticalAlignment="Top" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16" Width="21"/>
+        <CheckBox x:Name="cb_OFX_Enble" Content="" HorizontalAlignment="Left" Margin="476,310,0,0" VerticalAlignment="Top" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16" Width="21"/>
         <CheckBox x:Name="cb_NFX_Enable" Content="" HorizontalAlignment="Left" Margin="95,214,0,0" VerticalAlignment="Top" Width="16" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16"/>
         <CheckBox x:Name="CB_EnforceInstruments" Content="" HorizontalAlignment="Left" Margin="761,214,0,0" VerticalAlignment="Top" Width="16" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16">
             <CheckBox.ToolTip>
@@ -516,7 +518,7 @@
                         <GradientStop Color="#FF01012C" Offset="1"/>
                     </LinearGradientBrush>
                 </Grid.Background>
-                <Ellipse x:Name="ch1" HorizontalAlignment="Left" Height="16" Margin="10,3,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_Ind_off}">
+                <Ellipse x:Name="ch1" HorizontalAlignment="Left" Height="16" Margin="10,3,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
                     <Ellipse.Stroke>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                             <GradientStop Color="#FF706868" Offset="1"/>
@@ -526,7 +528,7 @@
                         </LinearGradientBrush>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch2" HorizontalAlignment="Left" Height="16" Margin="10,24,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_Ind_off}">
+                <Ellipse x:Name="ch2" HorizontalAlignment="Left" Height="16" Margin="10,24,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
                     <Ellipse.Stroke>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                             <GradientStop Color="#FF706868" Offset="1"/>
@@ -536,7 +538,7 @@
                         </LinearGradientBrush>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch3" HorizontalAlignment="Left" Height="16" Margin="10,45,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_Ind_off}">
+                <Ellipse x:Name="ch3" HorizontalAlignment="Left" Height="16" Margin="10,45,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
                     <Ellipse.Stroke>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                             <GradientStop Color="#FF706868" Offset="1"/>
@@ -546,7 +548,7 @@
                         </LinearGradientBrush>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch4" HorizontalAlignment="Left" Height="16" Margin="10,66,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_Ind_off}">
+                <Ellipse x:Name="ch4" HorizontalAlignment="Left" Height="16" Margin="10,66,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
                     <Ellipse.Stroke>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                             <GradientStop Color="#FF706868" Offset="1"/>
@@ -556,7 +558,7 @@
                         </LinearGradientBrush>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch5" HorizontalAlignment="Left" Height="16" Margin="10,87,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_Ind_off}">
+                <Ellipse x:Name="ch5" HorizontalAlignment="Left" Height="16" Margin="10,87,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
                     <Ellipse.Stroke>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                             <GradientStop Color="#FF706868" Offset="1"/>
@@ -566,7 +568,7 @@
                         </LinearGradientBrush>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch6" HorizontalAlignment="Left" Height="16" Margin="10,108,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_Ind_off}">
+                <Ellipse x:Name="ch6" HorizontalAlignment="Left" Height="16" Margin="10,108,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
                     <Ellipse.Stroke>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                             <GradientStop Color="#FF706868" Offset="1"/>
@@ -576,7 +578,7 @@
                         </LinearGradientBrush>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch7" HorizontalAlignment="Left" Height="16" Margin="10,129,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_Ind_off}">
+                <Ellipse x:Name="ch7" HorizontalAlignment="Left" Height="16" Margin="10,129,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
                     <Ellipse.Stroke>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                             <GradientStop Color="#FF706868" Offset="1"/>
@@ -586,7 +588,7 @@
                         </LinearGradientBrush>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch8" HorizontalAlignment="Left" Height="16" Margin="10,150,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_Ind_off}">
+                <Ellipse x:Name="ch8" HorizontalAlignment="Left" Height="16" Margin="10,150,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
                     <Ellipse.Stroke>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                             <GradientStop Color="#FF706868" Offset="1"/>
@@ -596,7 +598,7 @@
                         </LinearGradientBrush>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch9" HorizontalAlignment="Left" Height="16" Margin="10,171,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_Ind_off}">
+                <Ellipse x:Name="ch9" HorizontalAlignment="Left" Height="16" Margin="10,171,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
                     <Ellipse.Stroke>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                             <GradientStop Color="#FF706868" Offset="1"/>
@@ -606,7 +608,7 @@
                         </LinearGradientBrush>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch11" HorizontalAlignment="Left" Height="16" Margin="10,213,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_Ind_off}">
+                <Ellipse x:Name="ch11" HorizontalAlignment="Left" Height="16" Margin="10,213,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
                     <Ellipse.Stroke>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                             <GradientStop Color="#FF706868" Offset="1"/>
@@ -616,7 +618,7 @@
                         </LinearGradientBrush>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch12" HorizontalAlignment="Left" Height="16" Margin="10,234,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_Ind_off}">
+                <Ellipse x:Name="ch12" HorizontalAlignment="Left" Height="16" Margin="10,234,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
                     <Ellipse.Stroke>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                             <GradientStop Color="#FF706868" Offset="1"/>
@@ -626,7 +628,7 @@
                         </LinearGradientBrush>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch13" HorizontalAlignment="Left" Height="16" Margin="10,255,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_Ind_off}">
+                <Ellipse x:Name="ch13" HorizontalAlignment="Left" Height="16" Margin="10,255,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
                     <Ellipse.Stroke>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                             <GradientStop Color="#FF706868" Offset="1"/>
@@ -636,7 +638,7 @@
                         </LinearGradientBrush>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch14" HorizontalAlignment="Left" Height="16" Margin="10,276,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_Ind_off}">
+                <Ellipse x:Name="ch14" HorizontalAlignment="Left" Height="16" Margin="10,276,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
                     <Ellipse.Stroke>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                             <GradientStop Color="#FF706868" Offset="1"/>
@@ -646,7 +648,7 @@
                         </LinearGradientBrush>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch15" HorizontalAlignment="Left" Height="16" Margin="10,297,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_Ind_off}">
+                <Ellipse x:Name="ch15" HorizontalAlignment="Left" Height="16" Margin="10,297,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
                     <Ellipse.Stroke>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                             <GradientStop Color="#FF706868" Offset="1"/>
@@ -656,7 +658,7 @@
                         </LinearGradientBrush>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch16" HorizontalAlignment="Left" Height="16" Margin="10,318,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_Ind_off}">
+                <Ellipse x:Name="ch16" HorizontalAlignment="Left" Height="16" Margin="10,318,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
                     <Ellipse.Stroke>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                             <GradientStop Color="#FF706868" Offset="1"/>
@@ -677,7 +679,7 @@
                 <TextBlock HorizontalAlignment="Left" Margin="31,171,0,0" TextWrapping="Wrap" Text="9" VerticalAlignment="Top" Height="16"/>
                 <Button Margin="3,188,21,137" Click="Ch_Indicator10_Click" BorderThickness="0">
                     <Grid>
-                        <Ellipse x:Name="ch10" HorizontalAlignment="Left" Height="16" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_Ind_off}" MouseUp="ch10_MouseUp">
+                        <Ellipse x:Name="ch10" HorizontalAlignment="Left" Height="16" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" MouseUp="ch10_MouseUp">
                             <Ellipse.Stroke>
                                 <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                                     <GradientStop Color="#FF706868" Offset="1"/>
