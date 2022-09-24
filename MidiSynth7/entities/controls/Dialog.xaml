@@ -29,7 +29,7 @@
 
                     </Canvas>
                         <Image Width="28" Height="28" HorizontalAlignment="Left" Source="/MidiSynth7;component/synthico.png" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="Fant" Margin="6,0,0,0"/>
-                        <TextBlock Margin="38,6,39,6" VerticalAlignment="Center" FontSize="20" Height="auto" Width="auto" Text="Dialog Box Text" MaxWidth="720" x:Name="Dlg_TitleBlock" TextTrimming="WordEllipsis"></TextBlock>
+                        <TextBlock Margin="38,6,39,6" VerticalAlignment="Center" FontSize="20" Height="auto" Width="auto" Text="Dialog Box Text"  x:Name="Dlg_TitleBlock" TextTrimming="WordEllipsis"></TextBlock>
                     <Button MinHeight="24" MinWidth="24" x:Name="BNHelpRequested" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,8,10,7" Click="BNHelpRequested_Click" Background="#FF002A83">
                         <Run FontWeight ="Normal" Text="❓" FontFamily="Segoe UI"></Run>
                     </Button>

@@ -72,6 +72,7 @@
     <Style TargetType="{x:Type controls:DialControl}">
         <Setter Property="ToolTipService.IsEnabled" Value="False"/>
     </Style>
+    
     <Style x:Key="{x:Type GroupBox}"
        TargetType="{x:Type GroupBox}">
         <Setter Property="BorderBrush"

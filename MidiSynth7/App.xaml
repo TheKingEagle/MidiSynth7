@@ -4,21 +4,33 @@
              xmlns:local="clr-namespace:MidiSynth7"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <LinearGradientBrush x:Key="CH_Ind_off" EndPoint="0.5,1" StartPoint="0.5,0">
+        <LinearGradientBrush x:Key="CH_IND_OFF" EndPoint="0.5,1" StartPoint="0.5,0">
             <GradientStop Color="#FF0F0F0F"/>
             <GradientStop Color="#FF2B2B2B" Offset="1"/>
         </LinearGradientBrush>
-        <LinearGradientBrush x:Key="CH_IND_On" EndPoint="0.5,1" StartPoint="0.5,0">
+        <LinearGradientBrush x:Key="CH_IND_ON" EndPoint="0.5,1" StartPoint="0.5,0">
             <GradientStop Color="#FF02C31D" Offset="1"/>
             <GradientStop Color="#FF11FF34"/>
             <GradientStop Color="#FF21DC3B" Offset="0.498"/>
             <GradientStop Color="#FF01C51E" Offset="0.502"/>
         </LinearGradientBrush>
-        <LinearGradientBrush x:Key="CH_IND_Muted" EndPoint="0.5,1" StartPoint="0.5,0">
+        <LinearGradientBrush x:Key="CH_IND_MUTED" EndPoint="0.5,1" StartPoint="0.5,0">
             <GradientStop Color="#FFC30202" Offset="1"/>
             <GradientStop Color="#FFFF1111"/>
             <GradientStop Color="#FFDC2121" Offset="0.498"/>
             <GradientStop Color="#FFC50101" Offset="0.502"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="CH_IND_MARKER" EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="#FF93D8FF" Offset="1"/>
+            <GradientStop Color="#FF49A4FF"/>
+            <GradientStop Color="#FF616161" Offset="0.505"/>
+            <GradientStop Color="#FF5F5F5F" Offset="0.5"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="CH_IND_STROKE" EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+            <GradientStop Color="#FF706868" Offset="1"/>
+            <GradientStop Color="#FFB6AEAE"/>
+            <GradientStop Color="#FF272727" Offset="0.505"/>
+            <GradientStop Color="#FF3C3C3C" Offset="0.5"/>
         </LinearGradientBrush>
     </Application.Resources>
 </Application>

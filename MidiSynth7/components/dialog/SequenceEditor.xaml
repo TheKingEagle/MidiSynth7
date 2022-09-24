@@ -1,0 +1,14 @@
+﻿<Page
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MidiSynth7.components.dialog"
+      xmlns:components="clr-namespace:MidiSynth7.components" xmlns:controls="clr-namespace:MidiSynth7.entities.controls" x:Class="MidiSynth7.components.dialog.SequenceEditor"
+      mc:Ignorable="d"
+      Title="SequenceEditor" Width="1400" ClipToBounds="False" Background="#FF0C0C0C" Height="500">
+    <Page.Resources>
+        <ResourceDictionary Source="..\..\asset\Themes.xaml"/>
+    </Page.Resources>
+    <Grid Background="#FF151515"/>
+</Page>

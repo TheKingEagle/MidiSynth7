@@ -93,8 +93,8 @@
                         <ScaleTransform x:Name="FrameContentScale"/>
                     </Frame.RenderTransform>
                 </Frame>
-                <Grid x:Name="GR_OverlayContent" Background="#D8000000" RenderOptions.ClearTypeHint="Enabled" ClipToBounds="True" Visibility="Visible" Opacity="1" PreviewMouseUp="Gr_OverlayContent_PreviewMouseUp" UseLayoutRounding="True" SnapsToDevicePixels="True"/>
             </Grid>
+            <Grid x:Name="GR_OverlayContent" Background="#D8000000" RenderOptions.ClearTypeHint="Enabled" ClipToBounds="True" Visibility="Visible" Opacity="1" PreviewMouseUp="Gr_OverlayContent_PreviewMouseUp" UseLayoutRounding="True" SnapsToDevicePixels="True" Margin="0,40,0,0"/>
 
         </Grid>
 

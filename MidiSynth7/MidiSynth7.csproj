@@ -120,11 +120,15 @@
     <Compile Include="components\dialog\NFXDelay.xaml.cs">
       <DependentUpon>NFXDelay.xaml</DependentUpon>
     </Compile>
+    <Compile Include="components\dialog\SequenceEditor.xaml.cs">
+      <DependentUpon>SequenceEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="components\dialog\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
     <Compile Include="components\NFXDelayProfile.cs" />
     <Compile Include="components\SynthKey.cs" />
+    <Compile Include="components\TrackerSequence.cs" />
     <Compile Include="components\WindowHelper.cs" />
     <Page Include="asset\themes.xaml">
       <SubType>Designer</SubType>
@@ -139,6 +143,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="components\dialog\NFXDelay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="components\dialog\SequenceEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -163,6 +171,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="entities\controls\Dialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="entities\controls\LightCell.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -209,6 +221,9 @@
     </Compile>
     <Compile Include="entities\controls\Dialog.xaml.cs">
       <DependentUpon>Dialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="entities\controls\LightCell.xaml.cs">
+      <DependentUpon>LightCell.xaml</DependentUpon>
     </Compile>
     <Compile Include="entities\KeyTypes.cs" />
     <Compile Include="entities\controls\PianoControl.xaml.cs">
