@@ -178,18 +178,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="entities\controls\MPTPattern.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="entities\MPTBit.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="entities\MPTRow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="entities\controls\PianoControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -236,15 +224,6 @@
     </Compile>
     <Compile Include="entities\controls\LightCell.xaml.cs">
       <DependentUpon>LightCell.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="entities\controls\MPTPattern.xaml.cs">
-      <DependentUpon>MPTPattern.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="entities\MPTBit.xaml.cs">
-      <DependentUpon>MPTBit.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="entities\MPTRow.xaml.cs">
-      <DependentUpon>MPTRow.xaml</DependentUpon>
     </Compile>
     <Compile Include="entities\KeyTypes.cs" />
     <Compile Include="entities\controls\PianoControl.xaml.cs">

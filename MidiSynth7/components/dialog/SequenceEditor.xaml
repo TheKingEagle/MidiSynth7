@@ -10,7 +10,5 @@
     <Page.Resources>
         <ResourceDictionary Source="..\..\asset\Themes.xaml"/>
     </Page.Resources>
-    <Grid Background="#FF151515">
-        <controls:MPTPattern HorizontalAlignment="Left" Height="357" VerticalAlignment="Top" Width="1400" ScrollViewer.HorizontalScrollBarVisibility="Visible" Margin="0,73,0,0"/>
-    </Grid>
+    <Grid Background="#FF151515"/>
 </Page>

@@ -26,18 +26,16 @@ namespace MidiSynth7.components
     {
         public int TicksPerRow { get; set; }
         public string PatternName { get; set; }
-        public List<SequenceRow> Rows { get; set; }
+        public List<SeqData> PatternData { get; set; }
     }
 
-    public class SequenceRow
-    {
-        public List<(int midiChannel,int col, SeqData data)> Channels { get; set; }
-    }
 
     public class SeqData
     {
-        
 
+        int row;
+        int col; 
+        int midiChannel;
         private int? _pitch = 0;
         private byte? _velocity = 0;
         private TrackerInstrument _trackerInstrument;
