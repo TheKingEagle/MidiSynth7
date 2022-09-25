@@ -35,7 +35,7 @@ namespace MidiSynth7.entities.controls
             }
         }
         IDialogView activeDialog { get; set; }
-       
+        public event EventHandler<EventArgs> DialogShown;
         public bool shown = false;
         bool _helpRequest = false;
         static Grid ModalOverlay = new Grid();
@@ -55,7 +55,7 @@ namespace MidiSynth7.entities.controls
             activeDialog.DialogClosed += ActiveDialog_DialogClosed;
             BNHelpRequested.Visibility = activeDialog.CanRequestHelp ? Visibility.Visible : Visibility.Collapsed;
             BNHelpRequested.IsEnabled = activeDialog.CanRequestHelp;
-            FR_dialogView.Content = View;
+            FR_dialogView.Content = activeDialog;
             if (!shown)
             {
                 container.Children.Add(this);
@@ -82,6 +82,10 @@ namespace MidiSynth7.entities.controls
             if (shown == false)
             {
                 container.Children.Remove(this);
+            }
+            if (shown)
+            {
+                DialogShown?.Invoke(this.activeDialog, new EventArgs());
             }
         }
 
