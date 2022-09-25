@@ -24,18 +24,76 @@ namespace MidiSynth7.components
 
     public class TrackerPattern
     {
-        public int TicksPerRow { get; set; }
+        public int RowCount { get; set; }
+        public int ChannelCount { get; set; }
         public string PatternName { get; set; }
-        public List<SeqData> PatternData { get; set; }
+        public List<TrackerRow> Rows { get; set; }
+
+        public static TrackerPattern GetEmptyPattern(int rows, int channels)
+        {
+            return new TrackerPattern()
+            {
+                ChannelCount = channels,
+                RowCount = rows,
+                PatternName = "New Pattern",
+                Rows = TrackerRow.GetEmptyRows(rows, channels)
+            };
+        }
     }
 
+    public class TrackerRow
+    {
+        
+        public TrackerRow(List<SeqData> notes)
+        {
+            Notes = notes;
+        }
+        public List<SeqData> Notes { get; set; }
 
+        public static List<TrackerRow> GetEmptyRows(int rows, int ChannelCount)
+        {
+            List<TrackerRow> Rows = new List<TrackerRow>();
+            for (int i = 0; i < rows; i++)
+            {
+                TrackerRow row = new TrackerRow(new List<SeqData>());
+                for (int ii = 0; ii < ChannelCount; ii++)
+                {
+                    int midiChannel = GetMIDIChannelIndex(ii);
+                    row.Notes.Add(new SeqData()
+                    {
+                        Column = ii,
+                        Instrument = null,
+                        midiChannel = midiChannel,
+                        Parameter = null,
+                        Pitch = null,
+                        Velocity = null
+
+                    });
+                }
+                Rows.Add(row);
+            }
+            return Rows;
+        }
+
+        private static int GetMIDIChannelIndex(int column)
+        {
+            int midiChannel = column;//channel 0-8
+            if (column >= 9)
+            {
+                midiChannel = column + 1;//skip channel 9 (percussion)
+            }
+            if (column + 1 > 15)
+            {
+                midiChannel = 9;//channels beyond 15 will be routed to channel 9 as percussion.
+            }
+
+            return midiChannel;
+        }
+    }
     public class SeqData
     {
-
-        int row;
-        int col; 
-        int midiChannel;
+        public int Column { get; set; }
+        public int midiChannel;
         private int? _pitch = 0;
         private byte? _velocity = 0;
         private TrackerInstrument _trackerInstrument;

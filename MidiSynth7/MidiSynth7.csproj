@@ -178,6 +178,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="entities\controls\MPTPattern.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="entities\controls\PianoControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -186,9 +190,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="entities\MPTRow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="entities\TransposeNotification.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="entities\MPTBit.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="entities\WhiteKey.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -225,6 +237,9 @@
     <Compile Include="entities\controls\LightCell.xaml.cs">
       <DependentUpon>LightCell.xaml</DependentUpon>
     </Compile>
+    <Compile Include="entities\controls\MPTPattern.xaml.cs">
+      <DependentUpon>MPTPattern.xaml</DependentUpon>
+    </Compile>
     <Compile Include="entities\KeyTypes.cs" />
     <Compile Include="entities\controls\PianoControl.xaml.cs">
       <DependentUpon>PianoControl.xaml</DependentUpon>
@@ -232,9 +247,15 @@
     <Compile Include="entities\controls\PianoControlFullRange.xaml.cs">
       <DependentUpon>PianoControlFullRange.xaml</DependentUpon>
     </Compile>
+    <Compile Include="entities\MPTRow.xaml.cs">
+      <DependentUpon>MPTRow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="entities\Pie.cs" />
     <Compile Include="entities\TransposeNotification.xaml.cs">
       <DependentUpon>TransposeNotification.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="entities\MPTBit.xaml.cs">
+      <DependentUpon>MPTBit.xaml</DependentUpon>
     </Compile>
     <Compile Include="entities\WhiteKey.xaml.cs">
       <DependentUpon>WhiteKey.xaml</DependentUpon>

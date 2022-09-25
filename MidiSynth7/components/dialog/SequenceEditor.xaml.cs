@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MidiSynth7.entities.controls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,12 +21,18 @@ namespace MidiSynth7.components.dialog
     /// </summary>
     public partial class SequenceEditor : Page, IDialogView
     {
-        public SequenceEditor()
+        public SequenceEditor(MainWindow win, Grid container)
         {
+            _win = win;
+            _container = container;
             InitializeComponent();
         }
+        MainWindow _win;
+        Grid _container;
 
-        public string DialogTitle { get => "Sequence Tracker v1.0"; set => throw new NotImplementedException(); }
+        MPTPattern ActivePattern;
+        string _ttl = "Sequence Tracker v1.0";
+        public string DialogTitle { get => _ttl; set => _ttl = value; }
         public bool HelpRequested { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public bool CanRequestHelp => false;
@@ -37,9 +44,26 @@ namespace MidiSynth7.components.dialog
             throw new NotImplementedException();
         }
 
-        private void MPTPattern_Loaded(object sender, RoutedEventArgs e)
+        public void LoadPattern(int index=0 )
         {
+            string ttl = DialogTitle;
+            loader.Visibility = Visibility.Visible;
+            UpdateLayout();
+            PatternContainer.Children.Clear();
 
+            Console.WriteLine("Yup");
+            ActivePattern = new MPTPattern(16,4,TrackerPattern.GetEmptyPattern(32,20));
+            PatternContainer.Children.Add(ActivePattern);
+            loader.Visibility = Visibility.Collapsed;
+
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            PatternContainer.Children.Clear();
+            ActivePattern = null;
+
+            DialogClosed?.Invoke(this, new DialogEventArgs(_win, _container));
         }
     }
 }

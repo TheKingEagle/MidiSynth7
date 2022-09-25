@@ -6,9 +6,17 @@
       xmlns:local="clr-namespace:MidiSynth7.components.dialog"
       xmlns:components="clr-namespace:MidiSynth7.components" xmlns:controls="clr-namespace:MidiSynth7.entities.controls" x:Class="MidiSynth7.components.dialog.SequenceEditor"
       mc:Ignorable="d"
-      Title="SequenceEditor" Width="1400" ClipToBounds="False" Background="#FF0C0C0C" Height="500">
+      Title="SequenceEditor" Width="1400" ClipToBounds="False" Background="White" Height="500">
     <Page.Resources>
         <ResourceDictionary Source="..\..\asset\Themes.xaml"/>
     </Page.Resources>
-    <Grid Background="#FF151515"/>
+    <Grid Background="#FF151515">
+        <ScrollViewer  HorizontalScrollBarVisibility="Auto" Margin="0,77,0,0" Background="Black" Foreground="White" >
+            <Grid x:Name="PatternContainer" Margin="0,200"></Grid>
+        </ScrollViewer>
+        <Button Content="EXIT" HorizontalAlignment="Left" Margin="1317,27,0,0" VerticalAlignment="Top" Width="75" Background="#FF292929" Foreground="White" FontWeight="Bold" Click="Button_Click"/>
+        <Grid Background="Black" Margin="0,77,0,0" x:Name="loader">
+            <TextBlock Foreground="White" FontSize="72" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center">Loading...</TextBlock>
+        </Grid>
+    </Grid>
 </Page>

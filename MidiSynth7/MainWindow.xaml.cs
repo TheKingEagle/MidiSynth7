@@ -34,6 +34,7 @@ namespace MidiSynth7
         #region Declarations
 
         private bool _Closing = false;
+        private bool PatternLoaded = false;
         private bool _Minimized = false;
         private int appinfo_projectRevision = 0;
         private int _width, _height = 0;
@@ -487,10 +488,11 @@ namespace MidiSynth7
                     {
                         if (uielm == this) return;
                         uielm.Visibility = Visibility.Collapsed;
-                        if(uielm.GetType() == typeof(Dialog))
-                        {
-                            ((Dialog)uielm).OnDialogAnimationComplete(GR_OverlayContent);
-                        }
+                        
+                    }
+                    if (uielm.GetType() == typeof(Dialog))
+                    {
+                        ((Dialog)uielm).OnDialogAnimationComplete(GR_OverlayContent);
                     }
                 };
                 scaler.AutoReverse = false;
@@ -817,22 +819,35 @@ namespace MidiSynth7
                 return;
             }
             Dialog g = new Dialog();
+            
             g.SnapsToDevicePixels = true;
             g.ShowDialog(new NFXDelay(this, GR_OverlayContent), this, GR_OverlayContent);
         }
 
+        
+
         public void ShowMPT()
         {
-
+            PatternLoaded = false;
             if (GR_OverlayContent.Visibility == Visibility.Visible)
             {
                 return;
             }
+            SequenceEditor editor = new SequenceEditor(this,GR_OverlayContent);
             Dialog g = new Dialog();
+            g.DialogShown += G_Shown;
             g.SnapsToDevicePixels = true;
-            g.ShowDialog(new SequenceEditor(), this, GR_OverlayContent);
+            g.ShowDialog(editor, this, GR_OverlayContent);
         }
+        
+        private void G_Shown(object sender, EventArgs e)
+        {
+            if (PatternLoaded) return;
+            var editor = sender as SequenceEditor;
 
+            editor.LoadPattern();
+            PatternLoaded = true;
+        }
         public class ChInvk
         {
             Ellipse index;
