@@ -24,6 +24,7 @@ namespace MidiSynth7.entities
     public partial class MPTRow : UserControl
     {
         int _chCount = 16;
+        private SolidColorBrush bg_HotSelected1 = new SolidColorBrush(Color.FromArgb(255, 0, 67, 159));
         TrackerRow _rowData;
         [Category("Row Info")]
         public int ChannelCount { get => _chCount; set { _chCount = value; UpdateList(); } }
@@ -51,7 +52,14 @@ namespace MidiSynth7.entities
             RowIndex = index;
             UpdateList();
         }
-
+        internal void UpdateFocus(bool active)
+        {
+            row_container.Background = active ? bg_HotSelected1 : null;
+            foreach (MPTBit item in bits)
+            {
+                Dispatcher.Invoke(()=>item.UpdateFocus(active));
+            }
+        }
         public void UpdateList()
         {
             //clear

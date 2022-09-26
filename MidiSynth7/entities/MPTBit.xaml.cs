@@ -27,11 +27,12 @@ namespace MidiSynth7.entities
         TrackerInstrument _instrument;
         SeqParam _param;
         byte? _velo;
-        SolidColorBrush BR_Null = new SolidColorBrush(Color.FromArgb(255, 35, 67, 103));
-        SolidColorBrush BR_Note = new SolidColorBrush(Color.FromArgb(255, 223, 236, 255));
-        SolidColorBrush BR_Inst = new SolidColorBrush(Color.FromArgb(255, 255, 133, 128));
-        SolidColorBrush BR_Velo = new SolidColorBrush(Color.FromArgb(255, 128, 225, 139));
-        SolidColorBrush BR_APar = new SolidColorBrush(Color.FromArgb(255, 137, 185, 247));
+        public static SolidColorBrush BR_Null = new SolidColorBrush(Color.FromArgb(255, 35, 67, 103));
+        public static SolidColorBrush BR_NHot = new SolidColorBrush(Color.FromArgb(255, 223, 236, 255));
+        public static SolidColorBrush BR_Note = new SolidColorBrush(Color.FromArgb(255, 223, 236, 255));
+        public static SolidColorBrush BR_Inst = new SolidColorBrush(Color.FromArgb(255, 255, 133, 128));
+        public static SolidColorBrush BR_Velo = new SolidColorBrush(Color.FromArgb(255, 128, 225, 139));
+        public static SolidColorBrush BR_APar = new SolidColorBrush(Color.FromArgb(255, 137, 185, 247));
         [Category("MPTBit Properties")]
         public int? Pitch
         {
@@ -100,13 +101,37 @@ namespace MidiSynth7.entities
                 {
                     if (value.Mark == 'A')
                     {
-                        Bl_Instrument.Foreground = BR_APar;
+                        Bl_ParmMark.Foreground = BR_APar;
+                        Bl_ParmValue.Foreground = BR_APar;
+
                     }
                     else
                     {
-                        Bl_Instrument.Foreground = BR_Null;
+                        Bl_ParmMark.Foreground = BR_Null;
+                        Bl_ParmValue.Foreground = BR_Null;
                     }
                 }
+                else
+                {
+                    Bl_ParmMark.Foreground = BR_Null;
+                    Bl_ParmValue.Foreground = BR_Null;
+                }
+            }
+        }
+
+        internal void UpdateFocus(bool active)
+        {
+
+            foreach (TextBlock tbl in Bit_Container.Children.OfType<TextBlock>())
+            {
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    if (tbl.Foreground == BR_Null || tbl.Foreground == BR_NHot)
+                    {
+                        tbl.Foreground = active ? BR_NHot : BR_Null;
+                    }
+
+                });
             }
         }
 

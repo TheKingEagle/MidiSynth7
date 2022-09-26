@@ -26,6 +26,7 @@ namespace MidiSynth7.components.dialog
             _win = win;
             _container = container;
             InitializeComponent();
+            
         }
         MainWindow _win;
         Grid _container;
@@ -53,9 +54,16 @@ namespace MidiSynth7.components.dialog
 
             Console.WriteLine("Yup");
             ActivePattern = new MPTPattern(16,4,TrackerPattern.GetEmptyPattern(32,20));
+            ActivePattern.PatternSelectionChange += ActivePattern_PatternSelectionChange;
             PatternContainer.Children.Add(ActivePattern);
             loader.Visibility = Visibility.Collapsed;
+            PatternContainer.Margin = new Thickness(0, (PatternScroller.ViewportHeight-21) / 2, 0, (PatternScroller.ViewportHeight-21) / 2);
 
+        }
+
+        private void ActivePattern_PatternSelectionChange(object sender, SelectionEventArgs e)
+        {
+            PatternScroller.ScrollToVerticalOffset(((PatternScroller.ViewportHeight - 21) / 2) + (e.SelectedIndex * 21) - ((PatternScroller.ViewportHeight - 21) / 2));
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -64,6 +72,31 @@ namespace MidiSynth7.components.dialog
             ActivePattern = null;
 
             DialogClosed?.Invoke(this, new DialogEventArgs(_win, _container));
+        }
+
+        private void PatternScroller_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            e.Handled = true;
+            if(e.Key == Key.Up)
+            {
+                ActivePattern.ActiveRowIndex--;
+                if(ActivePattern.ActiveRowIndex < 0)
+                {
+                    //TODO: Load previous pattern
+                    ActivePattern.ActiveRowIndex = ActivePattern.RowCount - 1;
+                }
+                ActivePattern.SelectRow(ActivePattern.ActiveRowIndex);
+            }
+            if (e.Key == Key.Down)
+            {
+                ActivePattern.ActiveRowIndex++;
+                if (ActivePattern.ActiveRowIndex > ActivePattern.RowCount - 1)
+                {
+                    //TODO: Load previous pattern
+                    ActivePattern.ActiveRowIndex = 0;
+                }
+                ActivePattern.SelectRow(ActivePattern.ActiveRowIndex);
+            }
         }
     }
 }

@@ -32,10 +32,16 @@ namespace MidiSynth7.entities.controls
         private SolidColorBrush bg_subdivision1 = new SolidColorBrush(Color.FromArgb(255, 24, 30, 40));
         private SolidColorBrush bg_subdivision2 = new SolidColorBrush(Color.FromArgb(255, 20, 26, 34));
         private SolidColorBrush bg_subdivisionN = new SolidColorBrush(Color.FromArgb(255, 12, 16, 20));
+        
+        private MPTRow ActiveRow;
+        public int ActiveRowIndex = 0;
+
         TrackerPattern tpf = new TrackerPattern();
         SynchronizationContext uiContext = SynchronizationContext.Current;
         List<MPTRow> mptRows = new List<MPTRow>();
         BackgroundWorker bw = new BackgroundWorker();
+
+        public event EventHandler<SelectionEventArgs> PatternSelectionChange;
 
         [Category("MPT")]
         public int ChannelCount
@@ -56,7 +62,13 @@ namespace MidiSynth7.entities.controls
 
             }
         }
-
+        public void SelectRow(int index)
+        {
+            ActiveRow.UpdateFocus(false);
+            ActiveRow = mptRows.FirstOrDefault(x => x.RowIndex == index);
+            ActiveRow.UpdateFocus(true);
+            Dispatcher.Invoke(()=>PatternSelectionChange?.Invoke(this, new SelectionEventArgs(index)));
+        }
         [Category("MPT")]
         public int RowsPerBeat
         {
@@ -112,6 +124,17 @@ namespace MidiSynth7.entities.controls
                     Dispatcher.Invoke(() =>
                     {
                         var row = new MPTRow(id, ChannelCount, item);
+                        row.MouseLeftButtonUp += (object s, MouseButtonEventArgs m)=>{
+                            if(ActiveRow != null)
+                            {
+                                Dispatcher.Invoke(() => ActiveRow.UpdateFocus(false));
+                            }
+                            ActiveRow = (MPTRow)s;
+                            ActiveRowIndex = ActiveRow.RowIndex;
+                            
+                            Dispatcher.Invoke(() => ActiveRow.UpdateFocus(true));
+                            Dispatcher.Invoke(() => PatternSelectionChange?.Invoke(this, new SelectionEventArgs(ActiveRow.RowIndex)));
+                        };
                         row.Background = bg_subdivisionN;
                         if (id % RowsPerBeat == 0)
                         {
@@ -134,6 +157,16 @@ namespace MidiSynth7.entities.controls
             t.Start();
             SpinWait.SpinUntil(() => locker);//even more good god...
         }
+        
+        
+    }
 
+    public class SelectionEventArgs : EventArgs
+    {
+        public int SelectedIndex { get; private set; }
+        public SelectionEventArgs(int selectedIndex)
+        {
+            SelectedIndex = selectedIndex; 
+        }
     }
 }

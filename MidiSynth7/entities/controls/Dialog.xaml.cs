@@ -66,9 +66,7 @@ namespace MidiSynth7.entities.controls
                 shown = true;
             }
             
-            
         }
-
         private void ActiveDialog_DialogClosed(object sender, DialogEventArgs e)
         {
             shown = false;
