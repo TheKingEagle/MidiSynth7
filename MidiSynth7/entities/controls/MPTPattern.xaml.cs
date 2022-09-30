@@ -1,22 +1,13 @@
 ﻿using MidiSynth7.components;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 //===================== NOTES =====================
 // This is not great code. Please enjoy at your
@@ -48,7 +39,6 @@ namespace MidiSynth7.entities.controls
         int selectedBit = 0;
         int selectedChannel = 0;
         TrackerPattern tpf = new TrackerPattern();
-        SynchronizationContext uiContext = SynchronizationContext.Current;
         List<MPTRow> mptRows = new List<MPTRow>();
         BackgroundWorker bw = new BackgroundWorker();
         FrameworkElement Frame;
@@ -89,7 +79,6 @@ namespace MidiSynth7.entities.controls
             private set
             {
                 _rowCount = value;
-
             }
         }
 
@@ -127,13 +116,15 @@ namespace MidiSynth7.entities.controls
         {
             SelPoint1 = new Point((126 * selectedChannel) + MPTXOffset, 0);
             SelPoint2 = new Point((126 * selectedChannel) + 126+ MPTXOffset, 21*RowCount);
-            Point Dp1 = PointToScreen(SelPoint1);
-            Point Dp2 = PointToScreen(SelPoint2);
-            Rect dr = new Rect(Dp1, Dp2);
-            using (System.Drawing.Graphics g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero))
-            {
-                g.DrawRectangle(System.Drawing.Pens.Red, new System.Drawing.Rectangle((int)dr.X, (int)dr.Y, (int)dr.Width, (int)dr.Height));
-            }
+            //===== DEBUG BOUNDARIES =====
+            //Point Dp1 = PointToScreen(SelPoint1);
+            //Point Dp2 = PointToScreen(SelPoint2);
+            //Rect dr = new Rect(Dp1, Dp2);
+            //using (System.Drawing.Graphics g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero))
+            //{
+            //    g.DrawRectangle(System.Drawing.Pens.Red, new System.Drawing.Rectangle((int)dr.X, (int)dr.Y, (int)dr.Width, (int)dr.Height));
+            //}
+            //===== ================ =====
             Rect r = new Rect(SelPoint1, SelPoint2);
             GetSelection(r,true);
         }
