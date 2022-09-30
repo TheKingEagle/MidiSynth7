@@ -1,4 +1,5 @@
 ﻿using MidiSynth7.components;
+using MidiSynth7.entities.controls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,8 +24,9 @@ namespace MidiSynth7.entities
 
     public partial class MPTRow : UserControl
     {
+        public bool Active { get; private set; }
         int _chCount = 16;
-        private SolidColorBrush bg_HotSelected1 = new SolidColorBrush(Color.FromArgb(255, 0, 67, 159));
+        public static SolidColorBrush bg_HotSelected1 = new SolidColorBrush(Color.FromArgb(255, 0, 67, 159));
         TrackerRow _rowData;
         [Category("Row Info")]
         public int ChannelCount { get => _chCount; set { _chCount = value; UpdateList(); } }
@@ -33,6 +35,9 @@ namespace MidiSynth7.entities
 
         [Category("Row Info")]
         public int RowIndex { get => int.Parse(BL_RowIndex.Text); set => BL_RowIndex.Text = value.ToString(); }
+
+        public int SelectedChannel { get; private set; }
+        public int SelectedBit { get; private set; }
         public List<MPTBit> bits = new List<MPTBit>();
         public MPTRow()
         {
@@ -54,10 +59,31 @@ namespace MidiSynth7.entities
         }
         internal void UpdateFocus(bool active)
         {
+            Active = active;
             row_container.Background = active ? bg_HotSelected1 : null;
             foreach (MPTBit item in bits)
             {
                 Dispatcher.Invoke(()=>item.UpdateFocus(active));
+            }
+        }
+
+        public void GetSelection(Rect bounds, FrameworkElement relativeTo, bool IntendsMulti = false)
+        {
+            var f = row_container.Items.OfType<MPTBit>().Where(x => x.BoundsRelativeTo(relativeTo).IntersectsWith(bounds));
+            foreach (var item in f)
+            {
+                if (!IntendsMulti)
+                {
+                    SelectedChannel = item.Channel;
+                }
+                SelectedBit = item.GetSelection(bounds, relativeTo,IntendsMulti);
+            }
+        }
+        public void ClearSelection()
+        {
+            foreach (MPTBit item in bits)
+            {
+                Dispatcher.Invoke(() => item.ClearSelection());
             }
         }
         public void UpdateList()

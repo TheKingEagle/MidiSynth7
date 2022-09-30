@@ -3,16 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MidiSynth7.entities" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Foreground="{x:Null}"  VirtualizingPanel.IsContainerVirtualizable="True">
+             xmlns:local="clr-namespace:MidiSynth7.entities" HorizontalAlignment="Left" UseLayoutRounding="True" VerticalAlignment="Top" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Foreground="{x:Null}"  VirtualizingPanel.IsContainerVirtualizable="True">
     <VirtualizingStackPanel x:Name="row_shell" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
 
-        <Border BorderBrush="#FF072949" BorderThickness="1">
+        <Border x:Name="bd_indx" BorderBrush="#FF072949" BorderThickness="1" Width="42">
             <TextBlock x:Name="BL_RowIndex" Text="0" MinWidth="40" TextAlignment="Center" Background="#FF091D30" FontSize="14" Foreground="White"/>
         </Border>
         <ItemsControl x:Name="row_container" >
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <VirtualizingStackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <VirtualizingStackPanel UseLayoutRounding="True" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
 
                     </VirtualizingStackPanel>
                 </ItemsPanelTemplate>

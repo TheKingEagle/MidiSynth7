@@ -28,10 +28,10 @@ namespace MidiSynth7.components.dialog
             InitializeComponent();
             
         }
-        MainWindow _win;
-        Grid _container;
+        private MainWindow _win;
+        private Grid _container;
 
-        MPTPattern ActivePattern;
+        private MPTPattern ActivePattern;
         string _ttl = "Sequence Tracker v1.0";
         public string DialogTitle { get => _ttl; set => _ttl = value; }
         public bool HelpRequested { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -53,7 +53,7 @@ namespace MidiSynth7.components.dialog
             PatternContainer.Children.Clear();
 
             Console.WriteLine("Yup");
-            ActivePattern = new MPTPattern(16,4,TrackerPattern.GetEmptyPattern(32,20));
+            ActivePattern = new MPTPattern(16,4,TrackerPattern.GetEmptyPattern(32,20), PatternContainer);
             ActivePattern.PatternSelectionChange += ActivePattern_PatternSelectionChange;
             PatternContainer.Children.Add(ActivePattern);
             loader.Visibility = Visibility.Collapsed;
@@ -85,17 +85,25 @@ namespace MidiSynth7.components.dialog
                     //TODO: Load previous pattern
                     ActivePattern.ActiveRowIndex = ActivePattern.RowCount - 1;
                 }
-                ActivePattern.SelectRow(ActivePattern.ActiveRowIndex);
+                ActivePattern.SetActiveRow(ActivePattern.ActiveRowIndex);
             }
             if (e.Key == Key.Down)
             {
                 ActivePattern.ActiveRowIndex++;
                 if (ActivePattern.ActiveRowIndex > ActivePattern.RowCount - 1)
                 {
-                    //TODO: Load previous pattern
+                    //TODO: Load next pattern
                     ActivePattern.ActiveRowIndex = 0;
                 }
-                ActivePattern.SelectRow(ActivePattern.ActiveRowIndex);
+                ActivePattern.SetActiveRow(ActivePattern.ActiveRowIndex);
+            }
+            if(e.Key == Key.L && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                ActivePattern.SelectActiveChannel();
+            }
+            if (e.Key == Key.L && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
+            {
+                ActivePattern.SelectActiveChannelBit();
             }
         }
     }

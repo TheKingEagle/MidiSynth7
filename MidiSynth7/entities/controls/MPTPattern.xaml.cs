@@ -18,6 +18,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+//===================== NOTES =====================
+// This is not great code. Please enjoy at your
+// own risk. I cannot take responsibility for any
+// injuries that may occur physically or mentally.
+//===================== You've been warned ========
+
 namespace MidiSynth7.entities.controls
 {
     /// <summary>
@@ -35,11 +41,35 @@ namespace MidiSynth7.entities.controls
         
         private MPTRow ActiveRow;
         public int ActiveRowIndex = 0;
-
+        Point SelPoint1 = new Point(0, 0);
+        Point SelPoint2 = new Point(0, 0);
+        bool mouseDowned = false;
+        bool multiSelect = false;
+        int selectedBit = 0;
+        int selectedChannel = 0;
         TrackerPattern tpf = new TrackerPattern();
         SynchronizationContext uiContext = SynchronizationContext.Current;
         List<MPTRow> mptRows = new List<MPTRow>();
         BackgroundWorker bw = new BackgroundWorker();
+        FrameworkElement Frame;
+
+        /// <summary>
+        /// The width of the row's number slot.
+        /// </summary>
+        private int MPTXOffset
+        {
+            get
+            {
+                if (mptRows != null)
+                {
+                    if (mptRows.Count > 0)
+                    {
+                        return (int)mptRows[0].bd_indx.ActualWidth;
+                    }
+                }
+                return 0;
+            }
+        }
 
         public event EventHandler<SelectionEventArgs> PatternSelectionChange;
 
@@ -62,12 +92,70 @@ namespace MidiSynth7.entities.controls
 
             }
         }
-        public void SelectRow(int index)
+
+        public void GetSelection(Rect bounds, bool intendsMulti = false)
+        {
+            foreach (var selcl in rowContainer.Items.OfType<MPTRow>())
+            {
+                selcl.ClearSelection();
+            }
+            var f = rowContainer.Items.OfType<MPTRow>().Where(x => x.BoundsRelativeTo(Frame).IntersectsWith(bounds));
+            foreach (var item in f)
+            {
+                item.GetSelection(bounds, Frame,intendsMulti);
+                if (!intendsMulti)
+                {
+                    selectedChannel = item.SelectedChannel;
+                    selectedBit = item.SelectedBit;
+                }
+            }
+            //update active row; so we don't get font color misses
+            var ar = rowContainer.Items.OfType<MPTRow>().FirstOrDefault(x => x.Active);
+            if(ar != null) ar.UpdateFocus(ar.Active);
+
+        }
+
+        public void SetActiveRow(int index)
         {
             ActiveRow.UpdateFocus(false);
             ActiveRow = mptRows.FirstOrDefault(x => x.RowIndex == index);
             ActiveRow.UpdateFocus(true);
             Dispatcher.Invoke(()=>PatternSelectionChange?.Invoke(this, new SelectionEventArgs(index)));
+        }
+
+        public void SelectActiveChannel()
+        {
+            SelPoint1 = new Point((126 * selectedChannel) + MPTXOffset, 0);
+            SelPoint2 = new Point((126 * selectedChannel) + 126+ MPTXOffset, 21*RowCount);
+            Point Dp1 = PointToScreen(SelPoint1);
+            Point Dp2 = PointToScreen(SelPoint2);
+            Rect dr = new Rect(Dp1, Dp2);
+            using (System.Drawing.Graphics g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero))
+            {
+                g.DrawRectangle(System.Drawing.Pens.Red, new System.Drawing.Rectangle((int)dr.X, (int)dr.Y, (int)dr.Width, (int)dr.Height));
+            }
+            Rect r = new Rect(SelPoint1, SelPoint2);
+            GetSelection(r,true);
+        }
+
+        public void SelectActiveChannelBit()
+        {
+            int[] bitWidths = new int[] { 31, 23, 33, 12, 21 }; //weird implementation but go off
+            int[] bitOffset = new int[] { 00, 31, 54, 87, 99 }; //oblong logic however fair
+            SelPoint1 = new Point((126 * selectedChannel) + bitOffset[selectedBit]+MPTXOffset+4, 0);//+4 because padding overlap? ¯\_(ツ)_/¯
+            SelPoint2 = new Point((126 * selectedChannel) + bitOffset[selectedBit] + bitWidths[selectedBit]+ MPTXOffset, 21 * RowCount);
+            //===== DEBUG BOUNDARIES =====
+            //Point Dp1 = PointToScreen(SelPoint1);
+            //Point Dp2 = PointToScreen(SelPoint2);
+            //Rect dr = new Rect(Dp1, Dp2);
+            //using (System.Drawing.Graphics g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero))
+            //{
+            //    g.DrawRectangle(System.Drawing.Pens.Red, new System.Drawing.Rectangle((int)dr.X, (int)dr.Y, (int)dr.Width, (int)dr.Height));
+            //}
+            //===== ================ =====
+
+            Rect r = new Rect(SelPoint1, SelPoint2);
+            GetSelection(r,true);
         }
         [Category("MPT")]
         public int RowsPerBeat
@@ -93,7 +181,7 @@ namespace MidiSynth7.entities.controls
             InitializeComponent();
         }
 
-        public MPTPattern(int rowsPerMeasure,int rowsPerBeat,TrackerPattern pattern)
+        public MPTPattern(int rowsPerMeasure,int rowsPerBeat,TrackerPattern pattern, FrameworkElement PatternContainer)
         {
             tpf = pattern;
             InitializeComponent();
@@ -105,6 +193,7 @@ namespace MidiSynth7.entities.controls
             bw.DoWork += Bw_DoWork;
             bw.RunWorkerCompleted += Bw_RunWorkerCompleted;
             bw.RunWorkerAsync();
+            Frame = PatternContainer;
         }
 
         private void Bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -124,17 +213,7 @@ namespace MidiSynth7.entities.controls
                     Dispatcher.Invoke(() =>
                     {
                         var row = new MPTRow(id, ChannelCount, item);
-                        row.MouseLeftButtonUp += (object s, MouseButtonEventArgs m)=>{
-                            if(ActiveRow != null)
-                            {
-                                Dispatcher.Invoke(() => ActiveRow.UpdateFocus(false));
-                            }
-                            ActiveRow = (MPTRow)s;
-                            ActiveRowIndex = ActiveRow.RowIndex;
-                            
-                            Dispatcher.Invoke(() => ActiveRow.UpdateFocus(true));
-                            Dispatcher.Invoke(() => PatternSelectionChange?.Invoke(this, new SelectionEventArgs(ActiveRow.RowIndex)));
-                        };
+                        
                         row.Background = bg_subdivisionN;
                         if (id % RowsPerBeat == 0)
                         {
@@ -157,8 +236,63 @@ namespace MidiSynth7.entities.controls
             t.Start();
             SpinWait.SpinUntil(() => locker);//even more good god...
         }
-        
-        
+
+        private void Pattern_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            mouseDowned = true;
+            CaptureMouse();
+            SelPoint1 = e.GetPosition(Frame);
+            SelPoint2 = e.GetPosition(Frame);
+            Rect r = new Rect(SelPoint1, SelPoint2);
+            multiSelect = false;
+            GetSelection(r,false);
+        }
+
+        private void Pattern_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (mouseDowned)
+            {
+                SelPoint2 = e.GetPosition(Frame);
+                Rect r = new Rect(SelPoint1, SelPoint2);
+
+                double distance = Math.Abs(Point.Subtract(SelPoint2, SelPoint1).Length);
+
+                if (distance > 5)
+                {
+                    multiSelect = true;
+                }
+                GetSelection(r,multiSelect);
+                
+            }
+            
+        }
+
+        private void Pattern_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+
+            ReleaseMouseCapture();
+            mouseDowned = false;
+            //SelPoint1 = e.GetPosition(Frame);
+            //SelPoint2 = e.GetPosition(Frame);
+            Rect r = new Rect(SelPoint1, SelPoint2);
+            GetSelection(r,multiSelect);
+            if (!multiSelect)
+            {
+                if (ActiveRow != null)
+                {
+                    ActiveRow.UpdateFocus(false);
+                }
+
+                ActiveRow = Dialog.GetElementUnderMouse<MPTRow>();
+                if (ActiveRow != null)
+                {
+                    ActiveRowIndex = ActiveRow.RowIndex;
+
+                    ActiveRow.UpdateFocus(true);
+                    PatternSelectionChange?.Invoke(this, new SelectionEventArgs(ActiveRow.RowIndex));
+                }
+            }
+        }
     }
 
     public class SelectionEventArgs : EventArgs

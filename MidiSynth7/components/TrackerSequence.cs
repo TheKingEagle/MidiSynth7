@@ -143,15 +143,15 @@ namespace MidiSynth7.components
                 note = n.noteLabel + n.octave;
                 if(Pitch.Value == -1)
                 {
-                    note = "== ";
+                    note = "===";
                 }
                 if (Pitch.Value == -2)
                 {
-                    note = "~~ ";
+                    note = "~~~";
                 }
                 if (Pitch.Value == -3)
                 {
-                    note = "^^ ";
+                    note = "^^^";
                 }
             }
             string instindex = "..";
@@ -159,12 +159,12 @@ namespace MidiSynth7.components
             {
                 instindex = Instrument.Index.ToString();//It's not hex here since OpenMPT does not use hex for instruments
             }
-            string velocity = " ..";
+            string velocity = "...";
             if (Velocity.HasValue)
             {
-                velocity = "v" + Velocity.Value;
+                velocity = "v" + Velocity.Value/2;//Since OpenMPT does not support values over 64
             }
-            string param = ".";
+            string param = "...";
             if(Parameter != null)
             {
                 param = Parameter.Mark.ToString() + Parameter.Value.ToString("X:2");

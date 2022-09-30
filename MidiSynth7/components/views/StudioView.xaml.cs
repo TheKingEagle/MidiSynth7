@@ -335,6 +335,30 @@ namespace MidiSynth7.components.views
                         Dispatcher.Invoke(() => LC_PatternNumber.SetLight(pattern));
                         for (int step = 0; step < 32; step++)
                         {
+                            //if (step > 0 && step != 16)
+                            //{
+                            //    if (step % 4 == 0)//TODO replace with value of beatsPerRow in pattern editor
+                            //    {
+                            //        AppContext.MidiEngine.MidiNote_Play(9, 42, 44, false);
+                            //    }
+                            //    if (step % 4 == 1)//TODO replace with value of beatsPerRow in pattern editor
+                            //    {
+                            //        AppContext.MidiEngine.MidiNote_Stop(9, 42, false);
+                            //    }
+                            //}
+                            //if (step == 0 || step == 16)
+                            //{
+                            //    if (step % 4 == 0)//TODO replace with value of beatsPerRow in pattern editor
+                            //    {
+                            //        AppContext.MidiEngine.MidiNote_Play(9, 46, 44, false);
+                            //    }
+
+                            //}
+                            //if (step == 1 || step == 17)//TODO replace with value of beatsPerRow in pattern editor
+                            //{
+                            //    AppContext.MidiEngine.MidiNote_Stop(9, 46, false);
+                            //}
+
                             Dispatcher.Invoke(() => check = CB_Sequencer_Check.IsChecked.Value);
                             if (!check) return;
                             Dispatcher.InvokeAsync(() => LC_PatternStep.SetLight(step));
@@ -342,7 +366,7 @@ namespace MidiSynth7.components.views
                             //  TODO: PROCESS STEP HERE (TEMPO)
                             // ==================================
                             Dispatcher.InvokeAsync(() => DotDuration = (int)((float)((2500 / (float)(Dial_RiffTempo.Value * 1000))) * (ticksPerDot * 1000)));
-                            System.Threading.Thread.Sleep(DotDuration);
+                            System.Threading.Thread.Sleep(DotDuration);//This is beyond not ideal LOL
                             // =================================
                             //  TODO: PROCESS STEP HERE (NOTES)
                             // =================================
