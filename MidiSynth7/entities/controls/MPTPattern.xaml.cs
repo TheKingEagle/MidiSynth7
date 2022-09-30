@@ -22,26 +22,20 @@ namespace MidiSynth7.entities.controls
     /// </summary>
     public partial class MPTPattern : UserControl
     {
-        private int _channelCount = 5;
-        private int _rowCount = 32;
-        private int _rowsPerBeat = 4;
-        private int _rowsPerMeasure = 16;
+        private bool locker = false;
+        private bool mouseDowned = false;
+        private bool multiSelect = false;
+
         private SolidColorBrush bg_subdivision1 = new SolidColorBrush(Color.FromArgb(255, 24, 30, 40));
         private SolidColorBrush bg_subdivision2 = new SolidColorBrush(Color.FromArgb(255, 20, 26, 34));
         private SolidColorBrush bg_subdivisionN = new SolidColorBrush(Color.FromArgb(255, 12, 16, 20));
-        
         private MPTRow ActiveRow;
-        public int ActiveRowIndex = 0;
-        Point SelPoint1 = new Point(0, 0);
-        Point SelPoint2 = new Point(0, 0);
-        bool mouseDowned = false;
-        bool multiSelect = false;
-        int selectedBit = 0;
-        int selectedChannel = 0;
-        TrackerPattern tpf = new TrackerPattern();
-        List<MPTRow> mptRows = new List<MPTRow>();
-        BackgroundWorker bw = new BackgroundWorker();
-        FrameworkElement Frame;
+        private Point SelPoint1 = new Point(0, 0);
+        private Point SelPoint2 = new Point(0, 0);
+        private TrackerPattern tpf = new TrackerPattern();
+        private List<MPTRow> mptRows = new List<MPTRow>();
+        private BackgroundWorker bw = new BackgroundWorker();
+        private FrameworkElement Frame;
 
         /// <summary>
         /// The width of the row's number slot.
@@ -61,112 +55,22 @@ namespace MidiSynth7.entities.controls
             }
         }
 
+        public int selectedBit { get; private set; } = 0;
+
+        public int selectedChannel { get; private set; } = 0;
+
+        public int ActiveRowIndex { get; internal set; }
+
+        public int ChannelCount { get; set; } = 16;
+
+        public int RowCount { get; set; } = 32;
+
+        public int RowsPerBeat { get; set; } = 4;
+
+        public int RowsPerMeasure { get; set; } = 16;
+
         public event EventHandler<SelectionEventArgs> PatternSelectionChange;
 
-        [Category("MPT")]
-        public int ChannelCount
-        {
-            get => _channelCount;
-            set
-            {
-                _channelCount = value;
-            }
-        }
-        [Category("MPT")]
-        public int RowCount
-        {
-            get => _rowCount;
-            private set
-            {
-                _rowCount = value;
-            }
-        }
-
-        public void GetSelection(Rect bounds, bool intendsMulti = false)
-        {
-            foreach (var selcl in rowContainer.Items.OfType<MPTRow>())
-            {
-                selcl.ClearSelection();
-            }
-            var f = rowContainer.Items.OfType<MPTRow>().Where(x => x.BoundsRelativeTo(Frame).IntersectsWith(bounds));
-            foreach (var item in f)
-            {
-                item.GetSelection(bounds, Frame,intendsMulti);
-                if (!intendsMulti)
-                {
-                    selectedChannel = item.SelectedChannel;
-                    selectedBit = item.SelectedBit;
-                }
-            }
-            //update active row; so we don't get font color misses
-            var ar = rowContainer.Items.OfType<MPTRow>().FirstOrDefault(x => x.Active);
-            if(ar != null) ar.UpdateFocus(ar.Active);
-
-        }
-
-        public void SetActiveRow(int index)
-        {
-            ActiveRow.UpdateFocus(false);
-            ActiveRow = mptRows.FirstOrDefault(x => x.RowIndex == index);
-            ActiveRow.UpdateFocus(true);
-            Dispatcher.Invoke(()=>PatternSelectionChange?.Invoke(this, new SelectionEventArgs(index)));
-        }
-
-        public void SelectActiveChannel()
-        {
-            SelPoint1 = new Point((126 * selectedChannel) + MPTXOffset, 0);
-            SelPoint2 = new Point((126 * selectedChannel) + 126+ MPTXOffset, 21*RowCount);
-            //===== DEBUG BOUNDARIES =====
-            //Point Dp1 = PointToScreen(SelPoint1);
-            //Point Dp2 = PointToScreen(SelPoint2);
-            //Rect dr = new Rect(Dp1, Dp2);
-            //using (System.Drawing.Graphics g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero))
-            //{
-            //    g.DrawRectangle(System.Drawing.Pens.Red, new System.Drawing.Rectangle((int)dr.X, (int)dr.Y, (int)dr.Width, (int)dr.Height));
-            //}
-            //===== ================ =====
-            Rect r = new Rect(SelPoint1, SelPoint2);
-            GetSelection(r,true);
-        }
-
-        public void SelectActiveChannelBit()
-        {
-            int[] bitWidths = new int[] { 31, 23, 33, 12, 21 }; //weird implementation but go off
-            int[] bitOffset = new int[] { 00, 31, 54, 87, 99 }; //oblong logic however fair
-            SelPoint1 = new Point((126 * selectedChannel) + bitOffset[selectedBit]+MPTXOffset+4, 0);//+4 because padding overlap? ¯\_(ツ)_/¯
-            SelPoint2 = new Point((126 * selectedChannel) + bitOffset[selectedBit] + bitWidths[selectedBit]+ MPTXOffset, 21 * RowCount);
-            //===== DEBUG BOUNDARIES =====
-            //Point Dp1 = PointToScreen(SelPoint1);
-            //Point Dp2 = PointToScreen(SelPoint2);
-            //Rect dr = new Rect(Dp1, Dp2);
-            //using (System.Drawing.Graphics g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero))
-            //{
-            //    g.DrawRectangle(System.Drawing.Pens.Red, new System.Drawing.Rectangle((int)dr.X, (int)dr.Y, (int)dr.Width, (int)dr.Height));
-            //}
-            //===== ================ =====
-
-            Rect r = new Rect(SelPoint1, SelPoint2);
-            GetSelection(r,true);
-        }
-        [Category("MPT")]
-        public int RowsPerBeat
-        {
-            get => _rowsPerBeat;
-            private set
-            {
-                _rowsPerBeat = value;
-            }
-        }
-        [Category("MPT")]
-
-        public int RowsPerMeasure
-        {
-            get => _rowsPerMeasure;
-            private set
-            {
-                _rowsPerMeasure = value;
-            }
-        }
         public MPTPattern()
         {
             InitializeComponent();
@@ -193,7 +97,7 @@ namespace MidiSynth7.entities.controls
             Dispatcher.Invoke(() => rowContainer.Visibility = Visibility.Visible);
 
         }
-        bool locker = false;
+
         private void Bw_DoWork(object sender, DoWorkEventArgs e)
         {
             void threader()
@@ -284,6 +188,86 @@ namespace MidiSynth7.entities.controls
                 }
             }
         }
+
+        public void GetSelection(Rect bounds, bool intendsMulti = false)
+        {
+            foreach (var selcl in rowContainer.Items.OfType<MPTRow>())
+            {
+                selcl.ClearSelection();
+            }
+            IEnumerable<MPTRow> f = rowContainer.Items.OfType<MPTRow>().Where(x => x.BoundsRelativeTo(Frame).IntersectsWith(bounds));
+            foreach (MPTRow item in f)
+            {
+                item.GetSelection(bounds, Frame, intendsMulti);
+                if (!intendsMulti)
+                {
+                    selectedChannel = item.SelectedChannel;
+                    selectedBit = item.SelectedBit;
+                }
+            }
+            //update active row; so we don't get font color misses
+            MPTRow ar = rowContainer.Items.OfType<MPTRow>().FirstOrDefault(x => x.Active);
+            if (ar != null) ar.UpdateFocus(ar.Active);
+
+        }
+
+        public void SetHotRow(int index)
+        {
+            ActiveRow.UpdateFocus(false);
+            ActiveRow = mptRows.FirstOrDefault(x => x.RowIndex == index);
+            ActiveRow.UpdateFocus(true);
+            Dispatcher.Invoke(() => PatternSelectionChange?.Invoke(this, new SelectionEventArgs(index)));
+        }
+
+        public void SelectActiveChannel()
+        {
+            SelPoint1 = new Point((126 * selectedChannel) + MPTXOffset, 0);
+            SelPoint2 = new Point((126 * selectedChannel) + 126 + MPTXOffset, 21 * RowCount);
+#if BOUNDS
+            DebugBounds();
+#endif
+            Rect r = new Rect(SelPoint1, SelPoint2);
+            GetSelection(r, true);
+        }
+
+        public void SelectActiveChannelBit()
+        {
+            int[] bitWidths = new int[] { 31, 23, 33, 12, 21 }; //weird implementation but go off
+            int[] bitOffset = new int[] { 00, 31, 54, 87, 99 }; //oblong logic however fair
+            SelPoint1 = new Point((126 * selectedChannel) + bitOffset[selectedBit] + MPTXOffset + 4, 0);//+4 because padding overlap? ¯\_(ツ)_/¯
+            SelPoint2 = new Point((126 * selectedChannel) + bitOffset[selectedBit] + bitWidths[selectedBit] + MPTXOffset, 21 * RowCount);
+#if BOUNDS
+            DebugBounds();
+#endif
+            Rect r = new Rect(SelPoint1, SelPoint2);
+            GetSelection(r, true);
+        }
+
+        public void MoveBitActiveRow(int ch, int bit)
+        {
+            int[] bitWidths = new int[] { 31, 23, 33, 12, 21 }; //weird implementation but go off
+            int[] bitOffset = new int[] { 00, 31, 54, 87, 99 }; //oblong logic however fair
+            SelPoint1 = new Point((126 * ch) + bitOffset[bit] + MPTXOffset + 4, 21 * ActiveRowIndex+2);
+            SelPoint2 = new Point((126 * ch) + bitOffset[bit] + bitWidths[bit] + MPTXOffset + 4, 21*ActiveRowIndex+2);
+#if BOUNDS
+            DebugBounds();
+#endif
+            Rect r = new Rect(SelPoint1, SelPoint2);
+            GetSelection(r, false);
+        }
+
+#if BOUNDS
+        private void DebugBounds()
+        {
+            Point Dp1 = PointToScreen(SelPoint1);
+            Point Dp2 = PointToScreen(SelPoint2);
+            Rect dr = new Rect(Dp1, Dp2);
+            using (System.Drawing.Graphics g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero))
+            {
+                g.DrawRectangle(System.Drawing.Pens.Red, new System.Drawing.Rectangle((int)dr.X, (int)dr.Y, (int)dr.Width, (int)dr.Height));
+            }
+        }
+#endif
     }
 
     public class SelectionEventArgs : EventArgs
@@ -291,7 +275,7 @@ namespace MidiSynth7.entities.controls
         public int SelectedIndex { get; private set; }
         public SelectionEventArgs(int selectedIndex)
         {
-            SelectedIndex = selectedIndex; 
+            SelectedIndex = selectedIndex;
         }
     }
 }

@@ -85,8 +85,9 @@ namespace MidiSynth7.components.dialog
                     //TODO: Load previous pattern
                     ActivePattern.ActiveRowIndex = ActivePattern.RowCount - 1;
                 }
-                ActivePattern.SetActiveRow(ActivePattern.ActiveRowIndex);
+                ActivePattern.SetHotRow(ActivePattern.ActiveRowIndex);
             }
+            
             if (e.Key == Key.Down)
             {
                 ActivePattern.ActiveRowIndex++;
@@ -95,7 +96,7 @@ namespace MidiSynth7.components.dialog
                     //TODO: Load next pattern
                     ActivePattern.ActiveRowIndex = 0;
                 }
-                ActivePattern.SetActiveRow(ActivePattern.ActiveRowIndex);
+                ActivePattern.SetHotRow(ActivePattern.ActiveRowIndex);
             }
             if(e.Key == Key.L && Keyboard.Modifiers == ModifierKeys.Control)
             {
@@ -105,6 +106,35 @@ namespace MidiSynth7.components.dialog
             {
                 ActivePattern.SelectActiveChannelBit();
             }
+            int bit = ActivePattern.selectedBit;
+            int ch = ActivePattern.selectedChannel;
+            if (e.Key == Key.Left)
+            {
+                bit--;
+            }
+            if (e.Key == Key.Right)
+            {
+                bit++;
+            }
+            if (bit > 4)
+            {
+                bit = 0;
+                ch++;
+                if(ch > ActivePattern.ChannelCount-1)
+                {
+                    ch = 0;
+                }
+            }
+            if (bit < 0)
+            {
+                bit = 4;
+                ch--;
+                if (ch < 0)
+                {
+                    ch = ActivePattern.ChannelCount - 1;
+                }
+            }
+            ActivePattern.MoveBitActiveRow(ch, bit);
         }
     }
 }
