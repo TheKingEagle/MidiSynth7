@@ -66,12 +66,7 @@ namespace MidiSynth7.entities.controls
             }
         }
 
-        public System.Windows.Input.Key[] KeysTable =
-        {
-           Key.Z, Key.S,Key.X,Key.C,Key.F,Key.V,Key.G,Key.B,Key.N,Key.J,Key.M,Key.K,(System.Windows.Input.KeyInterop.KeyFromVirtualKey(188)),Key.L,(System.Windows.Input.KeyInterop.KeyFromVirtualKey(190)),(System.Windows.Input.KeyInterop.KeyFromVirtualKey(191)),(System.Windows.Input.KeyInterop.KeyFromVirtualKey(222)),Key.RightShift,(System.Windows.Input.KeyInterop.KeyFromVirtualKey(13)),
-           Key.Q,Key.W,Key.D3,Key.E,Key.D4,Key.R,Key.D5,Key.T,Key.Y,Key.D7,Key.U,Key.D8,Key.I,Key.O,Key.D0,Key.P,(System.Windows.Input.KeyInterop.KeyFromVirtualKey(189)),
-           (System.Windows.Input.KeyInterop.KeyFromVirtualKey(219)),(System.Windows.Input.KeyInterop.KeyFromVirtualKey(187)),(System.Windows.Input.KeyInterop.KeyFromVirtualKey(221))
-        };
+        
 
         KeyTypes[] kTypeTable =
             {
@@ -96,7 +91,7 @@ namespace MidiSynth7.entities.controls
             {
                 return;
             }
-            int indx = Array.IndexOf(KeysTable, e.Key);
+            int indx = Array.IndexOf(SystemComponent.KeysTable, e.Key);
             if (indx > -1)
             {
                 var key = Keys.FirstOrDefault(k => k.keyID == indx + 21).keyItem;
@@ -113,7 +108,7 @@ namespace MidiSynth7.entities.controls
             {
                 return;
             }
-            int indx = Array.IndexOf(KeysTable, e.Key);
+            int indx = Array.IndexOf(SystemComponent.KeysTable, e.Key);
             if (indx > -1)
             {
                 var key = Keys.FirstOrDefault(k => k.keyID == indx + 21).keyItem;
