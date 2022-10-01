@@ -229,8 +229,8 @@ namespace MidiSynth7.entities.controls
         {
             int[] bitWidths = new int[] { 31, 23, 33, 12, 21 }; //weird implementation but go off
             int[] bitOffset = new int[] { 00, 31, 54, 87, 99 }; //oblong logic however fair
-            SelPoint1 = new Point((126 * ch) + bitOffset[bit] + 4, 21 * ActiveRowIndex+2);
-            SelPoint2 = new Point((126 * ch) + bitOffset[bit] + bitWidths[bit] + 4, 21*ActiveRowIndex+2);
+            SelPoint1 = new Point((126 * ch) + bitOffset[bit] + 4, (21 * ActiveRowIndex) + 2);
+            SelPoint2 = new Point((126 * ch) + bitOffset[bit] + bitWidths[bit] + 4, (21 * ActiveRowIndex) + 2);
 #if BOUNDS
             DebugBounds();
 #endif
