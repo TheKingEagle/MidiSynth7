@@ -34,7 +34,7 @@ namespace MidiSynth7.entities
         public TrackerRow RowData { get => _rowData ?? null; set { _rowData = value; } }
 
         [Category("Row Info")]
-        public int RowIndex { get => int.Parse(BL_RowIndex.Text); set => BL_RowIndex.Text = value.ToString(); }
+        public int RowIndex { get; private set; }
 
         public int SelectedChannel { get; private set; }
         public int SelectedBit { get; private set; }

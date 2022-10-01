@@ -37,24 +37,6 @@ namespace MidiSynth7.entities.controls
         private BackgroundWorker bw = new BackgroundWorker();
         private FrameworkElement Frame;
 
-        /// <summary>
-        /// The width of the row's number slot.
-        /// </summary>
-        private int MPTXOffset
-        {
-            get
-            {
-                if (mptRows != null)
-                {
-                    if (mptRows.Count > 0)
-                    {
-                        return (int)mptRows[0].bd_indx.ActualWidth;
-                    }
-                }
-                return 0;
-            }
-        }
-
         public int selectedBit { get; private set; } = 0;
 
         public int selectedChannel { get; private set; } = 0;
@@ -221,8 +203,8 @@ namespace MidiSynth7.entities.controls
 
         public void SelectActiveChannel()
         {
-            SelPoint1 = new Point((126 * selectedChannel) + MPTXOffset, 0);
-            SelPoint2 = new Point((126 * selectedChannel) + 126 + MPTXOffset, 21 * RowCount);
+            SelPoint1 = new Point(126 * selectedChannel, 0);
+            SelPoint2 = new Point((126 * selectedChannel) + 126, 21 * RowCount);
 #if BOUNDS
             DebugBounds();
 #endif
@@ -234,8 +216,8 @@ namespace MidiSynth7.entities.controls
         {
             int[] bitWidths = new int[] { 31, 23, 33, 12, 21 }; //weird implementation but go off
             int[] bitOffset = new int[] { 00, 31, 54, 87, 99 }; //oblong logic however fair
-            SelPoint1 = new Point((126 * selectedChannel) + bitOffset[selectedBit] + MPTXOffset + 4, 0);//+4 because padding overlap? ¯\_(ツ)_/¯
-            SelPoint2 = new Point((126 * selectedChannel) + bitOffset[selectedBit] + bitWidths[selectedBit] + MPTXOffset, 21 * RowCount);
+            SelPoint1 = new Point((126 * selectedChannel) + bitOffset[selectedBit] + 4, 0);//+4 because padding overlap? ¯\_(ツ)_/¯
+            SelPoint2 = new Point((126 * selectedChannel) + bitOffset[selectedBit] + bitWidths[selectedBit], 21 * RowCount);
 #if BOUNDS
             DebugBounds();
 #endif
@@ -247,8 +229,8 @@ namespace MidiSynth7.entities.controls
         {
             int[] bitWidths = new int[] { 31, 23, 33, 12, 21 }; //weird implementation but go off
             int[] bitOffset = new int[] { 00, 31, 54, 87, 99 }; //oblong logic however fair
-            SelPoint1 = new Point((126 * ch) + bitOffset[bit] + MPTXOffset + 4, 21 * ActiveRowIndex+2);
-            SelPoint2 = new Point((126 * ch) + bitOffset[bit] + bitWidths[bit] + MPTXOffset + 4, 21*ActiveRowIndex+2);
+            SelPoint1 = new Point((126 * ch) + bitOffset[bit] + 4, 21 * ActiveRowIndex+2);
+            SelPoint2 = new Point((126 * ch) + bitOffset[bit] + bitWidths[bit] + 4, 21*ActiveRowIndex+2);
 #if BOUNDS
             DebugBounds();
 #endif
