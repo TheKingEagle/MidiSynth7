@@ -6,18 +6,66 @@
       xmlns:local="clr-namespace:MidiSynth7.components.dialog"
       xmlns:components="clr-namespace:MidiSynth7.components" xmlns:controls="clr-namespace:MidiSynth7.entities.controls" x:Class="MidiSynth7.components.dialog.SequenceEditor"
       mc:Ignorable="d"
-      Title="SequenceEditor" Width="1400" ClipToBounds="False" Background="White" Height="500">
+      Title="SequenceEditor" Width="1475" ClipToBounds="False" Background="White" Height="530">
     <Page.Resources>
         <ResourceDictionary Source="..\..\asset\Themes.xaml"/>
     </Page.Resources>
     <Grid Background="#FF151515">
-        <ScrollViewer x:Name="PatternScroller"  HorizontalScrollBarVisibility="Visible" Margin="0,75,0,0" Background="Black" Foreground="White" PreviewKeyDown="PatternScroller_PreviewKeyDown" >
-            <Grid x:Name="PatternContainer" Margin="0,200"></Grid>
-        </ScrollViewer>
-        <Button Content="EXIT" HorizontalAlignment="Left" Margin="1317,27,0,0" VerticalAlignment="Top" Width="75" Background="#FF292929" Foreground="White" FontWeight="Bold" Click="Button_Click"/>
-        <Grid Background="Black" Margin="0,77,20,21" x:Name="loader">
-            <TextBlock Foreground="White" FontSize="72" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center">Loading...</TextBlock>
-        </Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="228*"/>
+            <RowDefinition Height="37*"/>
+        </Grid.RowDefinitions>
 
+        <Grid x:Name="PatternEditor" Grid.Row="0" Background="#FF0C0C0C">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="42"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="42"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <!--================= Pattern editors and loader =================-->
+            <ScrollViewer UseLayoutRounding="True" Grid.Row="1" Grid.Column="1" x:Name="PatternScroller"  HorizontalScrollBarVisibility="Visible" Background="Black" Foreground="White" PreviewKeyDown="PatternScroller_PreviewKeyDown" ScrollChanged="Scroller_Scrolled" Margin="0,1,0,0" >
+                <Grid x:Name="PatternContainer" Margin="0,200"></Grid>
+            </ScrollViewer>
+            <Grid Grid.Row="1" Grid.Column="1" Background="Black" Margin="0,3,20,21" x:Name="loader">
+                <TextBlock Foreground="White" FontSize="72" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center"><Run Text="Loading..."/></TextBlock>
+            </Grid>
+            <!--================= Row header container =================-->
+            <ScrollViewer UseLayoutRounding="True" x:Name="RowHeadScroller" Grid.Row="1" VerticalScrollBarVisibility="Hidden" Background="#FF202020" ScrollChanged="Scroller_Scrolled" HorizontalScrollBarVisibility="Hidden" PreviewKeyDown="RowHeadScroller_PreviewKeyDown" PreviewMouseWheel="RowHeadScroller_PreviewMouseWheel" PreviewKeyUp="RowHeadScroller_PreviewKeyUp" Margin="0,1,0,0" Padding="0">
+                <StackPanel Orientation="Vertical" x:Name="RowHeadContainer" Margin="0,200"></StackPanel>
+            </ScrollViewer>
+            <!--================= Channel header container =================-->
+            <ScrollViewer UseLayoutRounding="True" x:Name="ChannelHeadScroller" Grid.Row="0" Grid.Column="1" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" Background="#FF202020">
+                <StackPanel Orientation="Horizontal" x:Name="ChannelHeadContainer"></StackPanel>
+            </ScrollViewer>
+        </Grid>
+        <!-- ============================================= -->
+        <Grid x:Name="MenuContainer" Grid.Row="1">
+            <Grid.Background>
+                <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                    <LinearGradientBrush.Transform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </LinearGradientBrush.Transform>
+                    <LinearGradientBrush.RelativeTransform>
+                        <TransformGroup>
+                            <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                            <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                            <RotateTransform CenterY="0.5" CenterX="0.5" Angle="270"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </LinearGradientBrush.RelativeTransform>
+                    <GradientStop Color="#FF0A1932" Offset="1"/>
+                    <GradientStop Color="#FF151515" Offset="0.547"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+            <Button Content="Save &amp; Close" Margin="0,0,10,0" VerticalAlignment="Center" Background="#FF001D40" Foreground="White" FontWeight="Bold" Click="Button_Click" HorizontalAlignment="Right" Padding="6" />
+        </Grid>
     </Grid>
 </Page>

@@ -1,4 +1,5 @@
-﻿using MidiSynth7.entities.controls;
+﻿using MidiSynth7.entities;
+using MidiSynth7.entities.controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,8 +58,22 @@ namespace MidiSynth7.components.dialog
             ActivePattern.PatternSelectionChange += ActivePattern_PatternSelectionChange;
             PatternContainer.Children.Add(ActivePattern);
             loader.Visibility = Visibility.Collapsed;
-            PatternContainer.Margin = new Thickness(0, (PatternScroller.ViewportHeight-21) / 2, 0, (PatternScroller.ViewportHeight-21) / 2);
-
+            PatternContainer.Margin = new Thickness(0, (PatternScroller.ViewportHeight- 21) / 2, 0, (PatternScroller.ViewportHeight- 21) / 2);
+            RowHeadContainer.Margin = new Thickness(0, (PatternScroller.ViewportHeight-21) / 2, 0, (PatternScroller.ViewportHeight-21) / 2);
+            RowHeadScroller.Padding = new Thickness(0, 0, 0, 21);
+            ChannelHeadScroller.Padding = new Thickness(0, 0, SystemParameters.VerticalScrollBarWidth+2, 0);
+            RowHeadContainer.Children.Clear();
+            ChannelHeadContainer.Children.Clear();
+            //populate row index container
+            for (int i = 0; i < ActivePattern.RowCount; i++)
+            {
+                RowHeadContainer.Children.Add(new RowIndexBit(i));
+            }
+            //populate ch index container
+            for (int i = 0; i < ActivePattern.ChannelCount; i++)
+            {
+                ChannelHeadContainer.Children.Add(new RowChannelBit(i+1));
+            }
         }
 
         private void ActivePattern_PatternSelectionChange(object sender, SelectionEventArgs e)
@@ -135,6 +150,32 @@ namespace MidiSynth7.components.dialog
                 }
             }
             ActivePattern.MoveBitActiveRow(ch, bit);
+        }
+
+        private void Scroller_Scrolled(object sender, ScrollChangedEventArgs e)
+        {
+            if(sender == PatternScroller)
+            {
+                RowHeadScroller.ScrollToVerticalOffset(e.VerticalOffset);
+                ChannelHeadScroller.ScrollToHorizontalOffset(e.HorizontalOffset);
+            }
+            
+        }
+
+
+        private void RowHeadScroller_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void RowHeadScroller_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void RowHeadScroller_PreviewKeyUp(object sender, KeyEventArgs e)
+        {
+            e.Handled = true;
         }
     }
 }

@@ -203,6 +203,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="entities\RowChannelBit.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="entities\RowIndexBit.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="entities\TransposeNotification.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -260,6 +268,12 @@
       <DependentUpon>MPTRow.xaml</DependentUpon>
     </Compile>
     <Compile Include="entities\Pie.cs" />
+    <Compile Include="entities\RowChannelBit.xaml.cs">
+      <DependentUpon>RowChannelBit.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="entities\RowIndexBit.xaml.cs">
+      <DependentUpon>RowIndexBit.xaml</DependentUpon>
+    </Compile>
     <Compile Include="entities\TransposeNotification.xaml.cs">
       <DependentUpon>TransposeNotification.xaml</DependentUpon>
     </Compile>
