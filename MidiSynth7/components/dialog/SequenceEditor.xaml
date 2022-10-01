@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:MidiSynth7.components.dialog"
       xmlns:components="clr-namespace:MidiSynth7.components" xmlns:controls="clr-namespace:MidiSynth7.entities.controls" x:Class="MidiSynth7.components.dialog.SequenceEditor"
       mc:Ignorable="d"
-      Title="SequenceEditor" Width="1475" ClipToBounds="False" Background="White" Height="530">
+      Title="SequenceEditor" Width="1475" ClipToBounds="False" Background="White" Height="530" Foreground="White">
     <Page.Resources>
         <ResourceDictionary Source="..\..\asset\Themes.xaml"/>
     </Page.Resources>
@@ -41,7 +41,7 @@
                 <StackPanel Orientation="Horizontal" x:Name="ChannelHeadContainer"></StackPanel>
             </ScrollViewer>
         </Grid>
-        <!-- ============================================= -->
+        <!-- =================== Bottom window container ========================== -->
         <Grid x:Name="MenuContainer" Grid.Row="1">
             <Grid.Background>
                 <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
@@ -65,6 +65,24 @@
                     <GradientStop Color="#FF151515" Offset="0.547"/>
                 </LinearGradientBrush>
             </Grid.Background>
+            <Border x:Name="Bdr_InstrumentContainer" Margin="5,5,1186,0" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Top">
+                <Grid Margin="3,3">
+                    <ComboBox x:Name="CB_MPTInstrument" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False">
+                        <ComboBox.Background>
+                            <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                                <GradientStop Color="#FFD8D8D8" Offset="1"/>
+                                <GradientStop Color="#FFB6B6B6" Offset="0.5"/>
+                                <GradientStop Color="#FFC1C1C1" Offset="0.5"/>
+                                <GradientStop Color="#FF5D5D5D"/>
+                            </LinearGradientBrush>
+                        </ComboBox.Background>
+                        <ComboBoxItem Content="No Instrument"/>
+                    </ComboBox>
+                    <Button Content="Manage..." VerticalAlignment="Top" Focusable="False" FontSize="14" Background="#FF2C2C2C" Height="22" Margin="205,0,0,0" Padding="5,0" HorizontalAlignment="Left" Width="71"/>
+
+                </Grid>
+            </Border>
+            <controls:LightCell Rows="1" Columns="4" Margin="294,-3,0,0" Header="Pattern" Marker="1" Height="38"></controls:LightCell>
             <Button Content="Save &amp; Close" Margin="0,0,10,0" VerticalAlignment="Center" Background="#FF001D40" Foreground="White" FontWeight="Bold" Click="Button_Click" HorizontalAlignment="Right" Padding="6" />
         </Grid>
     </Grid>
