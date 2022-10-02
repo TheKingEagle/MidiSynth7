@@ -32,10 +32,6 @@ namespace MidiSynth7.components.views
         private List<Ellipse> channelElipses = new List<Ellipse>();
         private List<MainWindow.ChInvk> channelIndicators = new List<MainWindow.ChInvk>();
 
-
-
-        private List<(int c, int k, int v, int o, long d, Stopwatch w)?> NFXSavedNotes = new List<(int c, int k, int v, int o, long d, Stopwatch w)?>();
-
         public bool HaltKeyboardInput { get; private set; }
 
         public StudioView(MainWindow context, ref SystemConfig config, ref MidiEngine engine)
@@ -250,64 +246,12 @@ namespace MidiSynth7.components.views
         #endregion
 
         #region Riff Center
-        private void rb_rcp12_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-        private void rb_rcp11_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-        private void rb_rcp10_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-        private void rb_rcp9_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-        private void rb_rcp8_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-        private void rb_rcp7_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-        private void rb_rcp6_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-        private void rb_rcp5_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-        private void rb_rcp4_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-        private void rb_rcp3_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-        private void rb_rcp2_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-        private void rb_rcp1_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
+        
 
         private void BnRiff_Define_Click(object sender, RoutedEventArgs e)
         {
             AppContext.ShowMPT();
             
-        }
-
-        private void criffenablecheck(object sender, RoutedEventArgs e)
-        {
-
         }
 
         private void riffcenter_toggleCheck(object sender, RoutedEventArgs e)
@@ -320,9 +264,9 @@ namespace MidiSynth7.components.views
                 LC_PatternStep.SetLight(-1);
             }
             int ticksPerDot = 6; // TODO: Ensure this value is set by the sequence
-            int DotDuration = (int)((float)((2500 / (float)(Dial_RiffTempo.Value * 1000))) * (ticksPerDot*1000));
+            int DotDuration = (int)((float)(2500 / (float)(Dial_RiffTempo.Value * 1000)) * (ticksPerDot*1000));
             Console.WriteLine("DotDuration:" + DotDuration);
-            // start the task
+            // Play the selected sequence
             Task.Run(() =>
             {
                 
@@ -335,41 +279,19 @@ namespace MidiSynth7.components.views
                         Dispatcher.Invoke(() => LC_PatternNumber.SetLight(pattern));
                         for (int step = 0; step < 32; step++)
                         {
-                            //if (step > 0 && step != 16)
-                            //{
-                            //    if (step % 4 == 0)//TODO replace with value of beatsPerRow in pattern editor
-                            //    {
-                            //        AppContext.MidiEngine.MidiNote_Play(9, 42, 44, false);
-                            //    }
-                            //    if (step % 4 == 1)//TODO replace with value of beatsPerRow in pattern editor
-                            //    {
-                            //        AppContext.MidiEngine.MidiNote_Stop(9, 42, false);
-                            //    }
-                            //}
-                            //if (step == 0 || step == 16)
-                            //{
-                            //    if (step % 4 == 0)//TODO replace with value of beatsPerRow in pattern editor
-                            //    {
-                            //        AppContext.MidiEngine.MidiNote_Play(9, 46, 44, false);
-                            //    }
-
-                            //}
-                            //if (step == 1 || step == 17)//TODO replace with value of beatsPerRow in pattern editor
-                            //{
-                            //    AppContext.MidiEngine.MidiNote_Stop(9, 46, false);
-                            //}
+                            //MetronomeTick(step); // Idk what to do with this method right now... so I'm commenting it out for now
 
                             Dispatcher.Invoke(() => check = CB_Sequencer_Check.IsChecked.Value);
                             if (!check) return;
                             Dispatcher.InvokeAsync(() => LC_PatternStep.SetLight(step));
                             // ==================================
-                            //  TODO: PROCESS STEP HERE (TEMPO)
+                            //  TODO: PROCESS STEP HERE (TICKS)
                             // ==================================
-                            Dispatcher.InvokeAsync(() => DotDuration = (int)((float)((2500 / (float)(Dial_RiffTempo.Value * 1000))) * (ticksPerDot * 1000)));
-                            System.Threading.Thread.Sleep(DotDuration);//This is beyond not ideal LOL
+                            Dispatcher.InvokeAsync(() => DotDuration = (int)((float)(2500 / (float)(Dial_RiffTempo.Value * 1000)) * (ticksPerDot * 1000)));
                             // =================================
                             //  TODO: PROCESS STEP HERE (NOTES)
                             // =================================
+                            System.Threading.Thread.Sleep(DotDuration);//This is beyond not ideal LOL
                         }
 
                     }
@@ -377,6 +299,33 @@ namespace MidiSynth7.components.views
                 }
                 
             });
+        }
+
+        private void MetronomeTick(int step)
+        {
+            if (step > 0 && step != 16)
+            {
+                if (step % 4 == 0)//TODO replace with value of beatsPerRow in pattern editor
+                {
+                    AppContext.MidiEngine.MidiNote_Play(9, 42, 44, false);
+                }
+                if (step % 4 == 1)//TODO replace with value of beatsPerRow in pattern editor
+                {
+                    AppContext.MidiEngine.MidiNote_Stop(9, 42, false);
+                }
+            }
+            if (step == 0 || step == 16)
+            {
+                if (step % 4 == 0)//TODO replace with value of beatsPerRow in pattern editor
+                {
+                    AppContext.MidiEngine.MidiNote_Play(9, 46, 44, false);
+                }
+
+            }
+            if (step == 1 || step == 17)//TODO replace with value of beatsPerRow in pattern editor
+            {
+                AppContext.MidiEngine.MidiNote_Stop(9, 46, false);
+            }
         }
         #endregion
 
