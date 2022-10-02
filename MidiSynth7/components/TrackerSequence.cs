@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Sanford.Multimedia.Midi;
+﻿using System.Collections.Generic;
 namespace MidiSynth7.components
 {
-   /// <summary>
-   /// GOALS: 
-   ///  - Compatibility with OpenMPT's standard (At least mostly)
-   ///      - Ability to copy-paste track data
-   ///      - Ability to understand controller macros
-   ///  - figure out how to display the tracker
-   ///  
-   /// </summary>
+    /// <summary>
+    /// GOALS: 
+    ///  - Compatibility with OpenMPT's standard (At least mostly)
+    ///      - Ability to copy-paste track data
+    ///      - Ability to understand controller macros
+    ///  - figure out how to display the tracker
+    ///  
+    /// </summary>
 
     public class TrackerSequence
     {

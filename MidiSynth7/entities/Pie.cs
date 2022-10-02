@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Shapes;
-using System.Windows.Media;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Shapes;
 namespace MidiSynth7.entities
 {
     public class Pie:Shape
     {
         public Pie()
         {
-            Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#FF000000"));
+            Fill = (SolidColorBrush)new BrushConverter().ConvertFrom("#FF000000");
             Stroke = Brushes.Black;
             StrokeThickness = 2;
             

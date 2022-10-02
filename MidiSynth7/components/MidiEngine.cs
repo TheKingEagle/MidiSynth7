@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Sanford.Multimedia.Midi;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using Sanford.Multimedia.Midi;
-using System.ComponentModel;
-using System.Windows;
 using System.Windows.Threading;
 
 // =============== NOTICE: This file was ported from v6. ===============
