@@ -15,10 +15,15 @@ namespace MidiSynth7.components
         public string SequenceName { get; set; }
         public int ChannelCount { get; set; }
         public List<TrackerPattern> Patterns { get; set; }
+        public List<TrackerInstrument> Instruments { get; set; }
+        public int SelectedOctave { get; set; }
+        public int SelectedInstrument{ get; set; }
     }
 
     public class TrackerPattern
     {
+        public int RowsPerMeasure { get; set; }
+        public int RowsPerBeat { get; set; }
         public int RowCount { get; set; }
         public int ChannelCount { get; set; }
         public string PatternName { get; set; }
@@ -31,7 +36,9 @@ namespace MidiSynth7.components
                 ChannelCount = channels,
                 RowCount = rows,
                 PatternName = "New Pattern",
-                Rows = TrackerRow.GetEmptyRows(rows, channels)
+                Rows = TrackerRow.GetEmptyRows(rows, channels),
+                RowsPerBeat = 4,
+                RowsPerMeasure = 16
             };
         }
     }

@@ -60,9 +60,11 @@ namespace MidiSynth7.entities
         public MPTBit GetSelection(Rect bounds, FrameworkElement relativeTo, bool IntendsMulti = false)
         {
             var f = row_container.Items.OfType<MPTBit>().Where(x => x.BoundsRelativeTo(relativeTo).IntersectsWith(bounds));
+            //List<MPTBit> bits = new List<MPTBit>();
             foreach (var item in f)
             {
                 SelectedBit = item.GetSelection(bounds, relativeTo, IntendsMulti);
+                //bits.Add(item);
                 if (!IntendsMulti)
                 {
                     SelectedChannel = item.Channel;
@@ -71,6 +73,12 @@ namespace MidiSynth7.entities
             }
             return null;
         }
+        
+        public MPTBit[] GetLogicalSelection(Rect bounds, FrameworkElement relativeTo)
+        {
+            return row_container.Items.OfType<MPTBit>().Where(x => x.BoundsRelativeTo(relativeTo).IntersectsWith(bounds)).ToArray();
+        }
+
         public void ClearSelection()
         {
             foreach (MPTBit item in bits)

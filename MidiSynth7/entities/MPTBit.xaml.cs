@@ -19,7 +19,8 @@ namespace MidiSynth7.entities
         TrackerInstrument _instrument;
         SeqParam _param;
         byte? _velo;
-        private TextBlock activeTblock; 
+        private TextBlock activeTblock;
+        private bool OtherBitsDeleted = false;
         public static SolidColorBrush BR_Null = new SolidColorBrush(Color.FromArgb(255, 035, 067, 103));
         public static SolidColorBrush BR_NHot = new SolidColorBrush(Color.FromArgb(255, 223, 236, 255));
         public static SolidColorBrush BR_NSel = new SolidColorBrush(Color.FromArgb(255, 032, 057, 097));
@@ -195,7 +196,7 @@ namespace MidiSynth7.entities
             }
             if(activeTblock == Bl_Notation)
             {
-                int indx = Array.IndexOf(SystemComponent.KeysTable, key);
+                int indx = Array.IndexOf(SystemComponent.MPTKeysTable, key);
                 if (indx > -1)
                 {
                     Pitch = indx + 21 + (12*octave);
@@ -209,6 +210,42 @@ namespace MidiSynth7.entities
                     Pitch = null;
                     Velocity = null;
                 }
+            }
+        }
+
+        internal void DelSelection(Rect bounds, FrameworkElement ele)
+        {
+            OtherBitsDeleted = false;
+            foreach (TextBlock tbl in Bit_Container.Children.OfType<TextBlock>().Where(x=>x.BoundsRelativeTo(ele).IntersectsWith(bounds)))
+            {
+
+                if (tbl == Bl_Instrument)
+                {
+                    Instrument = null;
+                    OtherBitsDeleted = true;
+                }
+                if (tbl == Bl_Notation)
+                {
+                    Pitch = null;
+                    OtherBitsDeleted = true;
+                }
+                if (tbl == Bl_ParmMark)
+                {
+                    Parameter = null;
+                    OtherBitsDeleted = true;
+                }
+                if (tbl == Bl_Velocity)
+                {
+                    if (OtherBitsDeleted)
+                    {
+                        Velocity = null;
+                    }
+                    else
+                    {
+                        Velocity = 127;
+                    }
+                }
+
             }
         }
 

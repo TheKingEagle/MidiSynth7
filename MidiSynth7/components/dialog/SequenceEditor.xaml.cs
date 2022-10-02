@@ -36,7 +36,7 @@ namespace MidiSynth7.components.dialog
             throw new NotImplementedException();
         }
 
-        public void LoadPattern(int index=0 )
+        public void LoadPattern(TrackerSequence sequence, int index=0 )
         {
             string ttl = DialogTitle;
             loader.Visibility = Visibility.Visible;
@@ -44,7 +44,7 @@ namespace MidiSynth7.components.dialog
             PatternContainer.Children.Clear();
 
             Console.WriteLine("Yup");
-            ActivePattern = new MPTPattern(16,4,TrackerPattern.GetEmptyPattern(32,20), PatternContainer);
+            ActivePattern = new MPTPattern(sequence.Patterns[index], PatternContainer);
             ActivePattern.PatternSelectionChange += ActivePattern_PatternSelectionChange;
             PatternContainer.Children.Add(ActivePattern);
             loader.Visibility = Visibility.Collapsed;
@@ -64,6 +64,10 @@ namespace MidiSynth7.components.dialog
             {
                 ChannelHeadContainer.Children.Add(new RowChannelBit(i+1));
             }
+            TBX_SequenceName.Text = sequence.SequenceName;
+            TBX_PatternName.Text = sequence.Patterns[index].PatternName;
+            CTRL_MPTOctave.SetValueSuppressed(sequence.SelectedOctave);
+
         }
 
         private void ActivePattern_PatternSelectionChange(object sender, SelectionEventArgs e)
@@ -106,11 +110,26 @@ namespace MidiSynth7.components.dialog
             if(e.Key == Key.L && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 ActivePattern.SelectActiveChannel();
+                return;
             }
             if (e.Key == Key.L && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
             {
                 ActivePattern.SelectActiveChannelBit();
+                return;
+
             }
+            if (e.Key == Key.Delete)
+            {
+                if (ActivePattern.activeBits != null)
+                {
+                    foreach (MPTBit item in ActivePattern.activeBits)
+                    {
+                        item.DelSelection(ActivePattern.GetSelectedBounds(), PatternContainer);
+                    }
+                    return;
+                }
+            }
+
             int bit = ActivePattern.selectedBit;
             int ch = ActivePattern.selectedChannel;
             if (e.Key == Key.Left)
@@ -140,9 +159,11 @@ namespace MidiSynth7.components.dialog
                 }
             }
             ActivePattern.MoveBitActiveRow(ch, bit);
-            if(ActivePattern.ActiveBit != null)
+            
+            
+            if (ActivePattern.ActiveBit != null)
             {
-                ActivePattern.ActiveBit.ProcessKey(e.Key,CTRL_MPTOctave.Value);
+                ActivePattern.ActiveBit.ProcessKey(e.Key, CTRL_MPTOctave.Value);
             }
         }
 

@@ -31,8 +31,13 @@ namespace MidiSynth7.entities.controls
         private SolidColorBrush bg_subdivisionN = new SolidColorBrush(Color.FromArgb(255, 12, 16, 20));
         private MPTRow ActiveRow;
         public MPTBit ActiveBit { get; private set; }
+        public List<MPTBit> activeBits { get; private set; } = new List<MPTBit>();
         private Point SelPoint1 = new Point(0, 0);
         private Point SelPoint2 = new Point(0, 0);
+        public Rect GetSelectedBounds()
+        {
+            return new Rect(SelPoint1, SelPoint2);
+        }
         private TrackerPattern tpf = new TrackerPattern();
         private List<MPTRow> mptRows = new List<MPTRow>();
         private BackgroundWorker bw = new BackgroundWorker();
@@ -59,15 +64,15 @@ namespace MidiSynth7.entities.controls
             InitializeComponent();
         }
 
-        public MPTPattern(int rowsPerMeasure,int rowsPerBeat,TrackerPattern pattern, FrameworkElement PatternContainer)
+        public MPTPattern(TrackerPattern pattern, FrameworkElement PatternContainer)
         {
             tpf = pattern;
             InitializeComponent();
             rowContainer.Visibility = Visibility.Collapsed;
             RowCount = tpf.RowCount;
             ChannelCount = tpf.ChannelCount;
-            RowsPerBeat = rowsPerBeat;
-            RowsPerMeasure = rowsPerMeasure;
+            RowsPerBeat = pattern.RowsPerBeat;
+            RowsPerMeasure = pattern.RowsPerBeat;
             bw.DoWork += Bw_DoWork;
             bw.RunWorkerCompleted += Bw_RunWorkerCompleted;
             bw.RunWorkerAsync();
@@ -117,6 +122,10 @@ namespace MidiSynth7.entities.controls
 
         private void Pattern_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            if (!mouseDowned)
+            {
+                activeBits?.Clear();
+            }
             mouseDowned = true;
             CaptureMouse();
             SelPoint1 = e.GetPosition(Frame);
@@ -170,6 +179,16 @@ namespace MidiSynth7.entities.controls
                     PatternSelectionChange?.Invoke(this, new SelectionEventArgs(ActiveRow.RowIndex));
                 }
             }
+            if (multiSelect)
+            {
+                IEnumerable<MPTRow> f = rowContainer.Items.OfType<MPTRow>().Where(x => x.BoundsRelativeTo(Frame).IntersectsWith(r));
+                foreach (MPTRow item in f)
+                {
+                    var selection = item.GetLogicalSelection(r, Frame);
+                    activeBits.AddRange(selection);
+                    
+                }
+            }
         }
 
         public void GetSelection(Rect bounds, bool intendsMulti = false)
@@ -181,9 +200,10 @@ namespace MidiSynth7.entities.controls
             IEnumerable<MPTRow> f = rowContainer.Items.OfType<MPTRow>().Where(x => x.BoundsRelativeTo(Frame).IntersectsWith(bounds));
             foreach (MPTRow item in f)
             {
-                ActiveBit = item.GetSelection(bounds, Frame, intendsMulti);
+                var selection = item.GetSelection(bounds, Frame, intendsMulti);
                 if (!intendsMulti)
                 {
+                    ActiveBit = selection;
                     selectedChannel = item.SelectedChannel;
                     selectedBit = item.SelectedBit;
                     break;

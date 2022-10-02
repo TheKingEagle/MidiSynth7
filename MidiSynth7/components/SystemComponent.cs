@@ -15,5 +15,6 @@ namespace MidiSynth7.components
            Key.Q,Key.W,Key.D3,Key.E,Key.D4,Key.R,Key.D5,Key.T,Key.Y,Key.D7,Key.U,Key.D8,Key.I,Key.O,Key.D0,Key.P,KeyInterop.KeyFromVirtualKey(189),
            KeyInterop.KeyFromVirtualKey(219),KeyInterop.KeyFromVirtualKey(187),KeyInterop.KeyFromVirtualKey(221)
         };
+        public static Key[] MPTKeysTable = KeysTable.Where(x => x != KeyInterop.KeyFromVirtualKey(187)).ToArray();
     }
 }
