@@ -135,6 +135,7 @@
     <Compile Include="components\dialog\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
+    <Compile Include="components\SystemComponent.cs" />
     <Compile Include="components\NFXDelayProfile.cs" />
     <Compile Include="components\SynthKey.cs" />
     <Compile Include="components\TrackerSequence.cs" />
