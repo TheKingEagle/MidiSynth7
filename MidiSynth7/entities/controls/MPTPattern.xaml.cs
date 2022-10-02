@@ -30,6 +30,7 @@ namespace MidiSynth7.entities.controls
         private SolidColorBrush bg_subdivision2 = new SolidColorBrush(Color.FromArgb(255, 20, 26, 34));
         private SolidColorBrush bg_subdivisionN = new SolidColorBrush(Color.FromArgb(255, 12, 16, 20));
         private MPTRow ActiveRow;
+        public MPTBit ActiveBit { get; private set; }
         private Point SelPoint1 = new Point(0, 0);
         private Point SelPoint2 = new Point(0, 0);
         private TrackerPattern tpf = new TrackerPattern();
@@ -180,11 +181,12 @@ namespace MidiSynth7.entities.controls
             IEnumerable<MPTRow> f = rowContainer.Items.OfType<MPTRow>().Where(x => x.BoundsRelativeTo(Frame).IntersectsWith(bounds));
             foreach (MPTRow item in f)
             {
-                item.GetSelection(bounds, Frame, intendsMulti);
+                ActiveBit = item.GetSelection(bounds, Frame, intendsMulti);
                 if (!intendsMulti)
                 {
                     selectedChannel = item.SelectedChannel;
                     selectedBit = item.SelectedBit;
+                    break;
                 }
             }
             //update active row; so we don't get font color misses

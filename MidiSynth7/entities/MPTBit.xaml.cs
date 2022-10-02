@@ -29,7 +29,7 @@ namespace MidiSynth7.entities
         TrackerInstrument _instrument;
         SeqParam _param;
         byte? _velo;
-        private bool _bitSelected = false;
+        private TextBlock activeTblock; 
         public static SolidColorBrush BR_Null = new SolidColorBrush(Color.FromArgb(255, 035, 067, 103));
         public static SolidColorBrush BR_NHot = new SolidColorBrush(Color.FromArgb(255, 223, 236, 255));
         public static SolidColorBrush BR_NSel = new SolidColorBrush(Color.FromArgb(255, 032, 057, 097));
@@ -196,6 +196,32 @@ namespace MidiSynth7.entities
             }
         }
 
+        internal void ProcessKey(Key key, int octave)
+        {
+            if (activeTblock == null)
+            {
+                Console.WriteLine("no activeTblock");
+                return;
+            }
+            if(activeTblock == Bl_Notation)
+            {
+                int indx = Array.IndexOf(SystemComponent.KeysTable, key);
+                if (indx > -1)
+                {
+                    Pitch = indx + 21 + (12*octave);
+                    //TODO: Set instrument as well
+                    //throw velocity in for funzies
+                    Velocity = 127;
+
+                }
+                if(key == Key.Delete)
+                {
+                    Pitch = null;
+                    Velocity = null;
+                }
+            }
+        }
+
         public int GetSelection(Rect bounds, FrameworkElement ele, bool intendsMulti = false)
         {
             int select = 0;
@@ -208,8 +234,10 @@ namespace MidiSynth7.entities
                     if (!intendsMulti)
                     {
                         select = Bit_Container.Children.IndexOf(tbl);
+                        activeTblock = tbl;
                         return select;
                     }
+                    activeTblock = null;
                 } else
                 {
                     tbl.Background = null;
