@@ -294,7 +294,7 @@
                 </Grid.Background>
                 <RadioButton x:Name="rb_ofx_Std" Content="Standard" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="OFX" IsChecked="True" Focusable="False" IsTabStop="False"/>
                 <RadioButton x:Name="rb_ofx_Orchestral" Content="Orchestral" HorizontalAlignment="Left" Margin="89,5,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="OFX" Focusable="False" IsTabStop="False" Width="75"/>
-                <RadioButton x:Name="rb_ofx_custom" Content="Custom" HorizontalAlignment="Left" Margin="183,5,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="OFX" Grid.ColumnSpan="2" Focusable="False" IsTabStop="False" Checked="criffenablecheck" Unchecked="ToggleChecked"/>
+                <RadioButton x:Name="rb_ofx_custom" Content="Custom" HorizontalAlignment="Left" Margin="183,5,0,0" VerticalAlignment="Top" Foreground="White" Background="#FFC5C5C5" BorderBrush="Gray" GroupName="OFX" Grid.ColumnSpan="2" Focusable="False" IsTabStop="False" Unchecked="ToggleChecked"/>
                 <GroupBox x:Name="gb_CustomOFX" Header="Custom" Margin="10,32,15,12" BorderThickness="2" BorderBrush="#FF001283" Padding="0" Grid.ColumnSpan="2">
                     <Grid>
                         <Button x:Name="bn_Edit" Content="Edit..." HorizontalAlignment="Left" Margin="111,5,0,0" VerticalAlignment="Top" Width="97" Background="#FF2C2C2C" Focusable="False" IsTabStop="False" Click="OFX_bn_Edit_Click"/>
