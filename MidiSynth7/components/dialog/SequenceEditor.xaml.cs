@@ -150,6 +150,10 @@ namespace MidiSynth7.components.dialog
                 }
             }
             ActivePattern.MoveBitActiveRow(ch, bit);
+            if(ActivePattern.ActiveBit != null)
+            {
+                ActivePattern.ActiveBit.ProcessKey(e.Key,CTRL_MPTOctave.Value);
+            }
         }
 
         private void Scroller_Scrolled(object sender, ScrollChangedEventArgs e)

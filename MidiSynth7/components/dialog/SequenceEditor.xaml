@@ -67,7 +67,7 @@
             </Grid.Background>
             <Border x:Name="Bdr_InstrumentContainer" Margin="5,5,1186,0" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Top">
                 <Grid Margin="3,3">
-                    <ComboBox x:Name="CB_MPTInstrument" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False">
+                    <ComboBox x:Name="CB_MPTInstrument" VerticalAlignment="Center" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" Margin="0,0,76,0" SelectedIndex="0">
                         <ComboBox.Background>
                             <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                                 <GradientStop Color="#FFD8D8D8" Offset="1"/>
@@ -78,12 +78,38 @@
                         </ComboBox.Background>
                         <ComboBoxItem Content="No Instrument"/>
                     </ComboBox>
-                    <Button Content="Manage..." VerticalAlignment="Top" Focusable="False" FontSize="14" Background="#FF2C2C2C" Height="22" Margin="205,0,0,0" Padding="5,0" HorizontalAlignment="Left" Width="71"/>
+                    <Button Content="Manage..." VerticalAlignment="Top" Focusable="False" FontSize="14" Background="#FF2C2C2C" Height="22" Padding="5,0" HorizontalAlignment="Right" Width="71"/>
 
+                </Grid>
+            </Border>
+
+            <Border x:Name="Bdr_ActivePatternName" Margin="5,0,1289,5" BorderBrush="Gray" BorderThickness="1" Height="30" VerticalAlignment="Bottom">
+                <Grid Margin="3,3">
+                    <TextBlock Text="Pattern Name" Width="auto" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBlock>
+                    <TextBox x:Name="TBX_PatternName" Margin="78,0,0,0" Background="#FF333337" BorderBrush="#FF434346" Foreground="White"></TextBox>
+                </Grid>
+            </Border>
+
+            <Border x:Name="Bdr_ActiveSequenceName" Margin="191,0,1101,5" BorderBrush="Gray" BorderThickness="1" Height="30" VerticalAlignment="Bottom">
+                <Grid Margin="3,3">
+                    <TextBlock Text="Sequence" Width="auto" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBlock>
+                    <TextBox x:Name="TBX_SequenceName" Margin="56,0,0,0" Background="#FF333337" BorderBrush="#FF434346" Foreground="White"></TextBox>
                 </Grid>
             </Border>
             <controls:LightCell Rows="1" Columns="4" Margin="294,-3,0,0" Header="Pattern" Marker="1" Height="38"></controls:LightCell>
             <Button Content="Save &amp; Close" Margin="0,0,10,0" VerticalAlignment="Center" Background="#FF001D40" Foreground="White" FontWeight="Bold" Click="Button_Click" HorizontalAlignment="Right" Padding="6" />
+            <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Margin="379,5,0,0" Width="64" Height="64" ClipToBounds="False">
+                <controls:DialControl x:Name="CTRL_MPTOctave" Text="OCTAVE" Minimum="0" Maximum="9" Value="3" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0,0" ClipToBounds="False" Height="125" Margin="0,0,-60,-62" Width="125">
+                    <controls:DialControl.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleX="0.5125" ScaleY="0.5125"/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </controls:DialControl.RenderTransform>
+                </controls:DialControl>
+            </Grid>
         </Grid>
     </Grid>
 </Page>
