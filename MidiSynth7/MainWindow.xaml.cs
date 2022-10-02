@@ -844,8 +844,21 @@ namespace MidiSynth7
         {
             if (PatternLoaded) return;
             var editor = sender as SequenceEditor;
-
-            editor.LoadPattern();
+            //TODO: get this shit from a file.
+            TrackerSequence ts = new TrackerSequence()
+            {
+                Patterns = new List<TrackerPattern>()
+                {
+                    TrackerPattern.GetEmptyPattern(32, 20),
+                    TrackerPattern.GetEmptyPattern(32, 20),
+                    TrackerPattern.GetEmptyPattern(32, 20),
+                    TrackerPattern.GetEmptyPattern(32, 20),
+                },
+                ChannelCount = 20,
+                Instruments = new List<TrackerInstrument>(),
+                SequenceName = "Untitled Sequence"
+            };
+            editor.LoadPattern(ts,0);
             PatternLoaded = true;
         }
         public class ChInvk
