@@ -49,7 +49,7 @@ namespace MidiSynth7.components
         public event EventHandler<EventArgs> FileLoadComplete;
         public event EventHandler<EventArgs> SequenceBuilder_Completed;                         // The record build worked and has completed.
         
-        public OutputDevice device;                                                             // The output device of midi.
+        private OutputDevice _device;                                                           // The output device of midi.
         public InputDevice inDevice;                                                            // The input device (external keyboards etc)
         public InputDevice inDevice2;                                                           // The input device (external keyboards etc)
         public Sequencer ModableSequencer;                                                      // For Riff center
@@ -62,6 +62,7 @@ namespace MidiSynth7.components
         private RecordingSession recordSession;                                                 // Recording session of the midi files.
         private BackgroundWorker buildWorker = new BackgroundWorker();
         private BackgroundWorker MetaParserWorker = new BackgroundWorker();
+        private List<(int AuxIndex, OutputDevice device)> OutDevices = new List<(int AuxIndex, OutputDevice device)>();
 
 
         private int spb = -1;
@@ -115,8 +116,10 @@ namespace MidiSynth7.components
         {
             try
             {
+                OutDevices.Clear();
                 Generatepresets();
-                device = new OutputDevice(DeviceIndex);
+                _device = new OutputDevice(DeviceIndex);
+                OutDevices.Add((-1, _device));
                 OnMidiInit(new EventArgs());
                 GenerateSequencer();
                 GenerateSequence();
@@ -134,6 +137,54 @@ namespace MidiSynth7.components
         }
 
         #region Methods
+        /// <summary>
+        /// Export connected output device map
+        /// </summary>
+        /// <returns></returns>
+        public List<(int aux,int device)> ExportOutDeviceMap()
+        {
+            List<(int aux, int device)> z = new List<(int aux, int device)>();
+            foreach (var item in OutDevices)
+            {
+                if(item.AuxIndex != -1)
+                {
+                    z.Add((item.AuxIndex,item.device.DeviceID));
+                }
+            }
+            return z;
+        }
+        
+        /// <summary>
+        /// Load in a device and assign it to aux. If the device is already loaded, it's aux index is returned.
+        /// If the aux id is in use, an exception is thrown.
+        /// </summary>
+        /// <param name="aux">The assigned aux.</param>
+        /// <param name="deviceIndex"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public int OpenOutputDevice(int aux,int deviceIndex)
+        {
+            if (aux == -1) throw new InvalidOperationException("-1 is reserved for the engine default.");
+
+            var f = OutDevices.Find(x => x.AuxIndex == aux);
+            if(f.device != null)
+            {
+                throw new InvalidOperationException("This index is already in use");
+            }
+
+            OutputDevice device = OutDevices.FirstOrDefault(x => x.device.DeviceID == deviceIndex).device;
+
+            if (device != null)
+            {
+                return OutDevices.FirstOrDefault(x => x.device.DeviceID == deviceIndex).AuxIndex;
+            }
+
+            device = new OutputDevice(deviceIndex);
+            int index = OutDevices.Count + 1;
+            OutDevices.Add((OutDevices.Count + 1, device));
+            return index;
+
+        }
 
         /// <summary>
         /// returns a list of the available MIDI output devices installed on your system.
@@ -224,9 +275,10 @@ namespace MidiSynth7.components
         /// <param name="channel">Midi channel. 0 - 15.</param>
         /// <param name="pitch"> Pitch of the note. 0 - 127</param>
         /// <param name="volume">Velocity of the note 0 - 127</param>
-        public void MidiNote_Play(int channel, int pitch, int volume, bool send_event = true)
+        public void MidiNote_Play(int channel, int pitch, int volume, bool send_event = true, int output=-1)
         {
             //throw(new Exception("test"));
+            OutputDevice device = OutDevices.FirstOrDefault(x => x.AuxIndex == output).device;
             if (pitch > 127)
             {
                 return;
@@ -253,8 +305,9 @@ namespace MidiSynth7.components
         /// </summary>
         /// <param name="channel">the channel 0 - 15</param>
         /// <param name="pitch"> the pitch to terminate. 0 - 127</param>
-        public void MidiNote_Stop(int channel, int pitch, bool send_event = true)
+        public void MidiNote_Stop(int channel, int pitch, bool send_event = true, int output = -1)
         {
+            OutputDevice device = OutDevices.FirstOrDefault(x => x.AuxIndex == output).device;
             if (pitch > 127)
             {
                 return;
@@ -282,10 +335,10 @@ namespace MidiSynth7.components
         /// <param name="pitch">0 - 15</param>
         /// <param name="velocity">0 - 127</param>
         /// <param name="time">Time in milliseconds.</param>
-        public void MidiNote_PlayTimed(int channel, int pitch, int velocity, int time)
+        public void MidiNote_PlayTimed(int channel, int pitch, int velocity, int time, int output=-1)
         {
 
-            MidiNote_Play(channel, pitch, velocity);
+            MidiNote_Play(channel, pitch, velocity,true,output);
             new p(this, channel, pitch, velocity, time);
         }
 
@@ -295,8 +348,9 @@ namespace MidiSynth7.components
         /// <param name="bank">Bank of patch</param>
         /// <param name="patch">the instrument 0 - 127 supported.</param>
         /// <param name="ch"> 0 - 15.</param>
-        public void MidiNote_SetProgram(int bank, int patch, int ch)
+        public void MidiNote_SetProgram(int bank, int patch, int ch, int output=-1)
         {
+            OutputDevice device = OutDevices.FirstOrDefault(x => x.AuxIndex == output).device;
             if (!InternalSF2)
             {
                 device.Send(new ChannelMessage(ChannelCommand.Controller, ch, (int)ControllerType.BankSelect, bank));
@@ -344,8 +398,9 @@ namespace MidiSynth7.components
         /// </summary>
         /// <param name="ch">0 - 15</param>
         /// <param name="pan">0 - 127</param>
-        public void MidiNote_SetPan(int ch, int pan)
+        public void MidiNote_SetPan(int ch, int pan, int output = -1)
         {
+            OutputDevice device = OutDevices.FirstOrDefault(x => x.AuxIndex == output).device;
             if (!InternalSF2)
             {
                 device.Send(new ChannelMessage(ChannelCommand.Controller, ch, (int)ControllerType.Pan, pan));
@@ -354,7 +409,7 @@ namespace MidiSynth7.components
             {
                 //internalDevice.ControllerChange(ch, (int)ControllerType.Pan, pan);
             }
-            if (((isRecording) && ((sbc != ch && sbp != pan)) || (((isRecording) && (sbc == ch && sbp != pan))) || (((isRecording) && (sbc != ch && sbp == pan)))))
+            if ((isRecording && sbc != ch && sbp != pan) || (isRecording && sbc == ch && sbp != pan) || (isRecording && sbc != ch && sbp == pan))
             {
                 recordSession.Record(new ChannelMessage(ChannelCommand.Controller, ch, (int)ControllerType.Pan, pan));
                 sbp = pan;
@@ -367,8 +422,9 @@ namespace MidiSynth7.components
         /// </summary>
         /// <param name="ch"></param>
         /// <param name="reverb"></param>
-        public void MidiNote_SetReverb(int ch, int reverb)
+        public void MidiNote_SetReverb(int ch, int reverb, int output=-1)
         {
+            OutputDevice device = OutDevices.FirstOrDefault(x => x.AuxIndex == output).device;
             if (!InternalSF2)
             {
                 device.Send(new ChannelMessage(ChannelCommand.Controller, ch, (int)ControllerType.EffectsLevel, reverb));
@@ -388,8 +444,9 @@ namespace MidiSynth7.components
         /// </summary>
         /// <param name="ch">the channel to apply.</param>
         /// <param name="Chorus">The amount 0-127</param>
-        public void MidiNote_SetChorus(int ch, int Chorus)
+        public void MidiNote_SetChorus(int ch, int Chorus, int output =-1)
         {
+            OutputDevice device = OutDevices.FirstOrDefault(x => x.AuxIndex == output).device;
             if (!InternalSF2)
             {
                 device.Send(new ChannelMessage(ChannelCommand.Controller, ch, (int)ControllerType.ChorusLevel, Chorus));
@@ -409,8 +466,9 @@ namespace MidiSynth7.components
         /// </summary>
         /// <param name="ch">0 - 16</param>
         /// <param name="sustain">False = 0, true = 127(Thats the only values it will ever need...)</param>
-        public void MidiNote_SetSustain(int ch, bool sustain)
+        public void MidiNote_SetSustain(int ch, bool sustain, int output=-1)
         {
+            OutputDevice device = OutDevices.FirstOrDefault(x => x.AuxIndex == output).device;
             if (sustain)
             {
                 if (!InternalSF2)
@@ -448,8 +506,9 @@ namespace MidiSynth7.components
         /// </summary>
         /// <param name="ch">0 - 16</param>
         /// <param name="modulation">0 - 127</param>
-        public void MidiNote_SetModulation(int ch, int modulation)
+        public void MidiNote_SetModulation(int ch, int modulation, int output=-1)
         {
+            OutputDevice device = OutDevices.FirstOrDefault(x => x.AuxIndex == output).device;
             if (!InternalSF2)
             {
                 device.Send(new ChannelMessage(ChannelCommand.Controller, ch, (int)ControllerType.ModulationWheel, modulation));
@@ -469,9 +528,9 @@ namespace MidiSynth7.components
         /// </summary>
         public void MidiEngine_Close()
         {
-            if (!InternalSF2)
+            foreach (var item in OutDevices)
             {
-                if (device != null)
+                if(item.device != null)
                 {
                     OnMidiClose(new EventArgs());
                     midiSequencer.ChannelMessagePlayed -= MidiSequencer_ChannelMessagePlayed;
@@ -479,44 +538,46 @@ namespace MidiSynth7.components
                     midiSequence.LoadCompleted -= MidiSequence_LoadCompleted;
                     buildWorker.DoWork -= BuildWorker_DoWork;
                     buildWorker.RunWorkerCompleted -= BuildWorker_RunWorkerCompleted;
-                    device.Close();
-                    //close input devices
-                    if(inDevice != null)
-                    {
-                        if (inDevice.IsDisposed) return;
-
-                        inDevice.StopRecording();
-                        inDevice.Close();
-                        inDevice = null;
-                    }
-                    if (inDevice2 != null)
-                    {
-                        if (inDevice2.IsDisposed) return;
-
-                        inDevice2.StopRecording();
-                        inDevice2.Close();
-                        inDevice2 = null;
-                    }
-                    device = null;
+                    item.device.Close();
                 }
             }
-            if (InternalSF2)
+            //clear the output device list
+            OutDevices.Clear();
+            //close input devices
+            if (inDevice != null)
             {
-                OnMidiClose(new EventArgs());
-                midiSequencer.ChannelMessagePlayed -= MidiSequencer_ChannelMessagePlayed;
-                midiSequencer.MetaMessagePlayed -= MidiSequencer_MetaMessagePlayed;
-                midiSequence.LoadCompleted -= MidiSequence_LoadCompleted;
-                buildWorker.DoWork -= BuildWorker_DoWork;
-                buildWorker.RunWorkerCompleted -= BuildWorker_RunWorkerCompleted;
-                //internalDevice.SFontUnload((uint)SynthMainSF2, true);
-                //internalDevice = null;
+                if (inDevice.IsDisposed) return;
+
+                inDevice.StopRecording();
+                inDevice.Close();
+                inDevice = null;
             }
+            if (inDevice2 != null)
+            {
+                if (inDevice2.IsDisposed) return;
+
+                inDevice2.StopRecording();
+                inDevice2.Close();
+                inDevice2 = null;
+            }
+            
+            //if (InternalSF2)
+            //{
+            //    OnMidiClose(new EventArgs());
+            //    midiSequencer.ChannelMessagePlayed -= MidiSequencer_ChannelMessagePlayed;
+            //    midiSequencer.MetaMessagePlayed -= MidiSequencer_MetaMessagePlayed;
+            //    midiSequence.LoadCompleted -= MidiSequence_LoadCompleted;
+            //    buildWorker.DoWork -= BuildWorker_DoWork;
+            //    buildWorker.RunWorkerCompleted -= BuildWorker_RunWorkerCompleted;
+            //    //internalDevice.SFontUnload((uint)SynthMainSF2, true);
+            //    //internalDevice = null;
+            //}
         }
 
         /// <summary>
         /// Silence the MIDI engine, sends ALL SOUNDS OFF controller.
         /// </summary>
-        public void MidiEngine_Panic()
+        public void MidiEngine_Panic(int output=-1)
         {
             for (int i = 0; i < 16; i++)
             {
@@ -528,8 +589,8 @@ namespace MidiSynth7.components
                 }
                 if (!InternalSF2)
                 {
-                    MidiEngine_SendRawChannelMessage(new ChannelMessage(ChannelCommand.Controller, i, (int)ControllerType.AllNotesOff));
-                    MidiEngine_SendRawChannelMessage(new ChannelMessage(ChannelCommand.Controller, i, (int)ControllerType.AllSoundOff));
+                    MidiEngine_SendRawChannelMessage(new ChannelMessage(ChannelCommand.Controller, i, (int)ControllerType.AllNotesOff),output);
+                    MidiEngine_SendRawChannelMessage(new ChannelMessage(ChannelCommand.Controller, i, (int)ControllerType.AllSoundOff),output);
                 }
             }
         }
@@ -537,7 +598,7 @@ namespace MidiSynth7.components
         /// <summary>
         /// Send ALL NOTES OFF controller.
         /// </summary>
-        public void MidiEngine_AllNotesOff()
+        public void MidiEngine_AllNotesOff(int output=-1)
         {
             for (int i = 0; i < 16; i++)
             {
@@ -550,7 +611,7 @@ namespace MidiSynth7.components
                 }
                 if (!InternalSF2)
                 {
-                    MidiEngine_SendRawChannelMessage(new ChannelMessage(ChannelCommand.Controller, i, (int)ControllerType.AllNotesOff));
+                    MidiEngine_SendRawChannelMessage(new ChannelMessage(ChannelCommand.Controller, i, (int)ControllerType.AllNotesOff),output);
                 }
             }
         }
@@ -559,8 +620,10 @@ namespace MidiSynth7.components
         /// Send a channel message to the device
         /// </summary>
         /// <param name="cm"></param>
-        public void MidiEngine_SendRawChannelMessage(ChannelMessage cm)
+        public void MidiEngine_SendRawChannelMessage(ChannelMessage cm, int output = -1)
         {
+            OutputDevice device = OutDevices.FirstOrDefault(x => x.AuxIndex == output).device;
+
             if (InternalSF2)
             {
                 if (cm.Command == ChannelCommand.Controller)
@@ -593,8 +656,10 @@ namespace MidiSynth7.components
         /// <param name="control">the control type</param>
         /// <param name="ch">channel (0 - 15)</param>
         /// <param name="value">0 - 127</param>
-        public void MidiNote_SetControl(ControllerType control, int ch, int value)
+        public void MidiNote_SetControl(ControllerType control, int ch, int value, int output=-1)
         {
+            OutputDevice device = OutDevices.FirstOrDefault(x => x.AuxIndex == output).device;
+
             if (!InternalSF2)
             {
                 device.Send(new ChannelMessage(ChannelCommand.Controller, ch, (int)control, value));
@@ -612,8 +677,10 @@ namespace MidiSynth7.components
         /// <summary>
         /// resets the engine device.
         /// </summary>
-        public void MidiEngine_Reset()
+        public void MidiEngine_Reset(int output = -1)
         {
+            OutputDevice device = OutDevices.FirstOrDefault(x => x.AuxIndex == output).device;
+
             if (!InternalSF2)
             {
                 if (device != null)
@@ -832,8 +899,7 @@ namespace MidiSynth7.components
         {
             try
             {
-
-                device.Send(e.Message);
+                _device.Send(e.Message);//this midi sequencer should only use the "main" device
                 OnNotePlay(new NoteEventArgs(e.Message));
             }
             catch (Exception)

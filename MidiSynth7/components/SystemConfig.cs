@@ -60,6 +60,8 @@ namespace MidiSynth7.components
         public int[] ChannelModulations { get; set; }
 
         public List<(string name, (int controllerID, int value)[])> ChannelCustomControls { get; set; }
+
+        public List<(int aux, int device)> AuxOutDevices { get; set; }
         
         /// <summary>
         /// Configures which events the input devices may send, are processed [true] or ignored [false] by the synth.
@@ -98,7 +100,9 @@ namespace MidiSynth7.components
             ChannelReverbs           = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             ChannelChoruses          = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             ChannelModulations       = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            //Lists.
             ChannelCustomControls    = new List<(string name, (int controllerID, int value)[])>();
+            AuxOutDevices            = new List<(int aux, int device)>();
 
             InDeviceAllowedParams    = new bool[] { true, true, true, true, true, true, true, true, true };
 
@@ -144,7 +148,6 @@ namespace MidiSynth7.components
 
             ChannelCustomControls.Add(("Tremolo",controller1));
             ChannelCustomControls.Add(("Phaser", controller2));
-
         }
 
         public bool CheckForMissingValues()
