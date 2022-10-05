@@ -26,7 +26,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <!--================= Pattern editors and loader =================-->
-            <ScrollViewer UseLayoutRounding="True" Grid.Row="1" Grid.Column="1" x:Name="PatternScroller"  HorizontalScrollBarVisibility="Visible" Background="Black" Foreground="White" PreviewKeyDown="PatternScroller_PreviewKeyDown" ScrollChanged="Scroller_Scrolled" Margin="0,1,0,0" >
+            <ScrollViewer UseLayoutRounding="True" Grid.Row="1" Grid.Column="1" x:Name="PatternScroller" IsDeferredScrollingEnabled="True" HorizontalScrollBarVisibility="Visible" Background="Black" Foreground="White" PreviewKeyDown="PatternScroller_PreviewKeyDown" ScrollChanged="Scroller_Scrolled" Margin="0,1,0,0" >
                 <Grid x:Name="PatternContainer" Margin="0,200"></Grid>
             </ScrollViewer>
             <Grid Grid.Row="1" Grid.Column="1" Background="Black" Margin="0,3,20,21" x:Name="loader">
@@ -65,7 +65,7 @@
                     <GradientStop Color="#FF151515" Offset="0.547"/>
                 </LinearGradientBrush>
             </Grid.Background>
-            <Border x:Name="Bdr_InstrumentContainer" Margin="5,5,1186,0" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Top">
+            <Border x:Name="Bdr_InstrumentContainer" Margin="5,5,1185,0" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Top">
                 <Grid Margin="3,3">
                     <ComboBox x:Name="CB_MPTInstrument" VerticalAlignment="Center" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" Margin="0,0,76,0" SelectedIndex="0">
                         <ComboBox.Background>
@@ -78,28 +78,57 @@
                         </ComboBox.Background>
                         <ComboBoxItem Content="No Instrument"/>
                     </ComboBox>
-                    <Button Content="Manage..." VerticalAlignment="Top" Focusable="False" FontSize="14" Background="#FF2C2C2C" Height="22" Padding="5,0" HorizontalAlignment="Right" Width="71"/>
+                    <Button x:Name="BN_MPTInsManager" Content="Manage..." Focusable="False" FontSize="14" Background="#FF2C2C2C" Padding="5,0" HorizontalAlignment="Right" Width="71" Click="BN_MPTInsManager_Click"/>
 
                 </Grid>
             </Border>
+            <Border x:Name="Bdr_MiscButtons" Margin="295,5,1044,0" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Top">
+                <StackPanel Margin="3,3" Orientation="Horizontal">
 
-            <Border x:Name="Bdr_ActivePatternName" Margin="5,0,1289,5" BorderBrush="Gray" BorderThickness="1" Height="30" VerticalAlignment="Bottom">
+                    <Button Content="Zxx" VerticalAlignment="Top" Focusable="False" FontSize="14" Background="#FF2C2C2C" Height="22" Padding="5,0" HorizontalAlignment="Right" ToolTip="Manage Zxx Macros" Margin="0,0,3,0"/>
+                    <Button Content="▶" VerticalAlignment="Top" Focusable="False" FontSize="14" Background="#FF2C2C2C" Height="22" Padding="5,0" HorizontalAlignment="Right" ToolTip="Play Pattern" Margin="0,0,3,0"/>
+                    <Button VerticalAlignment="Top" Focusable="False" FontSize="14" Background="#FF2C2C2C" Height="22" Padding="5,0" HorizontalAlignment="Right" ToolTip="Play Row" Margin="0,0,3,0">
+                        <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
+                            <Canvas Name="SVGRoot" Width="15" Height="16.0">
+                                <Canvas.RenderTransform>
+                                    <TranslateTransform X="0" Y="0"/>
+                                </Canvas.RenderTransform>
+                                <Canvas.Resources/>
+                                <!--Unknown tag: sodipodi:namedview-->
+                                <Canvas Name="layer1">
+                                    <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="2" Canvas.Top="1" Width="12" Height="2.9571602" Name="rect338" Fill="White" StrokeThickness="0.958874"/>
+                                    <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="2" Canvas.Top="11.5" Width="12" Height="3" Name="rect3383" Fill="White" StrokeThickness="0.98101"/>
+                                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path402" Fill="White" StrokeThickness="1.02567" Canvas.Left="-0.334">
+                                        <Path.Data>
+                                            <PathGeometry Figures="M 3.1867718 5.9356188 H 12.76784 L 7.986994 10.899696 Z"/>
+                                        </Path.Data>
+                                    </Path>
+                                </Canvas>
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                    <Button Content="⏹" VerticalAlignment="Top" Focusable="False" FontSize="14" Background="#FF2C2C2C" Height="22" Padding="5,0" HorizontalAlignment="Right" ToolTip="Stop Pattern" Margin="0,0,3,0"/>
+
+                </StackPanel>
+            </Border>
+
+            <Border x:Name="Bdr_ActivePatternName" Margin="5,0,1260,5" BorderBrush="Gray" BorderThickness="1" Height="30" VerticalAlignment="Bottom">
                 <Grid Margin="3,3">
                     <TextBlock Text="Pattern Name" Width="auto" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBlock>
-                    <TextBox x:Name="TBX_PatternName" Margin="78,0,0,0" Background="#FF333337" BorderBrush="#FF434346" Foreground="White"></TextBox>
+                    <TextBox x:Name="TBX_PatternName" Margin="78,0,0,0" Background="#FF333337" BorderBrush="#FF434346" Foreground="White" Padding="0,2,0,0"></TextBox>
                 </Grid>
             </Border>
 
-            <Border x:Name="Bdr_ActiveSequenceName" Margin="191,0,1101,5" BorderBrush="Gray" BorderThickness="1" Height="30" VerticalAlignment="Bottom">
+            <Border x:Name="Bdr_ActiveSequenceName" Margin="220,0,1044,5" BorderBrush="Gray" BorderThickness="1" Height="30" VerticalAlignment="Bottom">
                 <Grid Margin="3,3">
                     <TextBlock Text="Sequence" Width="auto" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBlock>
-                    <TextBox x:Name="TBX_SequenceName" Margin="56,0,0,0" Background="#FF333337" BorderBrush="#FF434346" Foreground="White"></TextBox>
+                    <TextBox x:Name="TBX_SequenceName" Margin="56,0,0,0" Background="#FF333337" BorderBrush="#FF434346" Foreground="White" Padding="0,2,0,0"></TextBox>
                 </Grid>
             </Border>
-            <controls:LightCell Rows="1" Columns="4" Margin="294,-3,0,0" Header="Pattern" Marker="1" Height="38"></controls:LightCell>
-            <Button Content="Save &amp; Close" Margin="0,0,10,0" VerticalAlignment="Center" Background="#FF001D40" Foreground="White" FontWeight="Bold" Click="Button_Click" HorizontalAlignment="Right" Padding="6" />
-            <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Margin="379,5,0,0" Width="64" Height="64" ClipToBounds="False">
-                <controls:DialControl x:Name="CTRL_MPTOctave" Text="OCTAVE" Minimum="0" Maximum="9" Value="3" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0,0" ClipToBounds="False" Height="125" Margin="0,0,-60,-62" Width="125">
+
+
+            <Grid x:Name="Gr_OctaveDialContainer" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="434,5,0,0" Width="64" Height="64" ClipToBounds="False">
+                <controls:DialControl x:Name="CTRL_MPTOctave" Text="OCTAVE" Minimum="0" Maximum="9" Value="3" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0,0" ClipToBounds="False" Height="125" Margin="0,0,-61,-61" Width="125">
                     <controls:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="0.5125" ScaleY="0.5125"/>
@@ -110,6 +139,17 @@
                     </controls:DialControl.RenderTransform>
                 </controls:DialControl>
             </Grid>
+            <controls:LightCell x:Name="LC_PatternSel" Rows="1" Columns="4" Margin="501,-3,0,0" Header="Pattern" Marker="1" Height="38" EnableClick="True" RenderTransformOrigin="0,0" LightIndexChanged="LC_PatternSel_LightIndexChanged">
+                <controls:LightCell.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="1.9" ScaleY="1.9"/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </controls:LightCell.RenderTransform>
+            </controls:LightCell>
+            <Button Content="Save &amp; Close" Margin="0,0,10,0" VerticalAlignment="Center" Background="#FF001D40" Foreground="White" FontWeight="Bold" Click="Button_Click" HorizontalAlignment="Right" Padding="6" />
         </Grid>
     </Grid>
 </Page>

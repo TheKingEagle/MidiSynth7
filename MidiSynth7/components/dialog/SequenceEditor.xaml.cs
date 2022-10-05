@@ -21,7 +21,7 @@ namespace MidiSynth7.components.dialog
         }
         private MainWindow _win;
         private Grid _container;
-
+        private TrackerSequence ActiveSequence;
         private MPTPattern ActivePattern;
         string _ttl = "Sequence Tracker v1.0";
         public string DialogTitle { get => _ttl; set => _ttl = value; }
@@ -38,13 +38,15 @@ namespace MidiSynth7.components.dialog
 
         public void LoadPattern(TrackerSequence sequence, int index=0 )
         {
+            PatternContainer.Children.Clear();
             string ttl = DialogTitle;
             loader.Visibility = Visibility.Visible;
             UpdateLayout();
-            PatternContainer.Children.Clear();
+            ActiveSequence = sequence;
+            
 
             Console.WriteLine("Yup");
-            ActivePattern = new MPTPattern(sequence.Patterns[index], PatternContainer);
+            ActivePattern = new MPTPattern(ActiveSequence.Patterns[index], PatternContainer);
             ActivePattern.PatternSelectionChange += ActivePattern_PatternSelectionChange;
             PatternContainer.Children.Add(ActivePattern);
             loader.Visibility = Visibility.Collapsed;
@@ -64,9 +66,10 @@ namespace MidiSynth7.components.dialog
             {
                 ChannelHeadContainer.Children.Add(new RowChannelBit(i+1));
             }
-            TBX_SequenceName.Text = sequence.SequenceName;
-            TBX_PatternName.Text = sequence.Patterns[index].PatternName;
-            CTRL_MPTOctave.SetValueSuppressed(sequence.SelectedOctave);
+            TBX_SequenceName.Text = ActiveSequence.SequenceName;
+            TBX_PatternName.Text = ActiveSequence.Patterns[index].PatternName;
+            CTRL_MPTOctave.SetValueSuppressed(ActiveSequence.SelectedOctave);
+            LC_PatternSel.SetLight(index);
 
         }
 
@@ -159,6 +162,9 @@ namespace MidiSynth7.components.dialog
                 }
             }
             ActivePattern.MoveBitActiveRow(ch, bit);
+            //will this actually?
+            Rect selectBit = ActivePattern.ActiveBit.BoundsRelativeTo(ActivePattern);
+            PatternContainer.BringIntoView(selectBit);
             
             
             if (ActivePattern.ActiveBit != null)
@@ -177,7 +183,6 @@ namespace MidiSynth7.components.dialog
             
         }
 
-
         private void RowHeadScroller_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             e.Handled = true;
@@ -191,6 +196,17 @@ namespace MidiSynth7.components.dialog
         private void RowHeadScroller_PreviewKeyUp(object sender, KeyEventArgs e)
         {
             e.Handled = true;
+        }
+
+        private void LC_PatternSel_LightIndexChanged(object sender, LightCellEventArgs e)
+        {
+            LoadPattern(ActiveSequence, e.LightIndex);
+        }
+
+        private void BN_MPTInsManager_Click(object sender, RoutedEventArgs e)
+        {
+            Dialog g = new Dialog();
+            g.ShowDialog(new MPTInstrumentManager(ActiveSequence, _win, _container), _win, _container,true);
         }
     }
 }
