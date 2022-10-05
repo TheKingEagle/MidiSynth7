@@ -94,7 +94,6 @@ namespace MidiSynth7.entities
             //pain in the ass!!!!!
             MinWidth = 126 * ChannelCount;
             MinHeight = 21;
-            row_container.ItemsSource = bits;
             //pop values
 
             foreach (var item in _rowData.Notes)
