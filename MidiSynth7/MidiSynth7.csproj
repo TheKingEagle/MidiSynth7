@@ -126,6 +126,9 @@
     <Compile Include="components\dialog\Message.xaml.cs">
       <DependentUpon>Message.xaml</DependentUpon>
     </Compile>
+    <Compile Include="components\dialog\MPTInstrumentManager.xaml.cs">
+      <DependentUpon>MPTInstrumentManager.xaml</DependentUpon>
+    </Compile>
     <Compile Include="components\dialog\NFXDelay.xaml.cs">
       <DependentUpon>NFXDelay.xaml</DependentUpon>
     </Compile>
@@ -149,6 +152,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="components\dialog\Message.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="components\dialog\MPTInstrumentManager.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -258,6 +265,7 @@
     <Compile Include="entities\controls\MPTPattern.xaml.cs">
       <DependentUpon>MPTPattern.xaml</DependentUpon>
     </Compile>
+    <Compile Include="entities\controls\MPTPatternEditor.cs" />
     <Compile Include="entities\KeyTypes.cs" />
     <Compile Include="entities\controls\PianoControl.xaml.cs">
       <DependentUpon>PianoControl.xaml</DependentUpon>
