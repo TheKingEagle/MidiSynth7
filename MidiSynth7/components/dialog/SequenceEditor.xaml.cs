@@ -33,7 +33,7 @@ namespace MidiSynth7.components.dialog
         private void Bw_DoWork(object sender, DoWorkEventArgs e)
         {
             (TrackerSequence sequence, int index) = ((TrackerSequence sequence, int index))e.Argument ;
-            LoadPattern(sequence, index);
+            BWLoadPattern(sequence, index);
         }
 
         private MainWindow _win;
@@ -53,18 +53,26 @@ namespace MidiSynth7.components.dialog
         {
             throw new NotImplementedException();
         }
-        public void LoadPatternBW(TrackerSequence sequence, int index = 0)
+        public void LoadPattern(TrackerSequence sequence, int index = 0)
         {
             string ttl = DialogTitle;
             loader.Visibility = Visibility.Visible;
             UpdateLayout();
             (TrackerSequence sequence, int index) arg = (sequence, index);
-
+            //Populate instruments; This should be moved.
+            int prvInst = CB_MPTInstrument.SelectedIndex;
+            CB_MPTInstrument.Items.Clear();
+            CB_MPTInstrument.Items.Add("No Instrument");
+            foreach (var item in sequence.Instruments)
+            {
+                CB_MPTInstrument.Items.Add(item);
+            }
+            CB_MPTInstrument.SelectedIndex = prvInst;
             bw.RunWorkerAsync(arg);
         }
-        public void LoadPattern(TrackerSequence sequence, int index=0 )
+        private void BWLoadPattern(TrackerSequence sequence, int index=0 )
         {
-            Thread.Sleep(100);
+            Thread.Sleep(100);//this is just so ui can show the loader. Which is also stupid, but go off for now.
             Dispatcher.Invoke(()=> PatternContainer.Children.Clear());
             
             ActiveSequence = sequence;
@@ -98,6 +106,7 @@ namespace MidiSynth7.components.dialog
                 TBX_PatternName.Text = ActiveSequence.Patterns[index].PatternName;
                 CTRL_MPTOctave.SetValueSuppressed(ActiveSequence.SelectedOctave);
                 LC_PatternSel.SetLight(index);
+                
             });
         }
 
@@ -197,7 +206,7 @@ namespace MidiSynth7.components.dialog
             
             if (ActivePattern.ActiveBit != null)
             {
-                ActivePattern.ActiveBit.ProcessKey(e.Key, CTRL_MPTOctave.Value);
+                ActivePattern.ActiveBit.ProcessKey(e.Key, CTRL_MPTOctave.Value,CB_MPTInstrument.SelectedItem as TrackerInstrument);
             }
         }
 
@@ -228,7 +237,7 @@ namespace MidiSynth7.components.dialog
 
         private void LC_PatternSel_LightIndexChanged(object sender, LightCellEventArgs e)
         {
-            LoadPatternBW(ActiveSequence, e.LightIndex);
+            LoadPattern(ActiveSequence, e.LightIndex);
             //LoadPattern(ActiveSequence, e.LightIndex);
         }
 

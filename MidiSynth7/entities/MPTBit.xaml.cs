@@ -187,7 +187,7 @@ namespace MidiSynth7.entities
             }
         }
 
-        internal void ProcessKey(Key key, int octave)
+        internal void ProcessKey(Key key, int octave, TrackerInstrument instrument = null)
         {
             if (activeTblock == null)
             {
@@ -200,7 +200,7 @@ namespace MidiSynth7.entities
                 if (indx > -1)
                 {
                     Pitch = indx + 21 + (12*octave);
-                    //TODO: Set instrument as well
+                    Instrument = instrument;
                     //throw velocity in for funzies
                     Velocity = 127;
 

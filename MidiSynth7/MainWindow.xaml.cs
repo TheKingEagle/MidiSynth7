@@ -855,10 +855,14 @@ namespace MidiSynth7
                     TrackerPattern.GetEmptyPattern(32, 20),
                 },
                 ChannelCount = 20,
-                Instruments = new List<TrackerInstrument>(),
+                Instruments = new List<TrackerInstrument>()
+                {
+                    new TrackerInstrument(0,-1,0,0,"Piano"),
+                    new TrackerInstrument(1,-1,0,46,"Harp"),
+                },
                 SequenceName = "Untitled Sequence"
             };
-            editor.LoadPatternBW(ts,0);
+            editor.LoadPattern(ts,0);
             PatternLoaded = true;
         }
         public class ChInvk

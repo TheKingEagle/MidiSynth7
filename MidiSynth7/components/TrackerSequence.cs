@@ -179,8 +179,25 @@ namespace MidiSynth7.components
     public class TrackerInstrument
     {
         public byte Index { get; set; }
-        public NumberedEntry Bank { get; set; }
-        public NumberedEntry Instrument { get; set; }
+        public int DeviceIndex { get; set; }
+        public int Bank { get; set; }
+        public int Instrument { get; set; }
+        public string DisplayName { get; set; }
+
+        public TrackerInstrument(byte index,int device,int bank, int instrument, string name)
+        {
+            Index = index;
+            DeviceIndex = device;
+            Bank = bank;
+            Instrument = instrument;
+            DisplayName = name;
+
+        }
+
+        public override string ToString()
+        {
+            return $"{(int)Index:00}: {DisplayName}";
+        }
     }
 
     public class SeqParam
