@@ -37,7 +37,7 @@ namespace MidiSynth7.entities.controls
             
         }
 
-        public void ShowDialog(IDialogView View, MainWindow window, Grid container)
+        public void ShowDialog(IDialogView View, MainWindow window, Grid container, bool OverlayModal=false, byte overlayOpacity = 128)
         {
            
             //fading out during view switching does not work well.
@@ -49,6 +49,12 @@ namespace MidiSynth7.entities.controls
             FR_dialogView.Content = activeDialog;
             if (!shown)
             {
+                if (OverlayModal)
+                {
+                    if (container.Children.Contains(ModalOverlay)) return;
+                    ModalOverlay.Background = new SolidColorBrush(Color.FromArgb(overlayOpacity, 0, 0, 0));
+                    container.Children.Add(ModalOverlay);
+                }
                 container.Children.Add(this);
                 if (container.Visibility != Visibility.Visible) { 
                     window.FadeUI(0, 1, container);
@@ -60,6 +66,10 @@ namespace MidiSynth7.entities.controls
         }
         private void ActiveDialog_DialogClosed(object sender, DialogEventArgs e)
         {
+            if(e.Container.Children.IndexOf(ModalOverlay) > -1)
+            {
+                e.Container.Children.Remove(ModalOverlay);
+            }
             shown = false;
             e.Window.ScaleUI(1.0, 0.8, this);
             if (e.Container.Children.Count > 1) return;//don't fade the container if there's more than one dialog inside.
