@@ -95,6 +95,7 @@ namespace MidiSynth7.components
     public class SeqData
     {
         public int Column { get; set; }
+        public int Row { get; set; }
         public int midiChannel;
         private int? _pitch = 0;
         private byte? _velocity = 0;
