@@ -285,7 +285,6 @@ namespace MidiSynth7.entities
                 UpdatePitch(Pitch);
                 UpdateInstColors(Instrument);
                 UpdateVelocityColor(Velocity);
-            
         }
 
     }

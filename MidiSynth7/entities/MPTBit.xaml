@@ -3,12 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:MidiSynth7.entities"
              UseLayoutRounding="True" FontFamily="Segoe UI Mono" FontSize="16" FontWeight="Bold" BorderBrush="#FF274678" BorderThickness="0,0,2,0" Padding="2,0" MinHeight="21" MaxHeight="21" MaxWidth="126" MinWidth="126" FocusManager.IsFocusScope="False">
-    <VirtualizingStackPanel x:Name="Bit_Container" Orientation="Horizontal" VirtualizingPanel.IsContainerVirtualizable="True"  VirtualizingPanel.VirtualizationMode="Recycling">
-
-        <TextBlock UseLayoutRounding="True" x:Name="Bl_Notation" Background="{x:Null}"  FontFamily="Segoe UI Mono" Padding="0,0,2,0" Text="..." Width="31" ></TextBlock>
-        <TextBlock UseLayoutRounding="True" x:Name="Bl_Instrument" Background="{x:Null}" FontFamily="Segoe UI Mono" Padding="2,0" Text=".." Width="23" ></TextBlock>
-        <TextBlock UseLayoutRounding="True" x:Name="Bl_Velocity" Background="{x:Null}" FontFamily="Segoe UI Mono" Padding="2,0" Text=" .." Width="33" ></TextBlock>
-        <TextBlock UseLayoutRounding="True" x:Name="Bl_ParmMark" Background="{x:Null}" FontFamily="Segoe UI Mono" Padding="2,0,0,0" Text="." Width="12" ></TextBlock>
-        <TextBlock UseLayoutRounding="True" x:Name="Bl_ParmValue" Background="{x:Null}" FontFamily="Segoe UI Mono" Padding="0,0,2,0" Text=".." Width="21" ></TextBlock>
-    </VirtualizingStackPanel>
+    <Canvas x:Name="Bit_Container">
+        <TextBlock UseLayoutRounding="True" x:Name="Bl_Notation" Background="{x:Null}"  FontFamily="Segoe UI Mono" Padding="0,0,2,0" Text="..." Width="31" HorizontalAlignment="Left" VerticalAlignment="Center" ></TextBlock>
+        <TextBlock UseLayoutRounding="True" x:Name="Bl_Instrument" Background="{x:Null}" FontFamily="Segoe UI Mono" Padding="2,0" Text=".." Width="23" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="31,0,0,0" ></TextBlock>
+        <TextBlock UseLayoutRounding="True" x:Name="Bl_Velocity" Background="{x:Null}" FontFamily="Segoe UI Mono" Padding="2,0" Text=" .." Width="33" Margin="54,0,0,0" ></TextBlock>
+        <TextBlock UseLayoutRounding="True" x:Name="Bl_ParmMark" Background="{x:Null}" FontFamily="Segoe UI Mono" Padding="2,0,0,0" Text="." Width="12" Margin="87,0,0,0" ></TextBlock>
+        <TextBlock UseLayoutRounding="True" x:Name="Bl_ParmValue" Background="{x:Null}" FontFamily="Segoe UI Mono" Padding="0,0,2,0" Text=".." Width="21" Margin="99,0,0,0" ></TextBlock>
+    </Canvas>
 </ItemsControl>
