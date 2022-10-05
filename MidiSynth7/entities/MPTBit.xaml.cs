@@ -196,6 +196,19 @@ namespace MidiSynth7.entities
             }
             if(activeTblock == Bl_Notation)
             {
+                if(key == Key.Q && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+                {
+                    Pitch += Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) ? 12 : 1;
+
+                    if (Pitch > 127)Pitch = 127;
+                    return;
+                }
+                if (key == Key.A && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+                {
+                    Pitch -= Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) ? 12 : 1;
+                    if (Pitch < 0) Pitch = 0;
+                    return;
+                }
                 int indx = Array.IndexOf(SystemComponent.MPTKeysTable, key);
                 if (indx > -1)
                 {
@@ -208,6 +221,7 @@ namespace MidiSynth7.entities
                 if(key == Key.Delete)
                 {
                     Pitch = null;
+                    Instrument = null;
                     Velocity = null;
                 }
             }

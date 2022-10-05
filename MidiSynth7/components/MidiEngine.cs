@@ -229,7 +229,8 @@ namespace MidiSynth7.components
         public static (string noteLabel, int octave) GetNote(int note, string spacer = "")
         {
             string[] noteString = new string[] { "C"+spacer, "C#", "D" + spacer, "D#", "E" + spacer, "F" + spacer, "F#", "G" + spacer, "G#", "A" + spacer, "A#", "B" + spacer };
-
+            if (note < 0) note = 0;
+            if (note > 127) note = 127;
             int octave = (note / 12) - 1;
             if (octave < 0) octave = 0;//accurate? nah... who cares.
             if (octave > 9) octave = 9;//accurate? nah... who cares.

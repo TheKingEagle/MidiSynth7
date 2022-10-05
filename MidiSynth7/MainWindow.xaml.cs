@@ -855,11 +855,13 @@ namespace MidiSynth7
                     TrackerPattern.GetEmptyPattern(32, 20),
                 },
                 ChannelCount = 20,
+                SelectedOctave = 3,
                 Instruments = new List<TrackerInstrument>()
                 {
                     new TrackerInstrument(0,-1,0,0,"Piano"),
                     new TrackerInstrument(1,-1,0,46,"Harp"),
                 },
+                SelectedInstrument = 1,
                 SequenceName = "Untitled Sequence"
             };
             editor.LoadPattern(ts,0);

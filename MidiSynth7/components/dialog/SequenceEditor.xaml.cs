@@ -60,7 +60,7 @@ namespace MidiSynth7.components.dialog
             UpdateLayout();
             (TrackerSequence sequence, int index) arg = (sequence, index);
             //Populate instruments; This should be moved.
-            int prvInst = CB_MPTInstrument.SelectedIndex;
+            int prvInst = sequence.SelectedInstrument;
             CB_MPTInstrument.Items.Clear();
             CB_MPTInstrument.Items.Add("No Instrument");
             foreach (var item in sequence.Instruments)
@@ -160,7 +160,7 @@ namespace MidiSynth7.components.dialog
             }
             if (e.Key == Key.Delete)
             {
-                if (ActivePattern.activeBits != null)
+                if (ActivePattern.activeBits?.Count > 1)
                 {
                     foreach (MPTBit item in ActivePattern.activeBits)
                     {
