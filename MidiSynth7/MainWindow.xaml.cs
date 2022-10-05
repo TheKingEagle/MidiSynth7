@@ -858,7 +858,7 @@ namespace MidiSynth7
                 Instruments = new List<TrackerInstrument>(),
                 SequenceName = "Untitled Sequence"
             };
-            editor.LoadPattern(ts,0);
+            editor.LoadPatternBW(ts,0);
             PatternLoaded = true;
         }
         public class ChInvk

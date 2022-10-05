@@ -1,6 +1,8 @@
 ﻿using MidiSynth7.entities;
 using MidiSynth7.entities.controls;
 using System;
+using System.ComponentModel;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,13 +18,29 @@ namespace MidiSynth7.components.dialog
         {
             _win = win;
             _container = container;
-            InitializeComponent();
             
+            bw.DoWork += Bw_DoWork;
+            bw.RunWorkerCompleted += Bw_RunWorkerCompleted;
+            InitializeComponent();
+
         }
+
+        private void Bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            loader.Visibility = Visibility.Collapsed;
+        }
+
+        private void Bw_DoWork(object sender, DoWorkEventArgs e)
+        {
+            (TrackerSequence sequence, int index) = ((TrackerSequence sequence, int index))e.Argument ;
+            LoadPattern(sequence, index);
+        }
+
         private MainWindow _win;
         private Grid _container;
         private TrackerSequence ActiveSequence;
         private MPTPattern ActivePattern;
+        private BackgroundWorker bw = new BackgroundWorker();
         string _ttl = "Sequence Tracker v1.0";
         public string DialogTitle { get => _ttl; set => _ttl = value; }
         public bool HelpRequested { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -35,42 +53,52 @@ namespace MidiSynth7.components.dialog
         {
             throw new NotImplementedException();
         }
-
-        public void LoadPattern(TrackerSequence sequence, int index=0 )
+        public void LoadPatternBW(TrackerSequence sequence, int index = 0)
         {
-            PatternContainer.Children.Clear();
             string ttl = DialogTitle;
             loader.Visibility = Visibility.Visible;
             UpdateLayout();
+            (TrackerSequence sequence, int index) arg = (sequence, index);
+
+            bw.RunWorkerAsync(arg);
+        }
+        public void LoadPattern(TrackerSequence sequence, int index=0 )
+        {
+            Thread.Sleep(100);
+            Dispatcher.Invoke(()=> PatternContainer.Children.Clear());
+            
             ActiveSequence = sequence;
             
 
             Console.WriteLine("Yup");
-            ActivePattern = new MPTPattern(ActiveSequence.Patterns[index], PatternContainer);
-            ActivePattern.PatternSelectionChange += ActivePattern_PatternSelectionChange;
-            PatternContainer.Children.Add(ActivePattern);
-            loader.Visibility = Visibility.Collapsed;
-            PatternContainer.Margin = new Thickness(0, (PatternScroller.ViewportHeight- 21) / 2, 0, (PatternScroller.ViewportHeight- 21) / 2);
-            RowHeadContainer.Margin = new Thickness(0, (PatternScroller.ViewportHeight-21) / 2, 0, (PatternScroller.ViewportHeight-21) / 2);
-            RowHeadScroller.Padding = new Thickness(0, 0, 0, 21);
-            ChannelHeadScroller.Padding = new Thickness(0, 0, SystemParameters.VerticalScrollBarWidth+2, 0);
-            RowHeadContainer.Children.Clear();
-            ChannelHeadContainer.Children.Clear();
-            //populate row index container
-            for (int i = 0; i < ActivePattern.RowCount; i++)
+            Dispatcher.Invoke(() =>
             {
-                RowHeadContainer.Children.Add(new RowIndexBit(i));
-            }
-            //populate ch index container
-            for (int i = 0; i < ActivePattern.ChannelCount; i++)
-            {
-                ChannelHeadContainer.Children.Add(new RowChannelBit(i+1));
-            }
-            TBX_SequenceName.Text = ActiveSequence.SequenceName;
-            TBX_PatternName.Text = ActiveSequence.Patterns[index].PatternName;
-            CTRL_MPTOctave.SetValueSuppressed(ActiveSequence.SelectedOctave);
-            LC_PatternSel.SetLight(index);
+                
+                ActivePattern = new MPTPattern(ActiveSequence.Patterns[index], PatternContainer);
+                ActivePattern.PatternSelectionChange += ActivePattern_PatternSelectionChange;
+                PatternContainer.Children.Add(ActivePattern);
 
+                PatternContainer.Margin = new Thickness(0, (PatternScroller.ViewportHeight - 21) / 2, 0, (PatternScroller.ViewportHeight - 21) / 2);
+                RowHeadContainer.Margin = new Thickness(0, (PatternScroller.ViewportHeight - 21) / 2, 0, (PatternScroller.ViewportHeight - 21) / 2);
+                RowHeadScroller.Padding = new Thickness(0, 0, 0, 21);
+                ChannelHeadScroller.Padding = new Thickness(0, 0, SystemParameters.VerticalScrollBarWidth + 2, 0);
+                RowHeadContainer.Children.Clear();
+                ChannelHeadContainer.Children.Clear();
+                //populate row index container
+                for (int i = 0; i < ActivePattern.RowCount; i++)
+                {
+                    RowHeadContainer.Children.Add(new RowIndexBit(i));
+                }
+                //populate ch index container
+                for (int i = 0; i < ActivePattern.ChannelCount; i++)
+                {
+                    ChannelHeadContainer.Children.Add(new RowChannelBit(i + 1));
+                }
+                TBX_SequenceName.Text = ActiveSequence.SequenceName;
+                TBX_PatternName.Text = ActiveSequence.Patterns[index].PatternName;
+                CTRL_MPTOctave.SetValueSuppressed(ActiveSequence.SelectedOctave);
+                LC_PatternSel.SetLight(index);
+            });
         }
 
         private void ActivePattern_PatternSelectionChange(object sender, SelectionEventArgs e)
@@ -200,7 +228,8 @@ namespace MidiSynth7.components.dialog
 
         private void LC_PatternSel_LightIndexChanged(object sender, LightCellEventArgs e)
         {
-            LoadPattern(ActiveSequence, e.LightIndex);
+            LoadPatternBW(ActiveSequence, e.LightIndex);
+            //LoadPattern(ActiveSequence, e.LightIndex);
         }
 
         private void BN_MPTInsManager_Click(object sender, RoutedEventArgs e)
