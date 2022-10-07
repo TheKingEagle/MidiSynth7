@@ -1,4 +1,5 @@
 ﻿using MidiSynth7.components;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace MidiSynth7.entities
     {
         public bool Active { get; private set; }
         int _chCount = 16;
+        MainWindow _win;
         public static SolidColorBrush bg_HotSelected1 = new SolidColorBrush(Color.FromArgb(255, 0, 67, 159));
         TrackerRow _rowData;
         [Category("Row Info")]
@@ -29,13 +31,16 @@ namespace MidiSynth7.entities
         public int SelectedChannel { get; private set; }
         public int SelectedBit { get; private set; }
         public List<MPTBit> bits = new List<MPTBit>();
+
+        public event EventHandler<RowDataEventArgs> RowDataUpdated;
+
         public MPTRow()
         {
 
             InitializeComponent();
             UpdateList();
         }
-        public MPTRow(int index, int channelCount = 16, TrackerRow row = null)
+        public MPTRow(MainWindow appwin, int index, int channelCount = 16, TrackerRow row = null)
         {
 
             InitializeComponent();
@@ -45,10 +50,12 @@ namespace MidiSynth7.entities
                 _rowData = row;
             }
             RowIndex = index;
+            _win = appwin;
             UpdateList();
         }
         internal void UpdateFocus(bool active)
         {
+            
             Active = active;
             row_container.Background = active ? bg_HotSelected1 : null;
             foreach (MPTBit item in bits)
@@ -98,15 +105,33 @@ namespace MidiSynth7.entities
 
             foreach (var item in _rowData.Notes)
             {
-                MPTBit bit = new MPTBit(item.Column);
-                bit.Pitch = item.Pitch;
-                bit.Instrument = item.Instrument;
-                bit.Velocity = item.Velocity;
-                bit.Parameter = item.Parameter;
+                MPTBit bit = new MPTBit(item.Column,item);
+                bit.BitDataChanged += Bit_BitDataChanged;
                 bits.Add(bit);
             }
             row_container.ItemsSource = bits;
 
+        }
+
+        private void Bit_BitDataChanged(object sender, BitEventArgs e)
+        {
+            MPTBit s = sender as MPTBit;
+            RowData.Notes[bits.IndexOf(s)] = e.NewSeqData;
+            RowDataUpdated?.Invoke(this, new RowDataEventArgs(RowData));
+            if(e.Type == EventType.note)
+            {
+                RowData.Play(_win.ActiveSequence,_win.MidiEngine, null);
+            }
+        }
+    }
+
+    public class RowDataEventArgs : EventArgs
+    {
+        public TrackerRow NewRowData { get; private set; }
+
+        public RowDataEventArgs(TrackerRow row)
+        {
+            NewRowData = row;
         }
     }
 }

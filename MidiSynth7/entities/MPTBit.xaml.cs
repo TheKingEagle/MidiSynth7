@@ -15,10 +15,7 @@ namespace MidiSynth7.entities
     /// </summary>
     public partial class MPTBit : ItemsControl
     {
-        int? _pitch;
-        TrackerInstrument _instrument;
-        SeqParam _param;
-        byte? _velo;
+        private SeqData _data { get; set; }
         private TextBlock activeTblock;
         private bool OtherBitsDeleted = false;
         public static SolidColorBrush BR_Null = new SolidColorBrush(Color.FromArgb(255, 035, 067, 103));
@@ -35,11 +32,89 @@ namespace MidiSynth7.entities
         [Category("MPTBit Properties")]
         public int? Pitch
         {
-            get => _pitch;
+            get => _data.Pitch;
             set
             {
-                _pitch = value;
+                _data.Pitch = value;
                 UpdatePitch(value);
+                
+            }
+        }
+
+        [Category("MPTBit Properties")]
+        public byte? Instrument
+        {
+            get => _data.Instrument;
+            set
+            {
+                _data.Instrument = value;
+                UpdateInstColors(value);
+
+            }
+        }
+
+
+        [Category("MPTBit Properties")]
+        public byte? Velocity
+        {
+            get => _data.Velocity;
+            set
+            {
+                _data.Velocity = value;
+                UpdateVelocityColor(value);
+
+            }
+        }
+
+        [Category("MPTBit Properties")]
+        public SeqParam Parameter
+        {
+            get => _data.Parameter;
+            set
+            {
+                UpdateSeqParamColors(value);
+
+                _data.Parameter = value;
+
+            }
+        }
+
+        public int Channel { get; private set; }
+        
+        public MPTBit()
+        {
+            InitializeComponent();
+        }
+        
+        public MPTBit(int col, SeqData data)
+        {
+            InitializeComponent();
+            Channel = col;
+            _data = data;
+            UpdatePitch(data.Pitch);
+            UpdateVelocityColor(data.Velocity);
+            UpdateInstColors(data.Instrument);
+            UpdateSeqParamColors(data.Parameter);
+        }
+        
+        public SeqData GetSeqData()
+        {
+            
+            return _data;
+        }
+
+        private void UpdateInstColors(byte? value)
+        {
+            if (value == null)
+            {
+                Bl_Instrument.Text = "..";
+                Bl_Instrument.Foreground = Bl_Instrument.Foreground != BR_NHot ? BR_Null : BR_NHot;
+
+            }
+            else
+            {
+                Bl_Instrument.Text = value.Value.ToString("X2");
+                Bl_Instrument.Foreground = BR_Inst;
             }
         }
 
@@ -59,43 +134,6 @@ namespace MidiSynth7.entities
             }
         }
 
-        [Category("MPTBit Properties")]
-        public TrackerInstrument Instrument
-        {
-            get => _instrument;
-            set
-            {
-                _instrument = value;
-                UpdateInstColors(value);
-            }
-        }
-
-        private void UpdateInstColors(TrackerInstrument value)
-        {
-            if (value == null)
-            {
-                Bl_Instrument.Text = "..";
-                Bl_Instrument.Foreground = Bl_Instrument.Foreground != BR_NHot ? BR_Null : BR_NHot;
-
-            }
-            else
-            {
-                Bl_Instrument.Text = value.Index.ToString("X2");
-                Bl_Instrument.Foreground = BR_Inst;
-            }
-        }
-
-        [Category("MPTBit Properties")]
-        public byte? Velocity
-        {
-            get => _velo;
-            set
-            {
-                _velo = value;
-                UpdateVelocityColor(value);
-            }
-        }
-
         private void UpdateVelocityColor(byte? value)
         {
             if (value == null)
@@ -110,21 +148,9 @@ namespace MidiSynth7.entities
             }
         }
 
-        [Category("MPTBit Properties")]
-        public SeqParam Parameter
-        {
-            get => _param;
-            set
-            {
-                UpdateSeqParamColors(value);
-
-                _param = value;
-            }
-        }
-
         private void UpdateSeqParamColors(SeqParam value)
         {
-            
+
             if (value != null)
             {
                 if (value.Mark == 'A')
@@ -136,7 +162,7 @@ namespace MidiSynth7.entities
                 else
                 {
                     Bl_ParmMark.Foreground = Bl_ParmMark.Foreground != BR_NHot ? BR_Null : BR_NHot;
-                    Bl_ParmValue.Foreground = Bl_ParmValue.Foreground != BR_NHot ? BR_Null : BR_NHot; 
+                    Bl_ParmValue.Foreground = Bl_ParmValue.Foreground != BR_NHot ? BR_Null : BR_NHot;
                 }
             }
             else
@@ -144,31 +170,6 @@ namespace MidiSynth7.entities
                 Bl_ParmMark.Foreground = Bl_ParmMark.Foreground != BR_NHot ? BR_Null : BR_NHot;
                 Bl_ParmValue.Foreground = Bl_ParmValue.Foreground != BR_NHot ? BR_Null : BR_NHot;
             }
-        }
-
-        public int Channel { get; private set; }
-        
-        public MPTBit()
-        {
-            InitializeComponent();
-        }
-        
-        public MPTBit(int channel)
-        {
-            InitializeComponent();
-            Channel = channel;
-        }
-        
-        public SeqData GetSeqData()
-        {
-            SeqData d = new SeqData()
-            {
-                Instrument = Instrument,
-                Parameter = Parameter,
-                Pitch = Pitch,
-                Velocity = Velocity
-            };
-            return d;
         }
 
         internal void UpdateFocus(bool active)
@@ -187,7 +188,7 @@ namespace MidiSynth7.entities
             }
         }
 
-        internal void ProcessKey(Key key, int octave, TrackerInstrument instrument = null)
+        internal void ProcessKey(Key key, int octave, byte? instrument = null)
         {
             if (activeTblock == null)
             {
@@ -201,12 +202,14 @@ namespace MidiSynth7.entities
                     Pitch += Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) ? 12 : 1;
 
                     if (Pitch > 127)Pitch = 127;
+                    BitDataChanged?.Invoke(this, new BitEventArgs(GetSeqData(),EventType.note));
                     return;
                 }
                 if (key == Key.A && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
                 {
                     Pitch -= Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) ? 12 : 1;
                     if (Pitch < 0) Pitch = 0;
+                    BitDataChanged?.Invoke(this, new BitEventArgs(GetSeqData(), EventType.note));
                     return;
                 }
                 int indx = Array.IndexOf(SystemComponent.MPTKeysTable, key);
@@ -223,7 +226,20 @@ namespace MidiSynth7.entities
                     Pitch = null;
                     Instrument = null;
                     Velocity = null;
+                    BitDataChanged?.Invoke(this, new BitEventArgs(GetSeqData(), EventType.delete));
+
+                    return;
                 }
+                if (key == KeyInterop.KeyFromVirtualKey(189))
+                {
+                    Pitch = -1;
+                    Instrument = null;
+                    Velocity = null;
+                    BitDataChanged?.Invoke(this, new BitEventArgs(GetSeqData(), EventType.stop));
+
+                    return;
+                }
+                BitDataChanged?.Invoke(this, new BitEventArgs(GetSeqData(), EventType.note));
             }
         }
 
@@ -311,16 +327,25 @@ namespace MidiSynth7.entities
             return gt.TransformBounds(new Rect(0, 0, child.ActualWidth, child.ActualHeight));
         }
     }
+    
     public class BitEventArgs : EventArgs
     {
         public SeqData NewSeqData { get; private set; }
 
-        public int Index { get; private set; }
+        public EventType Type { get; set; }
 
-        public BitEventArgs(SeqData data, int index)
+        public BitEventArgs(SeqData data,EventType etype)
         {
             NewSeqData = data;
-            Index = index;
+            Type = etype;
         }
+    }
+
+    public enum EventType
+    {
+        note,
+        velo,
+        stop,
+        delete
     }
 }

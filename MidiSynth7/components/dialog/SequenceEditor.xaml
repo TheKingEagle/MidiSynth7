@@ -150,6 +150,7 @@
                 </controls:LightCell.RenderTransform>
             </controls:LightCell>
             <Button Content="Save &amp; Close" Margin="0,0,10,0" VerticalAlignment="Center" Background="#FF001D40" Foreground="White" FontWeight="Bold" Click="Button_Click" HorizontalAlignment="Right" Padding="6" />
+            <Button x:Name="BN_cancel" Content="Cancel" Margin="0,0,102,0" VerticalAlignment="Center" Background="#FF400000" Foreground="White" FontWeight="Bold" HorizontalAlignment="Right" Padding="6" Click="BN_cancel_Click" />
         </Grid>
     </Grid>
 </Page>

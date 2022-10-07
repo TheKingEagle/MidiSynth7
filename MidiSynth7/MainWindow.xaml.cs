@@ -58,70 +58,26 @@ namespace MidiSynth7
         public List<ChInvk> channelIndicators = new List<ChInvk>();
         public List<NFXDelayProfile> NFXProfiles = new List<NFXDelayProfile>();
 
+        public List<TrackerSequence> Tracks = new List<TrackerSequence>();
+
+        public TrackerSequence ActiveSequence { get; set; }
+
         #endregion
 
         public MainWindow()
         {
             InitializeComponent();
-            #region Generate presets
 
-            if (!Directory.Exists(App.PRESET_DIR))
+            if (!Directory.Exists(App.APP_DATA_DIR + "sequences\\"))
             {
-                Directory.CreateDirectory(App.PRESET_DIR);
+                Directory.CreateDirectory(App.APP_DATA_DIR + "sequences\\");
             }
-            using (FileStream fs = File.Create(App.PRESET_DIR + "\\preset1.mid"))
-            {
-                fs.Write(Properties.Resources.preset1, 0, Properties.Resources.preset1.Length);
-            }
-            using (FileStream fs = File.Create(App.PRESET_DIR + "\\preset2.mid"))
-            {
-                fs.Write(Properties.Resources.preset2, 0, Properties.Resources.preset2.Length);
-            }
-            using (FileStream fs = File.Create(App.PRESET_DIR + "\\preset3.mid"))
-            {
-                fs.Write(Properties.Resources.preset3, 0, Properties.Resources.preset3.Length);
-            }
-            using (FileStream fs = File.Create(App.PRESET_DIR + "\\preset4.mid"))
-            {
-                fs.Write(Properties.Resources.preset4, 0, Properties.Resources.preset4.Length);
-            }
-            using (FileStream fs = File.Create(App.PRESET_DIR + "\\preset5.mid"))
-            {
-                fs.Write(Properties.Resources.preset5, 0, Properties.Resources.preset5.Length);
-            }
-            using (FileStream fs = File.Create(App.PRESET_DIR + "\\preset6.mid"))
-            {
-                fs.Write(Properties.Resources.preset6, 0, Properties.Resources.preset6.Length);
-            }
-            using (FileStream fs = File.Create(App.PRESET_DIR + "\\preset7.mid"))
-            {
-                fs.Write(Properties.Resources.preset7, 0, Properties.Resources.preset7.Length);
-            }
-            using (FileStream fs = File.Create(App.PRESET_DIR + "\\preset8.mid"))
-            {
-                fs.Write(Properties.Resources.preset8, 0, Properties.Resources.preset8.Length);
-            }
-            using (FileStream fs = File.Create(App.PRESET_DIR + "\\preset9.mid"))
-            {
-                fs.Write(Properties.Resources.preset9, 0, Properties.Resources.preset9.Length);
-            }
-            using (FileStream fs = File.Create(App.PRESET_DIR + "\\preset10.mid"))
-            {
-                fs.Write(Properties.Resources.preset10, 0, Properties.Resources.preset10.Length);
-            }
-            using (FileStream fs = File.Create(App.PRESET_DIR + "\\preset11.mid"))
-            {
-                fs.Write(Properties.Resources.preset11, 0, Properties.Resources.preset11.Length);
-            }
-            using (FileStream fs = File.Create(App.PRESET_DIR + "\\preset12.mid"))
-            {
-                fs.Write(Properties.Resources.preset12, 0, Properties.Resources.preset12.Length);
-            }
-            #endregion
+
+            PopulateSequences();
 
             appinfo_projectRevision = Assembly.GetExecutingAssembly().GetName().Version.Revision;
             AppConfig = LoadConfig();
-            
+
             if (!string.IsNullOrWhiteSpace(AppConfig.InstrumentDefinitionPath))
             {
                 if (!File.Exists(AppConfig.InstrumentDefinitionPath))
@@ -145,9 +101,9 @@ namespace MidiSynth7
                             Definitions = new List<InstrumentDefinition>();
                             Definitions.Add(InstrumentDefinition.GetDefaultDefinition());
                             ActiveInstrumentDefinition = InstrumentDefinition.GetDefaultDefinition();//set active
-                            Dialog.Message(this, GR_OverlayContent,"The instrument Definition file is invalid. Using the default one instead","No Instruments", Icons.Warning);
+                            Dialog.Message(this, GR_OverlayContent, "The instrument Definition file is invalid. Using the default one instead", "No Instruments", Icons.Warning);
                         }
-                       
+
                     }
                 }
             }
@@ -196,6 +152,27 @@ namespace MidiSynth7
             GR_OverlayContent.Visibility = Visibility.Collapsed;
             GR_OverlayContent.Opacity = 0;
             Loadview(AppConfig.DisplayMode);
+        }
+
+        private void PopulateSequences()
+        {
+            Tracks = new List<TrackerSequence>();
+            foreach (string item in Directory.GetFiles(App.APP_DATA_DIR + "sequences\\", "*.mton"))
+            {
+                using (StreamReader sr = new StreamReader(item))
+                {
+                    TrackerSequence ts = JsonConvert.DeserializeObject<TrackerSequence>(sr.ReadToEnd());
+                    if (ts != null)
+                    {
+                        Tracks.Add(ts);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Failed to parse file: " + item);
+                    }
+                }
+            }
+            currentView?.HandleEvent(this, new EventArgs(), "TrSeqUpdate");
         }
 
         ~MainWindow()
@@ -810,8 +787,6 @@ namespace MidiSynth7
 
         #endregion
 
-
-
         public void ShowNFX()
         {
             if (GR_OverlayContent.Visibility == Visibility.Visible)
@@ -844,27 +819,32 @@ namespace MidiSynth7
         {
             if (PatternLoaded) return;
             var editor = sender as SequenceEditor;
-            //TODO: get this shit from a file.
-            TrackerSequence ts = new TrackerSequence()
+            if (ActiveSequence == null)
             {
-                Patterns = new List<TrackerPattern>()
+                TrackerSequence ts = new TrackerSequence();
+
+                ts.Patterns = new List<TrackerPattern>()
                 {
-                    TrackerPattern.GetEmptyPattern(32, 20),
-                    TrackerPattern.GetEmptyPattern(32, 20),
-                    TrackerPattern.GetEmptyPattern(32, 20),
-                    TrackerPattern.GetEmptyPattern(32, 20),
-                },
-                ChannelCount = 20,
-                SelectedOctave = 3,
-                Instruments = new List<TrackerInstrument>()
+                    TrackerPattern.GetEmptyPattern(ts,32, 20),
+                    TrackerPattern.GetEmptyPattern(ts,32, 20),
+                    TrackerPattern.GetEmptyPattern(ts, 32, 20),
+                    TrackerPattern.GetEmptyPattern(ts,32, 20),
+                };
+                ts.SelectedOctave = 3;
+                ts.Instruments = new List<TrackerInstrument>()
                 {
                     new TrackerInstrument(0,-1,0,0,"Piano"),
                     new TrackerInstrument(1,-1,0,46,"Harp"),
-                },
-                SelectedInstrument = 1,
-                SequenceName = "Untitled Sequence"
-            };
-            editor.LoadPattern(ts,0);
+                };
+                ts.SelectedInstrument = 1;
+                ts.SequenceName = "Untitled Sequence" + Tracks.Count + 1;
+                editor.LoadPattern(ts, 0);
+
+            }
+            else
+            {
+                editor.LoadPattern(ActiveSequence, 0);
+            }
             PatternLoaded = true;
         }
         public class ChInvk

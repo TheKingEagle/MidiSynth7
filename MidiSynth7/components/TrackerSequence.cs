@@ -1,4 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Sanford.Multimedia.Midi;
+using System.IO;
+using System.Linq;
+using Newtonsoft.Json;
+
 namespace MidiSynth7.components
 {
     /// <summary>
@@ -12,12 +18,57 @@ namespace MidiSynth7.components
 
     public class TrackerSequence
     {
-        public string SequenceName { get; set; }
-        public int ChannelCount { get; set; }
+        string path = App.APP_DATA_DIR + "Sequences\\";
+        string name = "";
+        public string SequenceName { get=>name; set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    name = "Untitled Sequence";
+                }
+                string safeSeqName = Path.GetInvalidFileNameChars().Aggregate(value, (current, c) => current.Replace(c, '-'));
+                string safePrvSeqName = Path.GetInvalidFileNameChars().Aggregate(name, (current, c) => current.Replace(c, '-'));
+
+                if (File.Exists(path + safeSeqName+".mton") && value != name && !string.IsNullOrWhiteSpace(name) && !string.IsNullOrWhiteSpace(value))
+                {
+                    throw new Exception("A sequence with this name already exists.");
+
+                }
+                if(File.Exists(path + safePrvSeqName + ".mton"))
+                {
+                    File.Move(path + safePrvSeqName + ".mton", path + safeSeqName + ".mton");
+                }
+                name = value;
+            }
+        }
         public List<TrackerPattern> Patterns { get; set; }
         public List<TrackerInstrument> Instruments { get; set; }
         public int SelectedOctave { get; set; }
         public int SelectedInstrument{ get; set; }
+
+        public void SaveSequence()
+        {
+            
+            if(!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            string safeSeqName = Path.GetInvalidFileNameChars().Aggregate(SequenceName, (current, c) => current.Replace(c, '-'));
+            if (File.Exists(path + safeSeqName+".mton"))
+            {
+                //delete then rewrite, to prevent corruptions
+                File.Delete(path + safeSeqName + ".mton");
+            }
+            using (StreamWriter sw = new StreamWriter(path+safeSeqName + ".mton"))
+            {
+                sw.Write(JsonConvert.SerializeObject(this, Formatting.Indented));
+            }
+        }
+
+        public override string ToString()
+        {
+            return SequenceName;
+        }
     }
 
     public class TrackerPattern
@@ -29,14 +80,14 @@ namespace MidiSynth7.components
         public string PatternName { get; set; }
         public List<TrackerRow> Rows { get; set; }
 
-        public static TrackerPattern GetEmptyPattern(int rows, int channels)
+        public static TrackerPattern GetEmptyPattern(TrackerSequence seq, int rows, int channels)
         {
             return new TrackerPattern()
             {
                 ChannelCount = channels,
                 RowCount = rows,
                 PatternName = "New Pattern",
-                Rows = TrackerRow.GetEmptyRows(rows, channels),
+                Rows = TrackerRow.GetEmptyRows(seq, rows, channels),
                 RowsPerBeat = 4,
                 RowsPerMeasure = 16
             };
@@ -45,14 +96,13 @@ namespace MidiSynth7.components
 
     public class TrackerRow
     {
-        
-        public TrackerRow(List<SeqData> notes)
+        public TrackerRow( List<SeqData> notes)
         {
             Notes = notes;
         }
         public List<SeqData> Notes { get; set; }
 
-        public static List<TrackerRow> GetEmptyRows(int rows, int ChannelCount)
+        public static List<TrackerRow> GetEmptyRows(TrackerSequence seq, int rows, int ChannelCount)
         {
             List<TrackerRow> Rows = new List<TrackerRow>();
             for (int i = 0; i < rows; i++)
@@ -91,6 +141,44 @@ namespace MidiSynth7.components
 
             return midiChannel;
         }
+
+        public List<SeqParam> Play(TrackerSequence seq, MidiEngine engine, ControllerType[] ActiveControl)
+        {
+            List<SeqParam> ControlList = new List<SeqParam>();
+            foreach (SeqData item in Notes)
+            {
+                TrackerInstrument ti = seq.Instruments.FirstOrDefault(x => x.Index == item.Instrument);
+                int output = ti?.DeviceIndex ?? -1;
+                ControlList.Add(item.Parameter);//even if null
+                if (item.Parameter != null)
+                {
+                    if (item.Parameter.Mark == 'Z' && ActiveControl !=  null)//3 is unused, and will be considered "default/null"
+                    {
+                        engine.MidiNote_SetControl(ActiveControl[item.midiChannel], item.midiChannel, item.Parameter.Value, output);
+                    }
+                }
+                if(ti != null)
+                {
+                    engine.MidiNote_SetProgram(ti.Bank, ti.Instrument, item.midiChannel, output);
+                    if(item.Pitch.HasValue)
+                    {
+                        if(item.midiChannel != 9)
+                        {
+                            engine.MidiNote_SetControl(ControllerType.AllNotesOff, item.midiChannel, 127, output);//in theory just for the channel?
+                        }
+                        if(item.Pitch > -1)
+                        {
+                            engine.MidiNote_Play(item.midiChannel, item.Pitch.Value, item.Velocity ?? 127, false, output);
+                        }
+                        if (item.Pitch == -2)
+                        {
+                            engine.MidiNote_SetControl(ControllerType.AllSoundOff, item.midiChannel, 127, output);//in theory just for the channel?
+                        }
+                    }
+                }
+            }
+            return ControlList;
+        }
     }
     public class SeqData
     {
@@ -99,7 +187,7 @@ namespace MidiSynth7.components
         public int midiChannel;
         private int? _pitch = 0;
         private byte? _velocity = 0;
-        private TrackerInstrument _trackerInstrument;
+        private byte? _trackerInstrument;
         private SeqParam _seqParam;
 
         public int? Pitch
@@ -119,7 +207,7 @@ namespace MidiSynth7.components
                 _velocity = value;
             }
         }
-        public TrackerInstrument Instrument
+        public byte? Instrument
         {
             get => _trackerInstrument; 
             set
@@ -160,7 +248,7 @@ namespace MidiSynth7.components
             string instindex = "..";
             if(Instrument != null)
             {
-                instindex = Instrument.Index.ToString();//It's not hex here since OpenMPT does not use hex for instruments
+                instindex = Instrument.ToString();//It's not hex here since OpenMPT does not use hex for instruments
             }
             string velocity = "...";
             if (Velocity.HasValue)

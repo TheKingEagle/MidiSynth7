@@ -82,7 +82,7 @@ namespace MidiSynth7.components.dialog
             Dispatcher.Invoke(() =>
             {
                 
-                ActivePattern = new MPTPattern(ActiveSequence.Patterns[index], PatternContainer);
+                ActivePattern = new MPTPattern(_win,ActiveSequence.Patterns[index], PatternContainer);
                 ActivePattern.PatternSelectionChange += ActivePattern_PatternSelectionChange;
                 PatternContainer.Children.Add(ActivePattern);
 
@@ -117,6 +117,7 @@ namespace MidiSynth7.components.dialog
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            ActiveSequence.SaveSequence();//TODO: someday use something that isn't json.
             PatternContainer.Children.Clear();
             ActivePattern = null;
 
@@ -206,7 +207,7 @@ namespace MidiSynth7.components.dialog
             
             if (ActivePattern.ActiveBit != null)
             {
-                ActivePattern.ActiveBit.ProcessKey(e.Key, CTRL_MPTOctave.Value,CB_MPTInstrument.SelectedItem as TrackerInstrument);
+                ActivePattern.ActiveBit.ProcessKey(e.Key, CTRL_MPTOctave.Value,(CB_MPTInstrument.SelectedItem as TrackerInstrument).Index);
             }
         }
 
@@ -245,6 +246,19 @@ namespace MidiSynth7.components.dialog
         {
             Dialog g = new Dialog();
             g.ShowDialog(new MPTInstrumentManager(ActiveSequence, _win, _container), _win, _container,true);
+        }
+
+        private void BN_cancel_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO: Add a confirmation dialog that blocks until a result is returned.
+            var mbd = MessageBox.Show("Abandon changes?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if(mbd == MessageBoxResult.Yes)
+            {
+                PatternContainer.Children.Clear();
+                ActivePattern = null;
+                DialogClosed?.Invoke(this, new DialogEventArgs(_win, _container));
+            }
+            
         }
     }
 }

@@ -105,6 +105,9 @@ namespace MidiSynth7.components.views
             }
             #endregion
 
+
+            Cb_SequencerProfile.ItemsSource = AppContext.Tracks;
+            Cb_SequencerProfile.SelectedIndex = 0;
         }
 
         private void UpdateInstrumentSelection(SystemConfig config)
@@ -278,13 +281,10 @@ namespace MidiSynth7.components.views
                             Dispatcher.Invoke(() => check = CB_Sequencer_Check.IsChecked.Value);
                             if (!check) return;
                             Dispatcher.InvokeAsync(() => LC_PatternStep.SetLight(step));
-                            // ==================================
-                            //  TODO: PROCESS STEP HERE (TICKS)
-                            // ==================================
+                            
+                            AppContext.ActiveSequence.Patterns[pattern].Rows[step].Play(AppContext.ActiveSequence, AppContext.MidiEngine, null);
+                            //TODO: Further process the sequence parameters within it.
                             Dispatcher.InvokeAsync(() => DotDuration = (int)((float)(2500 / (float)(Dial_RiffTempo.Value * 1000)) * (ticksPerDot * 1000)));
-                            // =================================
-                            //  TODO: PROCESS STEP HERE (NOTES)
-                            // =================================
                             System.Threading.Thread.Sleep(DotDuration);//This is beyond not ideal LOL
                         }
 
@@ -748,6 +748,10 @@ namespace MidiSynth7.components.views
                 case "MidiEngine_SequenceBuilder_Completed": break;
                 case "InsDEF_Changed": InsDefUpdate(); break;
                 case "RefNFXDelay": NFXProfileUpdate(); break;
+                case "TrSeqUpdate": 
+                    Cb_SequencerProfile.ItemsSource = AppContext.Tracks;
+                    Cb_SequencerProfile.SelectedIndex = 0;
+                    ; break;
                 default: Console.WriteLine("Unrecognized event string: {0}... lol", id);
                     break;
             }
@@ -904,6 +908,14 @@ namespace MidiSynth7.components.views
             if(AppContext.ActiveNFXProfile == null)
             {
                 AppContext.ActiveNFXProfile = AppContext.NFXProfiles[0];
+            }
+        }
+
+        private void Cb_SequencerProfile_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(AppContext != null)
+            {
+                AppContext.ActiveSequence = Cb_SequencerProfile.SelectedItem as TrackerSequence;
             }
         }
     }

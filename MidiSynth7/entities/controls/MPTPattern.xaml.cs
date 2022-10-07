@@ -30,6 +30,7 @@ namespace MidiSynth7.entities.controls
         private SolidColorBrush bg_subdivision2 = new SolidColorBrush(Color.FromArgb(255, 20, 26, 34));
         private SolidColorBrush bg_subdivisionN = new SolidColorBrush(Color.FromArgb(255, 12, 16, 20));
         private MPTRow ActiveRow;
+        MainWindow appwin;
         public MPTBit ActiveBit { get; private set; }
         public List<MPTBit> activeBits { get; private set; } = new List<MPTBit>();
         private Point SelPoint1 = new Point(0, 0);
@@ -64,7 +65,7 @@ namespace MidiSynth7.entities.controls
             InitializeComponent();
         }
 
-        public MPTPattern(TrackerPattern pattern, FrameworkElement PatternContainer)
+        public MPTPattern(MainWindow main, TrackerPattern pattern, FrameworkElement PatternContainer)
         {
             tpf = pattern;
             InitializeComponent();
@@ -77,6 +78,7 @@ namespace MidiSynth7.entities.controls
             bw.RunWorkerCompleted += Bw_RunWorkerCompleted;
             bw.RunWorkerAsync();
             Frame = PatternContainer;
+            appwin = main;
         }
 
         private void Bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -95,8 +97,8 @@ namespace MidiSynth7.entities.controls
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        var row = new MPTRow(id, ChannelCount, item);
-                        
+                        var row = new MPTRow(appwin,id, ChannelCount, item);
+                        row.RowDataUpdated += Row_RowDataUpdated;
                         row.Background = bg_subdivisionN;
                         if (id % RowsPerBeat == 0)
                         {
@@ -118,6 +120,11 @@ namespace MidiSynth7.entities.controls
             t.SetApartmentState(ApartmentState.STA);//good god.
             t.Start();
             SpinWait.SpinUntil(() => locker);//even more good god...
+        }
+
+        private void Row_RowDataUpdated(object sender, RowDataEventArgs e)
+        {
+            tpf.Rows[mptRows.IndexOf((MPTRow)sender)] = e.NewRowData;
         }
 
         private void Pattern_MouseDown(object sender, MouseButtonEventArgs e)
@@ -282,4 +289,5 @@ namespace MidiSynth7.entities.controls
             SelectedIndex = selectedIndex;
         }
     }
+
 }
