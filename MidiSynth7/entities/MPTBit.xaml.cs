@@ -219,6 +219,7 @@ namespace MidiSynth7.entities
                     Instrument = instrument;
                     //throw velocity in for funzies
                     Velocity = 127;
+                    BitDataChanged?.Invoke(this, new BitEventArgs(GetSeqData(), EventType.note));
 
                 }
                 if(key == Key.Delete)
@@ -239,7 +240,7 @@ namespace MidiSynth7.entities
 
                     return;
                 }
-                BitDataChanged?.Invoke(this, new BitEventArgs(GetSeqData(), EventType.note));
+                
             }
         }
 
