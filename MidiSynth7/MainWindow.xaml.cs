@@ -833,11 +833,14 @@ namespace MidiSynth7
                 ts.SelectedOctave = 3;
                 ts.Instruments = new List<TrackerInstrument>()
                 {
-                    new TrackerInstrument(0,-1,0,0,"Piano"),
-                    new TrackerInstrument(1,-1,0,46,"Harp"),
+                    new TrackerInstrument(0,-1,0,0,"Acoustic Grand"),
+                    new TrackerInstrument(1,-1,0,4,"Rhodes E. Piano"),
+                    new TrackerInstrument(2,-1,0,18,"Rock Organ"),
+                    new TrackerInstrument(3,-1,0,32,"Acoustic Bass"),
                 };
                 ts.SelectedInstrument = 1;
-                ts.SequenceName = "Untitled Sequence" + Tracks.Count + 1;
+                ts.SequenceName = "Untitled Sequence" + (Tracks.Count + 1);
+                ActiveSequence = ts;
                 editor.LoadPattern(ts, 0);
 
             }

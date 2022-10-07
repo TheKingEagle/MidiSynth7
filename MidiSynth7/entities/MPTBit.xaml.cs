@@ -230,7 +230,7 @@ namespace MidiSynth7.entities
 
                     return;
                 }
-                if (key == KeyInterop.KeyFromVirtualKey(189))
+                if (key == KeyInterop.KeyFromVirtualKey(187))
                 {
                     Pitch = -1;
                     Instrument = null;

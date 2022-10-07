@@ -170,10 +170,19 @@ namespace MidiSynth7.components
                         {
                             engine.MidiNote_Play(item.midiChannel, item.Pitch.Value, item.Velocity ?? 127, false, output);
                         }
-                        if (item.Pitch == -2)
-                        {
-                            engine.MidiNote_SetControl(ControllerType.AllSoundOff, item.midiChannel, 127, output);//in theory just for the channel?
-                        }
+                        
+                    }
+                }
+                if (item.Pitch.HasValue)
+                {
+
+                    if (item.Pitch == -2)
+                    {
+                        engine.MidiNote_SetControl(ControllerType.AllSoundOff, item.midiChannel, 127, output);//in theory just for the channel?
+                    }
+                    if (item.Pitch == -1)
+                    {
+                        engine.MidiNote_SetControl(ControllerType.AllNotesOff, item.midiChannel, 127, output);//in theory just for the channel?
                     }
                 }
             }
