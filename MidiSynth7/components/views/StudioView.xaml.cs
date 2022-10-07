@@ -25,7 +25,8 @@ namespace MidiSynth7.components.views
         private bool mfile_playing = false;
         private List<Ellipse> channelElipses = new List<Ellipse>();
         private List<MainWindow.ChInvk> channelIndicators = new List<MainWindow.ChInvk>();
-
+        int pattern = 0;
+        int step = 0;
         public bool HaltKeyboardInput { get; private set; }
 
         public StudioView(MainWindow context, ref SystemConfig config, ref MidiEngine engine)
@@ -270,11 +271,11 @@ namespace MidiSynth7.components.views
                 while (check)
                 {
                     
-                    for (int pattern = 0; pattern < 4; pattern++)
+                    for ( pattern = 0; pattern < 4; pattern++)
                     {
 
                         Dispatcher.Invoke(() => LC_PatternNumber.SetLight(pattern));
-                        for (int step = 0; step < 32; step++)
+                        for ( step = 0; step < 32; step++)
                         {
                             //MetronomeTick(step); // Idk what to do with this method right now... so I'm commenting it out for now
 
@@ -917,6 +918,11 @@ namespace MidiSynth7.components.views
             {
                 AppContext.ActiveSequence = Cb_SequencerProfile.SelectedItem as TrackerSequence;
             }
+        }
+
+        private void LC_PatternStep_LightIndexChanged(object sender, LightCellEventArgs e)
+        {
+            step = e.LightIndex;
         }
     }
 }

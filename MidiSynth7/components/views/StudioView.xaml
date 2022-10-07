@@ -245,7 +245,7 @@
 
                 </Grid>
                 <SynthGUI:LightCell x:Name="LC_PatternNumber" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="221,-4,87,61" Header="Pattern" Width="80"  />
-                <SynthGUI:LightCell x:Name="LC_PatternStep" Columns="16" Rows="2" Header="Position" Margin="5,35,0,0" />
+                <SynthGUI:LightCell x:Name="LC_PatternStep" Columns="16" Rows="2" Header="Position" Margin="5,35,0,0" EnableClick="True" LightIndexChanged="LC_PatternStep_LightIndexChanged" />
                 <ComboBox x:Name="Cb_SequencerProfile" HorizontalAlignment="Left" Margin="5,4,0,0" VerticalAlignment="Top" Width="159" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_SequencerProfile_SelectionChanged" SelectedIndex="0" Height="30" FontSize="16">
                     <ComboBox.Background>
                         <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
