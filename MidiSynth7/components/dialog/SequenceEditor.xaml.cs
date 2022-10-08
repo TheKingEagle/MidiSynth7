@@ -6,6 +6,9 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MidiSynth7.components.dialog
 {
@@ -28,6 +31,7 @@ namespace MidiSynth7.components.dialog
         private void Bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             loader.Visibility = Visibility.Collapsed;
+            
         }
 
         private void Bw_DoWork(object sender, DoWorkEventArgs e)
@@ -40,6 +44,9 @@ namespace MidiSynth7.components.dialog
         private Grid _container;
         private TrackerSequence ActiveSequence;
         private MPTPattern ActivePattern;
+        bool isPatternPlaying = false;
+        int currentPatternIndex = 0;
+        int activePatternIndex = 0;
         private BackgroundWorker bw = new BackgroundWorker();
         string _ttl = "Sequence Tracker v1.0";
         public string DialogTitle { get => _ttl; set => _ttl = value; }
@@ -55,9 +62,11 @@ namespace MidiSynth7.components.dialog
         }
         public void LoadPattern(TrackerSequence sequence, int index = 0)
         {
+            
             string ttl = DialogTitle;
             loader.Visibility = Visibility.Visible;
             UpdateLayout();
+            currentPatternIndex = index;
             (TrackerSequence sequence, int index) arg = (sequence, index);
             //Populate instruments; This should be moved.
             int prvInst = sequence.SelectedInstrument;
@@ -76,7 +85,7 @@ namespace MidiSynth7.components.dialog
             Dispatcher.Invoke(()=> PatternContainer.Children.Clear());
             
             ActiveSequence = sequence;
-            
+            StopMIDI();//just for safe
 
             Console.WriteLine("Yup");
             Dispatcher.Invoke(() =>
@@ -115,9 +124,11 @@ namespace MidiSynth7.components.dialog
             PatternScroller.ScrollToVerticalOffset(((PatternScroller.ViewportHeight - 21) / 2) + (e.SelectedIndex * 21) - ((PatternScroller.ViewportHeight - 21) / 2));
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            ActiveSequence.SaveSequence();//TODO: someday use something that isn't json.
+            isPatternPlaying = false;
+
+            await Task.Run(()=>ActiveSequence.SaveSequence());//TODO: someday use something that isn't json.
             PatternContainer.Children.Clear();
             ActivePattern = null;
 
@@ -238,8 +249,11 @@ namespace MidiSynth7.components.dialog
 
         private void LC_PatternSel_LightIndexChanged(object sender, LightCellEventArgs e)
         {
+            isPatternPlaying = false;
             LoadPattern(ActiveSequence, e.LightIndex);
+            activePatternIndex = e.LightIndex;
             //LoadPattern(ActiveSequence, e.LightIndex);
+            
         }
 
         private void BN_MPTInsManager_Click(object sender, RoutedEventArgs e)
@@ -254,11 +268,83 @@ namespace MidiSynth7.components.dialog
             var mbd = MessageBox.Show("Abandon changes?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if(mbd == MessageBoxResult.Yes)
             {
+                isPatternPlaying = false;
                 PatternContainer.Children.Clear();
                 ActivePattern = null;
                 DialogClosed?.Invoke(this, new DialogEventArgs(_win, _container));
             }
             
+        }
+
+        private async void Bn_PlayRow_Click(object sender, RoutedEventArgs e)
+        {
+            await Task.Run(() =>{
+                Dispatcher.InvokeAsync(() => ActivePattern.SetHotRow(ActivePattern.ActiveRowIndex, false));
+                ActiveSequence.Patterns[currentPatternIndex].Rows[ActivePattern.ActiveRowIndex].Play(ActiveSequence, _win.MidiEngine, null);
+                ActivePattern.ActiveRowIndex++;
+                if (ActivePattern.ActiveRowIndex > ActiveSequence.Patterns[currentPatternIndex].RowCount - 1)
+                {
+                    //TODO: Load next pattern
+                    ActivePattern.ActiveRowIndex = 0;
+                }
+                
+            });
+            
+        }
+
+        private void Bn_StopPattern_Click(object sender, RoutedEventArgs e)
+        {
+            isPatternPlaying = false;
+        }
+
+        private void StopMIDI()
+        {
+            
+            //I do need this.
+            List<int> devices = ActiveSequence.Instruments.DistinctBy(x => x.DeviceIndex).Select(x => x.DeviceIndex).ToList();
+            foreach (int item in devices)
+            {
+                _win.MidiEngine.MidiEngine_Panic(item);
+            }
+        }
+
+        private async void Bn_PlayPattern_Click(object sender, RoutedEventArgs e)
+        {
+            if (isPatternPlaying)
+            {
+                return;
+            }
+            isPatternPlaying = true;
+            int ticksPerDot = 6; // TODO: Ensure this value is set by the sequence
+            int DotDuration = (int)((float)(2500 / (float)(120 * 1000)) * (ticksPerDot * 1000));
+            Console.WriteLine("DotDuration:" + DotDuration);
+            // Play the selected sequence
+            
+            await Task.Run(() =>
+            {
+
+                while (isPatternPlaying)
+                {
+                    for (int step = 0; step < 32; step++)
+                    {
+
+                        
+                        if (!isPatternPlaying)
+                        {
+                            StopMIDI();
+                            return;
+                        }
+
+                        Dispatcher.InvokeAsync(() => ActivePattern.SetHotRow(step, true));
+                        _win.ActiveSequence.Patterns[activePatternIndex].Rows[step].Play(_win.ActiveSequence, _win.MidiEngine, null);
+                        //TODO: Further process the sequence parameters within it.
+                        
+                        Thread.Sleep(DotDuration);//This is beyond not ideal LOL
+                    }
+
+                }
+
+            });
         }
     }
 }
