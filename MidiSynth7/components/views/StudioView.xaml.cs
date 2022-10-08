@@ -248,6 +248,7 @@ namespace MidiSynth7.components.views
 
         private void BnRiff_Define_Click(object sender, RoutedEventArgs e)
         {
+            CB_Sequencer_Check.IsChecked = false;
             AppContext.ShowMPT();
             
         }
