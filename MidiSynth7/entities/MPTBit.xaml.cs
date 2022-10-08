@@ -318,17 +318,7 @@ namespace MidiSynth7.entities
                 UpdateVelocityColor(Velocity);
         }
 
-    }
-
-    public static class TBLExtender
-    {
-        public static Rect BoundsRelativeTo(this FrameworkElement child, Visual parent)
-        {
-            GeneralTransform gt = child.TransformToAncestor(parent);
-            return gt.TransformBounds(new Rect(0, 0, child.ActualWidth, child.ActualHeight));
-        }
-    }
-    
+    }    
     public class BitEventArgs : EventArgs
     {
         public SeqData NewSeqData { get; private set; }

@@ -53,15 +53,19 @@ namespace MidiSynth7.entities
             _win = appwin;
             UpdateList();
         }
-        internal void UpdateFocus(bool active)
+        internal void UpdateFocus(bool active, bool updateBits = true)
         {
-            
+
             Active = active;
             row_container.Background = active ? bg_HotSelected1 : null;
-            foreach (MPTBit item in bits)
+            if (updateBits)
             {
-                Dispatcher.Invoke(()=>item.UpdateFocus(active));
+                foreach (MPTBit item in bits)
+                {
+                    Dispatcher.Invoke(() => item.UpdateFocus(active));
+                }
             }
+            
         }
 
         public MPTBit GetSelection(Rect bounds, FrameworkElement relativeTo, bool IntendsMulti = false)
@@ -118,7 +122,7 @@ namespace MidiSynth7.entities
             MPTBit s = sender as MPTBit;
             RowData.Notes[bits.IndexOf(s)] = e.NewSeqData;
             RowDataUpdated?.Invoke(this, new RowDataEventArgs(RowData));
-            if(e.Type == EventType.note)
+            if(e.Type == EventType.note || e.Type == EventType.stop)
             {
                 RowData.Play(_win.ActiveSequence,_win.MidiEngine, null);
             }

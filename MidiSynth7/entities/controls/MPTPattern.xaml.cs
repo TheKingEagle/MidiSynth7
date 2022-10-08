@@ -222,11 +222,11 @@ namespace MidiSynth7.entities.controls
 
         }
 
-        public void SetHotRow(int index)
+        public void SetHotRow(int index, bool bits = true)
         {
-            ActiveRow.UpdateFocus(false);
-            ActiveRow = mptRows.FirstOrDefault(x => x.RowIndex == index);
-            ActiveRow.UpdateFocus(true);
+            ActiveRow?.UpdateFocus(false,bits);
+            ActiveRow = mptRows[index];
+            ActiveRow?.UpdateFocus(true,bits);
             Dispatcher.Invoke(() => PatternSelectionChange?.Invoke(this, new SelectionEventArgs(index)));
         }
 

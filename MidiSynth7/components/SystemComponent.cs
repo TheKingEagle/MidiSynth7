@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace MidiSynth7.components
 {
-    public class SystemComponent
+    public static class SystemComponent
     {
         public static Key[] KeysTable =
         {
@@ -16,5 +18,23 @@ namespace MidiSynth7.components
            KeyInterop.KeyFromVirtualKey(219),KeyInterop.KeyFromVirtualKey(187),KeyInterop.KeyFromVirtualKey(221)
         };
         public static Key[] MPTKeysTable = KeysTable.Where(x => x != KeyInterop.KeyFromVirtualKey(187)).ToArray();
+        
+        public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
+        {
+            HashSet<TKey> seenKeys = new HashSet<TKey>();
+            foreach (TSource element in source)
+            {
+                if (seenKeys.Add(keySelector(element)))
+                {
+                    yield return element;
+                }
+            }
+        }
+
+        public static Rect BoundsRelativeTo(this FrameworkElement child, Visual parent)
+        {
+            GeneralTransform gt = child.TransformToAncestor(parent);
+            return gt.TransformBounds(new Rect(0, 0, child.ActualWidth, child.ActualHeight));
+        }
     }
 }
