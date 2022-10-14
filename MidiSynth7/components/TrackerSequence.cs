@@ -4,6 +4,8 @@ using Sanford.Multimedia.Midi;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using System.Windows.Media;
+using System.Windows;
 
 namespace MidiSynth7.components
 {
@@ -48,7 +50,22 @@ namespace MidiSynth7.components
 
         public void SaveSequence()
         {
-            
+            //verify row numbers
+            foreach (TrackerPattern item in Patterns)
+            {
+                int r = 0;
+                foreach (TrackerRow row in item.Rows)
+                {
+                    foreach (SeqData data in row.Notes)
+                    {
+                        if(data.Row != r)
+                        {
+                            data.Row = r;
+                        } 
+                    }
+                    r++;
+                }
+            }
             if(!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
@@ -113,6 +130,7 @@ namespace MidiSynth7.components
                     int midiChannel = GetMIDIChannelIndex(ii);
                     row.Notes.Add(new SeqData()
                     {
+                        Row = i,
                         Column = ii,
                         Instrument = null,
                         midiChannel = midiChannel,
@@ -191,46 +209,44 @@ namespace MidiSynth7.components
     }
     public class SeqData
     {
+        #region Element Rendering Data
+        private bool[] SelectedBits = new bool[] { false, false, false, false, false };
+
+        //private bool NeedsRender = false;
+        private Rect SqDatBit_Bounds;  // overall dimensions
+        private Rect SqTxtBit_Bounds;  // text dimensions
+        private List<Rect> boundList = new List<Rect>();
+        internal readonly int Width = 120;
+        internal readonly int Height = 22;
+
         public int Column { get; set; }
         public int Row { get; set; }
+
+        public static SolidColorBrush BR_Empty = new SolidColorBrush(Color.FromArgb(255, 035, 067, 103));    // blank and some params
+        public static SolidColorBrush BR_HotFG = new SolidColorBrush(Color.FromArgb(255, 223, 236, 255));    // Active row text
+        public static SolidColorBrush BR_SelBG = new SolidColorBrush(Color.FromArgb(255, 032, 057, 097));    // Selection Background
+        public static SolidColorBrush BR_SelFG = new SolidColorBrush(Color.FromArgb(255, 089, 149, 231));    // Selection Foreground
+        public static SolidColorBrush BR_Pitch = new SolidColorBrush(Color.FromArgb(255, 223, 236, 255));    // Unselected Pitch
+        public static SolidColorBrush BR_Patch = new SolidColorBrush(Color.FromArgb(255, 255, 133, 128));    // Unselected Patch
+        public static SolidColorBrush BR_Veloc = new SolidColorBrush(Color.FromArgb(255, 128, 225, 139));    // Unselected Velocity
+        public static SolidColorBrush BR_AParV = new SolidColorBrush(Color.FromArgb(255, 137, 185, 247));    // 'A' parameter
+        public static SolidColorBrush BR_BdrEn = new SolidColorBrush(Color.FromArgb(255, 012, 016, 020));    // Dark border
+        public static SolidColorBrush BR_BdrEx = new SolidColorBrush(Color.FromArgb(255, 039, 070, 120));    // Light border
+
+        #endregion
+
+        #region Sequence Data
         public int midiChannel;
-        private int? _pitch = 0;
-        private byte? _velocity = 0;
-        private byte? _trackerInstrument;
-        private SeqParam _seqParam;
 
-        public int? Pitch
-        {
-            get => _pitch;
-            set
-            {
-                _pitch = value;
-            }
-        }
+        public int? Pitch { get; set; }
+        public byte? Velocity { get; set; }
+        public byte? Instrument { get; set; }
+        public SeqParam Parameter { get; set; }
+        #endregion
 
-        public byte? Velocity
+        public SeqData()
         {
-            get => _velocity;
-            set
-            {
-                _velocity = value;
-            }
-        }
-        public byte? Instrument
-        {
-            get => _trackerInstrument; 
-            set
-            {
-                _trackerInstrument = value;
-            }
-        }
-        public SeqParam Parameter
-        {
-            get => _seqParam; 
-            set
-            {
-                _seqParam = value;
-            }
+
         }
 
         public override string ToString()
@@ -262,7 +278,7 @@ namespace MidiSynth7.components
             string velocity = "...";
             if (Velocity.HasValue)
             {
-                velocity = "v" + Velocity.Value/2;//Since OpenMPT does not support values over 64
+                velocity = "v" + (Velocity.Value/2);//Since OpenMPT does not support values over 64
             }
             string param = "...";
             if(Parameter != null)
@@ -270,6 +286,116 @@ namespace MidiSynth7.components
                 param = Parameter.Mark.ToString() + Parameter.Value.ToString("X:2");
             }
             return "|"+note + instindex + velocity + param;
+        }
+
+        internal void Render(DrawingContext dc)
+        {
+            //if (!NeedsRender) return;
+            boundList.Clear();
+            double offset = 0;
+            SqDatBit_Bounds = new Rect(Column * Width, Row * Height, Width, Height);
+            SqTxtBit_Bounds = new Rect((Column * Width) + 3, (Row * Height) + 1, Width - 6, Height - 2);
+            Rect PitchBit_Bounds = new Rect(SqTxtBit_Bounds.X, SqDatBit_Bounds.Y, 32, Height);
+            offset += PitchBit_Bounds.Width;
+            Rect InstrBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 22, Height);
+            offset += InstrBit_Bounds.Width;
+            Rect VelocBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 32, Height);
+            offset += VelocBit_Bounds.Width;
+            Rect SqParBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 10, Height);
+            offset += SqParBit_Bounds.Width;
+            Rect SqValBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 18, Height);
+            boundList.Add(PitchBit_Bounds);
+            boundList.Add(InstrBit_Bounds);
+            boundList.Add(VelocBit_Bounds);
+            boundList.Add(SqParBit_Bounds);
+            boundList.Add(SqValBit_Bounds);
+            //render text and selection if need
+            for (int i = 0; i < SelectedBits.Length; i++)
+            {
+                Brush bg = SelectedBits[i] ? BR_SelBG : null;
+                dc.DrawRectangle(bg, null, boundList[i]);
+                Brush fg = BR_Empty;
+                string text = "...";
+                switch (i)
+                {
+                    case 0:
+                        fg = SelectedBits[i] ? BR_SelFG : (Pitch.HasValue ? BR_Pitch : BR_Empty);
+                        if (Pitch.HasValue)
+                        {
+                            var note = MidiEngine.GetNote(Pitch.Value, "-");
+                            text = note.noteLabel + note.octave;
+                            if(Pitch == -1)
+                            {
+                                fg = SelectedBits[i] ? BR_SelFG : BR_Empty;
+                                text = "== ";
+                            }
+                            if (Pitch == -2)
+                            {
+                                fg = SelectedBits[i] ? BR_SelFG : BR_Empty;
+                                text = "~~ ";
+                            }
+                            if (Pitch == -2)
+                            {
+                                fg = SelectedBits[i] ? BR_SelFG : BR_Empty;
+                                text = "^^ ";
+                            }
+                        }
+                        break;
+                    case 1:
+                        fg = SelectedBits[i] ? BR_SelFG : (Instrument.HasValue ? BR_Patch : BR_Empty);
+                        text = "..";
+                        if (Instrument.HasValue)
+                        {
+                            text = Instrument.Value.ToString("X2");
+                            
+                        }
+                        break;
+                    case 2:
+                        fg = SelectedBits[i] ? BR_SelFG : (Velocity.HasValue ? BR_Veloc : BR_Empty);
+                        text = " ..";
+                        if (Velocity.HasValue)
+                        {
+                            text = "v"+Velocity.Value.ToString("X2");
+                        }
+                        break;
+                    case 3:
+                        text = ".";
+                        fg = SelectedBits[i] ? BR_SelFG : (Parameter?.Mark == 'A' ? BR_AParV : BR_Empty);
+                        if (Parameter != null)
+                        {
+                            text = Parameter.Mark.ToString();
+                        } 
+                        break;
+                    case 4:
+                        text = "..";
+
+                        fg = SelectedBits[i] ? BR_SelFG : (Parameter?.Mark == 'A' ? BR_AParV : BR_Empty);
+                        if (Parameter != null)
+                        {
+                            text = Parameter.Value.ToString("X2");
+                        }
+                        break;
+                    default: break;
+                }
+                dc.DrawText(Text(text, fg), boundList[i].TopLeft);
+
+            }
+            //draw borders
+            Point tr2 = SqDatBit_Bounds.TopRight;
+            Point br2 = SqDatBit_Bounds.BottomRight;
+
+            dc.DrawLine(new Pen(BR_BdrEn, 4), tr2, br2);
+            dc.DrawLine(new Pen(BR_BdrEx, 2), SqDatBit_Bounds.TopRight, SqDatBit_Bounds.BottomRight);
+            
+            //NeedsRender = false;
+        }
+        private FormattedText Text(string text, Brush foreground)
+        {
+            return new FormattedText(text, System.Globalization.CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,SystemComponent.MPTEditorFont, 16, foreground, 1);
+        }
+        internal void DetectSelection(Rect Selection)
+        {
+            //NeedsRender = true;
         }
     }
 

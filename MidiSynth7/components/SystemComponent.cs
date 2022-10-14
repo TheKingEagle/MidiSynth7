@@ -36,5 +36,7 @@ namespace MidiSynth7.components
             GeneralTransform gt = child.TransformToAncestor(parent);
             return gt.TransformBounds(new Rect(0, 0, child.ActualWidth, child.ActualHeight));
         }
+
+        public static Typeface MPTEditorFont = new Typeface(new FontFamily("Segoe UI Mono"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal);
     }
 }
