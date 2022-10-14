@@ -3,6 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MidiSynth7.entities" BorderBrush="#FF0369C9" Background="#FF003363" BorderThickness="1,1,1,1" Width="120" MaxWidth="126" MinHeight="42">
+             xmlns:local="clr-namespace:MidiSynth7.entities" BorderBrush="#FF0369C9" Background="#FF003363" BorderThickness="0,1,2,1" Width="126" MaxWidth="126" MinHeight="42">
     <TextBlock x:Name="BL_ChannelIndex" Text="0" MinWidth="40" TextAlignment="Center"  FontSize="14" Foreground="White" VerticalAlignment="Center"/>
 </Border>

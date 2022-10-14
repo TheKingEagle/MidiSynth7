@@ -43,7 +43,7 @@ namespace MidiSynth7.components.dialog
         private MainWindow _win;
         private Grid _container;
         private TrackerSequence ActiveSequence;
-        private VirtualizedMPTPattern ActivePattern;
+        private MPTPattern ActivePattern;
         bool isPatternPlaying = false;
         int currentPatternIndex = 0;
         int activePatternIndex = 0;
@@ -91,8 +91,8 @@ namespace MidiSynth7.components.dialog
             Dispatcher.Invoke(() =>
             {
                 
-                ActivePattern = new VirtualizedMPTPattern(ActiveSequence.Patterns[index]);
-                //ActivePattern.PatternSelectionChange += ActivePattern_PatternSelectionChange;
+                ActivePattern = new MPTPattern(_win,ActiveSequence.Patterns[index], PatternContainer);
+                ActivePattern.PatternSelectionChange += ActivePattern_PatternSelectionChange;
                 PatternContainer.Children.Add(ActivePattern);
 
                 PatternContainer.Margin = new Thickness(0, (PatternScroller.ViewportHeight - 21) / 2, 0, (PatternScroller.ViewportHeight - 21) / 2);
@@ -102,12 +102,12 @@ namespace MidiSynth7.components.dialog
                 RowHeadContainer.Children.Clear();
                 ChannelHeadContainer.Children.Clear();
                 //populate row index container
-                for (int i = 0; i < ActiveSequence.Patterns[index].RowCount; i++)
+                for (int i = 0; i < ActivePattern.RowCount; i++)
                 {
                     RowHeadContainer.Children.Add(new RowIndexBit(i));
                 }
                 //populate ch index container
-                for (int i = 0; i < ActiveSequence.Patterns[index].ChannelCount; i++)
+                for (int i = 0; i < ActivePattern.ChannelCount; i++)
                 {
                     ChannelHeadContainer.Children.Add(new RowChannelBit(i + 1));
                 }
@@ -117,6 +117,11 @@ namespace MidiSynth7.components.dialog
                 LC_PatternSel.SetLight(index);
                 
             });
+        }
+
+        private void ActivePattern_PatternSelectionChange(object sender, SelectionEventArgs e)
+        {
+            PatternScroller.ScrollToVerticalOffset(((PatternScroller.ViewportHeight - 21) / 2) + (e.SelectedIndex * 21) - ((PatternScroller.ViewportHeight - 21) / 2));
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
@@ -135,86 +140,86 @@ namespace MidiSynth7.components.dialog
             e.Handled = true;
             if(e.Key == Key.Up)
             {
-                //ActivePattern.ActiveRowIndex--;
-                //if(ActivePattern.ActiveRowIndex < 0)
-                //{
-                //    //TODO: Load previous pattern
-                //    ActivePattern.ActiveRowIndex = ActivePattern.RowCount - 1;
-                //}
-                //ActivePattern.SetHotRow(ActivePattern.ActiveRowIndex);
+                ActivePattern.ActiveRowIndex--;
+                if(ActivePattern.ActiveRowIndex < 0)
+                {
+                    //TODO: Load previous pattern
+                    ActivePattern.ActiveRowIndex = ActivePattern.RowCount - 1;
+                }
+                ActivePattern.SetHotRow(ActivePattern.ActiveRowIndex);
             }
             
             if (e.Key == Key.Down)
             {
-                //ActivePattern.ActiveRowIndex++;
-                //if (ActivePattern.ActiveRowIndex > ActivePattern.RowCount - 1)
-                //{
-                //    //TODO: Load next pattern
-                //    ActivePattern.ActiveRowIndex = 0;
-                //}
-                //ActivePattern.SetHotRow(ActivePattern.ActiveRowIndex);
+                ActivePattern.ActiveRowIndex++;
+                if (ActivePattern.ActiveRowIndex > ActivePattern.RowCount - 1)
+                {
+                    //TODO: Load next pattern
+                    ActivePattern.ActiveRowIndex = 0;
+                }
+                ActivePattern.SetHotRow(ActivePattern.ActiveRowIndex);
             }
             if(e.Key == Key.L && Keyboard.Modifiers == ModifierKeys.Control)
             {
-                //ActivePattern.SelectActiveChannel();
+                ActivePattern.SelectActiveChannel();
                 return;
             }
             if (e.Key == Key.L && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
             {
-                //ActivePattern.SelectActiveChannelBit();
+                ActivePattern.SelectActiveChannelBit();
                 return;
 
             }
             if (e.Key == Key.Delete)
             {
-                //if (ActivePattern.activeBits?.Count > 1)
-                //{
-                //    foreach (MPTBit item in ActivePattern.activeBits)
-                //    {
-                //        item.DelSelection(ActivePattern.GetSelectedBounds(), PatternContainer);
-                //    }
-                //    return;
-                //}
+                if (ActivePattern.activeBits?.Count > 1)
+                {
+                    foreach (MPTBit item in ActivePattern.activeBits)
+                    {
+                        item.DelSelection(ActivePattern.GetSelectedBounds(), PatternContainer);
+                    }
+                    return;
+                }
             }
 
-            //int bit = ActivePattern.selectedBit;
-            //int ch = ActivePattern.selectedChannel;
-            //if (e.Key == Key.Left)
-            //{
-            //    bit--;
-            //}
-            //if (e.Key == Key.Right)
-            //{
-            //    bit++;
-            //}
-            //if (bit > 4)
-            //{
-            //    bit = 0;
-            //    ch++;
-            //    if(ch > ActivePattern.ChannelCount-1)
-            //    {
-            //        ch = 0;
-            //    }
-            //}
-            //if (bit < 0)
-            //{
-            //    bit = 4;
-            //    ch--;
-            //    if (ch < 0)
-            //    {
-            //        ch = ActivePattern.ChannelCount - 1;
-            //    }
-            //}
-            //ActivePattern.MoveBitActiveRow(ch, bit);
-            ////will this actually?
-            //Rect selectBit = ActivePattern.ActiveBit.BoundsRelativeTo(ActivePattern);
-            //PatternContainer.BringIntoView(selectBit);
+            int bit = ActivePattern.selectedBit;
+            int ch = ActivePattern.selectedChannel;
+            if (e.Key == Key.Left)
+            {
+                bit--;
+            }
+            if (e.Key == Key.Right)
+            {
+                bit++;
+            }
+            if (bit > 4)
+            {
+                bit = 0;
+                ch++;
+                if(ch > ActivePattern.ChannelCount-1)
+                {
+                    ch = 0;
+                }
+            }
+            if (bit < 0)
+            {
+                bit = 4;
+                ch--;
+                if (ch < 0)
+                {
+                    ch = ActivePattern.ChannelCount - 1;
+                }
+            }
+            ActivePattern.MoveBitActiveRow(ch, bit);
+            //will this actually?
+            Rect selectBit = ActivePattern.ActiveBit.BoundsRelativeTo(ActivePattern);
+            PatternContainer.BringIntoView(selectBit);
             
             
-            //if (ActivePattern.ActiveBit != null)
-            //{
-            //    ActivePattern.ActiveBit.ProcessKey(e.Key, CTRL_MPTOctave.Value,(CB_MPTInstrument.SelectedItem as TrackerInstrument).Index);
-            //}
+            if (ActivePattern.ActiveBit != null)
+            {
+                ActivePattern.ActiveBit.ProcessKey(e.Key, CTRL_MPTOctave.Value,(CB_MPTInstrument.SelectedItem as TrackerInstrument).Index);
+            }
         }
 
         private void Scroller_Scrolled(object sender, ScrollChangedEventArgs e)
@@ -247,6 +252,8 @@ namespace MidiSynth7.components.dialog
             isPatternPlaying = false;
             LoadPattern(ActiveSequence, e.LightIndex);
             activePatternIndex = e.LightIndex;
+            //LoadPattern(ActiveSequence, e.LightIndex);
+            
         }
 
         private void BN_MPTInsManager_Click(object sender, RoutedEventArgs e)
@@ -272,14 +279,14 @@ namespace MidiSynth7.components.dialog
         private async void Bn_PlayRow_Click(object sender, RoutedEventArgs e)
         {
             await Task.Run(() =>{
-                //Dispatcher.InvokeAsync(() => ActivePattern.SetHotRow(ActivePattern.ActiveRowIndex, false));
-                //ActiveSequence.Patterns[currentPatternIndex].Rows[ActivePattern.ActiveRowIndex].Play(ActiveSequence, _win.MidiEngine, null);
-                //ActivePattern.ActiveRowIndex++;
-                //if (ActivePattern.ActiveRowIndex > ActiveSequence.Patterns[currentPatternIndex].RowCount - 1)
-                //{
+                Dispatcher.InvokeAsync(() => ActivePattern.SetHotRow(ActivePattern.ActiveRowIndex, false));
+                ActiveSequence.Patterns[currentPatternIndex].Rows[ActivePattern.ActiveRowIndex].Play(ActiveSequence, _win.MidiEngine, null);
+                ActivePattern.ActiveRowIndex++;
+                if (ActivePattern.ActiveRowIndex > ActiveSequence.Patterns[currentPatternIndex].RowCount - 1)
+                {
                     //TODO: Load next pattern
-                 //   ActivePattern.ActiveRowIndex = 0;
-                //}
+                    ActivePattern.ActiveRowIndex = 0;
+                }
                 
             });
             
@@ -328,7 +335,7 @@ namespace MidiSynth7.components.dialog
                             return;
                         }
 
-                        //Dispatcher.InvokeAsync(() => ActivePattern.SetHotRow(step, true));
+                        Dispatcher.InvokeAsync(() => ActivePattern.SetHotRow(step, true));
                         _win.ActiveSequence.Patterns[activePatternIndex].Rows[step].Play(_win.ActiveSequence, _win.MidiEngine, null);
                         //TODO: Further process the sequence parameters within it.
                         

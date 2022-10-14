@@ -241,8 +241,8 @@ namespace MidiSynth7
 
         private void Bn_about_Click(object sender, RoutedEventArgs e)
         {
-            Dialog.Message(this, GR_OverlayContent,
-                "RMSoftware's MIDISynth 7.0 © 2012 - 2022 RMSoftware Development\r\n\r\nThis will be replaced with a more suitable dialog at some point.",
+            Dialog.Message(this, GR_OverlayContent, 
+                "RMSoftware's MIDISynth 7.0 © 2012 - 2022 RMSoftware Development\r\n\r\nThis will be replaced with a more suitable dialog at some point.", 
                 "RMSoftware MIDI Synthesizer 7.0", Icons.Info);
         }
 

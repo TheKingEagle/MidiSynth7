@@ -1,5 +1,5 @@
 ﻿<Border x:Class="MidiSynth7.entities.RowIndexBit"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" BorderBrush="#FF072949" BorderThickness="1" Width="42" MaxHeight="22" MinHeight="22">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" BorderBrush="#FF072949" BorderThickness="1" Width="42" MaxHeight="21">
     <TextBlock x:Name="BL_RowIndex" Text="0" MinWidth="40" TextAlignment="Center" Background="#FF091D30" FontSize="14" Foreground="White"/>
 </Border>
