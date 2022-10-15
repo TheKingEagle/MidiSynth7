@@ -280,15 +280,15 @@ namespace MidiSynth7.components.dialog
         private async void Bn_PlayRow_Click(object sender, RoutedEventArgs e)
         {
             await Task.Run(() =>{
-                //Dispatcher.InvokeAsync(() => ActivePattern.SetHotRow(ActivePattern.ActiveRowIndex, false));
-                //ActiveSequence.Patterns[currentPatternIndex].Rows[ActivePattern.ActiveRowIndex].Play(ActiveSequence, _win.MidiEngine, null);
-                //ActivePattern.ActiveRowIndex++;
-                //if (ActivePattern.ActiveRowIndex > ActiveSequence.Patterns[currentPatternIndex].RowCount - 1)
-                //{
-                    //TODO: Load next pattern
-                 //   ActivePattern.ActiveRowIndex = 0;
-                //}
-                
+                Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(ActivePattern.ActiveRow, false));
+                ActiveSequence.Patterns[currentPatternIndex].Rows[ActivePattern.ActiveRow].Play(ActiveSequence, _win.MidiEngine, null);
+                ActivePattern.ActiveRow++;
+                if (ActivePattern.ActiveRow > ActiveSequence.Patterns[currentPatternIndex].RowCount - 1)
+                {
+                //TODO: Load next pattern
+                    ActivePattern.ActiveRow = 0;
+                }
+                Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(ActivePattern.ActiveRow, true));
             });
             
         }
@@ -326,7 +326,7 @@ namespace MidiSynth7.components.dialog
 
                 while (isPatternPlaying)
                 {
-                    for (int step = 0; step < 32; step++)
+                    for (int step = 0; step < ActivePattern.RowCount; step++)
                     {
 
                         
@@ -335,8 +335,9 @@ namespace MidiSynth7.components.dialog
                             StopMIDI();
                             return;
                         }
-
-                        //Dispatcher.InvokeAsync(() => ActivePattern.SetHotRow(step, true));
+                        int pstep = step - 1; if (pstep < 0) pstep = ActivePattern.RowCount - 1;
+                        Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(pstep, false));
+                        Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(step, true));
                         _win.ActiveSequence.Patterns[activePatternIndex].Rows[step].Play(_win.ActiveSequence, _win.MidiEngine, null);
                         //TODO: Further process the sequence parameters within it.
                         
