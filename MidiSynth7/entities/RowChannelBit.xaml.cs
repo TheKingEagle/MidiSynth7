@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using MidiSynth7.components;
+using System.ComponentModel;
 using System.Windows.Controls;
 
 namespace MidiSynth7.entities
@@ -13,11 +14,17 @@ namespace MidiSynth7.entities
         public RowChannelBit()
         {
             InitializeComponent();
+            MinWidth = SeqData.Width;
+            MaxWidth = SeqData.Width;
+            Width = SeqData.Width;
         }
         public RowChannelBit(int ch)
         {
             InitializeComponent();
             Channel = ch;
+            MinWidth = SeqData.Width;
+            MaxWidth = SeqData.Width;
+            Width = SeqData.Width;
         }
     }
 }

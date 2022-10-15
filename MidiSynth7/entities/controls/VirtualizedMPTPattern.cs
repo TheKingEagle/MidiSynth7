@@ -25,8 +25,8 @@ namespace MidiSynth7.entities.controls
         public VirtualizedMPTPattern(TrackerPattern src)
         {
             PatternData = src;
-            Width = 120 * PatternData.ChannelCount;
-            Height = 22 * PatternData.RowCount;
+            Width = SeqData.Width * PatternData.ChannelCount;
+            Height = SeqData.Height * PatternData.RowCount;
             for (int i = 0; i < PatternData.RowCount; i++)
             {
                 UpdateRow(i, i == ActiveRow);

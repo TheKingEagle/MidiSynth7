@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using MidiSynth7.components;
+using System.ComponentModel;
 using System.Windows.Controls;
 
 namespace MidiSynth7.entities
@@ -15,11 +16,18 @@ namespace MidiSynth7.entities
         public RowIndexBit()
         {
             InitializeComponent();
+            MinHeight = SeqData.Height;
+            MaxHeight = SeqData.Height;
+            Height = SeqData.Height;
         }
         public RowIndexBit(int index)
         {
             InitializeComponent();
             RowIndex = index;
+
+            MinHeight = SeqData.Height;
+            MaxHeight = SeqData.Height;
+            Height = SeqData.Height;
         }
     }
 }

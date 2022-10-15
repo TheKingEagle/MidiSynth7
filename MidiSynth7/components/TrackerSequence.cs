@@ -236,8 +236,8 @@ namespace MidiSynth7.components
         private Rect SqDatBit_Bounds;  // overall dimensions
         private Rect SqTxtBit_Bounds;  // text dimensions
         private List<Rect> boundList = new List<Rect>();
-        internal readonly int Width = 120;
-        internal readonly int Height = 22;
+        public static readonly int Width = 126;
+        public static readonly int Height = 22;
 
         public int Column { get; set; }
         public int Row { get; set; }
@@ -319,12 +319,12 @@ namespace MidiSynth7.components
             boundList.Clear();
             double offset = 0;
             SqDatBit_Bounds = new Rect(Column * Width, Row * Height, Width, Height);
-            SqTxtBit_Bounds = new Rect((Column * Width) + 3, (Row * Height) + 1, Width - 6, Height - 2);
-            Rect PitchBit_Bounds = new Rect(SqTxtBit_Bounds.X, SqDatBit_Bounds.Y, 32, Height);
+            SqTxtBit_Bounds = new Rect((Column * Width) + 4, (Row * Height) + 1, Width - 6, Height - 2);
+            Rect PitchBit_Bounds = new Rect(SqTxtBit_Bounds.X, SqDatBit_Bounds.Y, 34, Height);
             offset += PitchBit_Bounds.Width;
-            Rect InstrBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 22, Height);
+            Rect InstrBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 24, Height);
             offset += InstrBit_Bounds.Width;
-            Rect VelocBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 32, Height);
+            Rect VelocBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 34, Height);
             offset += VelocBit_Bounds.Width;
             Rect SqParBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 10, Height);
             offset += SqParBit_Bounds.Width;
