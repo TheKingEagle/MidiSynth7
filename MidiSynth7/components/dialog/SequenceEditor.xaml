@@ -26,7 +26,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <!--================= Pattern editors and loader =================-->
-            <ScrollViewer UseLayoutRounding="True" Grid.Row="1" Grid.Column="1" x:Name="PatternScroller" IsDeferredScrollingEnabled="True" HorizontalScrollBarVisibility="Visible" Background="Black" Foreground="White" PreviewKeyDown="PatternScroller_PreviewKeyDown" ScrollChanged="Scroller_Scrolled" Margin="0,1,0,0" >
+            <ScrollViewer UseLayoutRounding="True" Grid.Row="1" Grid.Column="1" x:Name="PatternScroller" IsDeferredScrollingEnabled="False" HorizontalScrollBarVisibility="Visible" Background="Black" Foreground="White" PreviewKeyDown="PatternScroller_PreviewKeyDown" ScrollChanged="Scroller_Scrolled" Margin="0,1,0,0" >
                 <Grid x:Name="PatternContainer" Margin="0,200"></Grid>
             </ScrollViewer>
             <Grid Grid.Row="1" Grid.Column="1" Background="Black" Margin="0,3,20,21" x:Name="loader">
