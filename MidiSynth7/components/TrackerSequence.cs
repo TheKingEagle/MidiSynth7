@@ -113,9 +113,11 @@ namespace MidiSynth7.components
 
     public class TrackerRow
     {
+        internal DrawingGroup RowRender { get; private set; } = new DrawingGroup();
         public TrackerRow( List<SeqData> notes)
         {
             Notes = notes;
+            //UpdateRow();
         }
         public List<SeqData> Notes { get; set; }
 
@@ -206,10 +208,28 @@ namespace MidiSynth7.components
             }
             return ControlList;
         }
+
+        public void UpdateRow(int index, SolidColorBrush back, bool hot=false)
+        {
+            var dc = RowRender.Open();
+            dc.DrawRectangle(back, null, new Rect(0, index * 22, 126 * Notes.Count, 22));
+            foreach (var item in Notes)
+            {
+                item.UpdateBit(hot);
+                item.Render(dc);
+            }
+            dc.Close();
+        }
+
+        public void Render(DrawingContext dc)
+        {
+            dc.DrawDrawing(RowRender);
+        }
     }
     public class SeqData
     {
-        #region Element Rendering Data
+        #region Element Rendering
+        internal DrawingGroup Renderer { get; private set; } = new DrawingGroup();
         private bool[] SelectedBits = new bool[] { false, false, false, false, false };
 
         //private bool NeedsRender = false;
@@ -246,7 +266,7 @@ namespace MidiSynth7.components
 
         public SeqData()
         {
-
+            //UpdateBit();
         }
 
         public override string ToString()
@@ -288,9 +308,14 @@ namespace MidiSynth7.components
             return "|"+note + instindex + velocity + param;
         }
 
-        internal void Render(DrawingContext dc)
+        public void Render(DrawingContext dc)
         {
-            //if (!NeedsRender) return;
+            dc.DrawDrawing(Renderer);
+        }
+
+        public void UpdateBit(bool hot = false)
+        {
+            var rc = Renderer.Open();
             boundList.Clear();
             double offset = 0;
             SqDatBit_Bounds = new Rect(Column * Width, Row * Height, Width, Height);
@@ -313,7 +338,7 @@ namespace MidiSynth7.components
             for (int i = 0; i < SelectedBits.Length; i++)
             {
                 Brush bg = SelectedBits[i] ? BR_SelBG : null;
-                dc.DrawRectangle(bg, null, boundList[i]);
+                rc.DrawRectangle(bg, null, boundList[i]);
                 Brush fg = BR_Empty;
                 string text = "...";
                 switch (i)
@@ -324,7 +349,7 @@ namespace MidiSynth7.components
                         {
                             var note = MidiEngine.GetNote(Pitch.Value, "-");
                             text = note.noteLabel + note.octave;
-                            if(Pitch == -1)
+                            if (Pitch == -1)
                             {
                                 fg = SelectedBits[i] ? BR_SelFG : BR_Empty;
                                 text = "== ";
@@ -347,7 +372,7 @@ namespace MidiSynth7.components
                         if (Instrument.HasValue)
                         {
                             text = Instrument.Value.ToString("X2");
-                            
+
                         }
                         break;
                     case 2:
@@ -355,7 +380,7 @@ namespace MidiSynth7.components
                         text = " ..";
                         if (Velocity.HasValue)
                         {
-                            text = "v"+Velocity.Value.ToString("X2");
+                            text = "v" + Velocity.Value.ToString("X2");
                         }
                         break;
                     case 3:
@@ -364,7 +389,7 @@ namespace MidiSynth7.components
                         if (Parameter != null)
                         {
                             text = Parameter.Mark.ToString();
-                        } 
+                        }
                         break;
                     case 4:
                         text = "..";
@@ -377,17 +402,20 @@ namespace MidiSynth7.components
                         break;
                     default: break;
                 }
-                dc.DrawText(Text(text, fg), boundList[i].TopLeft);
+                if (hot && fg == BR_Empty)
+                {
+                    fg = BR_Pitch;
+                }
+                rc.DrawText(Text(text, fg), boundList[i].TopLeft);
 
             }
             //draw borders
             Point tr2 = SqDatBit_Bounds.TopRight;
             Point br2 = SqDatBit_Bounds.BottomRight;
 
-            dc.DrawLine(new Pen(BR_BdrEn, 4), tr2, br2);
-            dc.DrawLine(new Pen(BR_BdrEx, 2), SqDatBit_Bounds.TopRight, SqDatBit_Bounds.BottomRight);
-            
-            //NeedsRender = false;
+            rc.DrawLine(new Pen(BR_BdrEn, 4), tr2, br2);
+            rc.DrawLine(new Pen(BR_BdrEx, 2), SqDatBit_Bounds.TopRight, SqDatBit_Bounds.BottomRight);
+            rc.Close();
         }
         private FormattedText Text(string text, Brush foreground)
         {
@@ -395,7 +423,7 @@ namespace MidiSynth7.components
         }
         internal void DetectSelection(Rect Selection)
         {
-            //NeedsRender = true;
+            
         }
     }
 

@@ -81,7 +81,7 @@ namespace MidiSynth7.components.dialog
         }
         private void BWLoadPattern(TrackerSequence sequence, int index=0 )
         {
-            Thread.Sleep(100);//this is just so ui can show the loader. Which is also stupid, but go off for now.
+            Thread.Sleep(50);//this is just so ui can show the loader. Which is also stupid, but go off for now.
             Dispatcher.Invoke(()=> PatternContainer.Children.Clear());
             
             ActiveSequence = sequence;
@@ -92,7 +92,7 @@ namespace MidiSynth7.components.dialog
             {
                 
                 ActivePattern = new VirtualizedMPTPattern(ActiveSequence.Patterns[index]);
-                //ActivePattern.PatternSelectionChange += ActivePattern_PatternSelectionChange;
+                ActivePattern.ActiveRowChanged += ActivePattern_ActiveRowChanged; ;
                 PatternContainer.Children.Add(ActivePattern);
 
                 PatternContainer.Margin = new Thickness(0, (PatternScroller.ViewportHeight - 21) / 2, 0, (PatternScroller.ViewportHeight - 21) / 2);
@@ -119,6 +119,12 @@ namespace MidiSynth7.components.dialog
             });
         }
 
+        private void ActivePattern_ActiveRowChanged(object sender, SelectionEventArgs e)
+        {
+            PatternScroller.ScrollToVerticalOffset(((PatternScroller.ViewportHeight - 21) / 2) + (e.selectedIndex * 22) - ((PatternScroller.ViewportHeight - 21) / 2));
+
+        }
+
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
             isPatternPlaying = false;
@@ -135,26 +141,28 @@ namespace MidiSynth7.components.dialog
             e.Handled = true;
             if(e.Key == Key.Up)
             {
-                //ActivePattern.ActiveRowIndex--;
-                //if(ActivePattern.ActiveRowIndex < 0)
-                //{
-                //    //TODO: Load previous pattern
-                //    ActivePattern.ActiveRowIndex = ActivePattern.RowCount - 1;
-                //}
-                //ActivePattern.SetHotRow(ActivePattern.ActiveRowIndex);
+                ActivePattern.UpdateRow(ActivePattern.ActiveRow, false);
+                ActivePattern.ActiveRow--;
+                if (ActivePattern.ActiveRow < 0)
+                {
+                    //TODO: Load previous pattern
+                    ActivePattern.ActiveRow = ActivePattern.RowCount - 1;
+                }
+                ActivePattern.UpdateRow(ActivePattern.ActiveRow, true);
             }
             
             if (e.Key == Key.Down)
             {
-                //ActivePattern.ActiveRowIndex++;
-                //if (ActivePattern.ActiveRowIndex > ActivePattern.RowCount - 1)
-                //{
-                //    //TODO: Load next pattern
-                //    ActivePattern.ActiveRowIndex = 0;
-                //}
-                //ActivePattern.SetHotRow(ActivePattern.ActiveRowIndex);
+                ActivePattern.UpdateRow(ActivePattern.ActiveRow, false);
+                ActivePattern.ActiveRow++;
+                if (ActivePattern.ActiveRow > ActivePattern.RowCount - 1)
+                {
+                    //TODO: Load next pattern
+                    ActivePattern.ActiveRow = 0;
+                }
+                ActivePattern.UpdateRow(ActivePattern.ActiveRow, true);
             }
-            if(e.Key == Key.L && Keyboard.Modifiers == ModifierKeys.Control)
+            if (e.Key == Key.L && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 //ActivePattern.SelectActiveChannel();
                 return;
