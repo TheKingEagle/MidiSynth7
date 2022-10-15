@@ -209,13 +209,14 @@ namespace MidiSynth7.components
             return ControlList;
         }
 
-        public void UpdateRow(int index, SolidColorBrush back, bool hot=false)
+        public void UpdateRow(int index, SolidColorBrush back, bool hot=false, bool ignorebits = false)
         {
             var dc = RowRender.Open();
             dc.DrawRectangle(back, null, new Rect(0, index * 22, 126 * Notes.Count, 22));
+            
             foreach (var item in Notes)
             {
-                item.UpdateBit(hot);
+                if (!ignorebits) item.UpdateBit(hot);
                 item.Render(dc);
             }
             dc.Close();

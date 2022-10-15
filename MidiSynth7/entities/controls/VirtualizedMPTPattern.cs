@@ -21,6 +21,7 @@ namespace MidiSynth7.entities.controls
         private SolidColorBrush bg_subdivision2 = new SolidColorBrush(Color.FromArgb(255, 20, 26, 34));
         private SolidColorBrush bg_subdivisionN = new SolidColorBrush(Color.FromArgb(255, 12, 16, 20));
         private SolidColorBrush bg_subdivisionH = new SolidColorBrush(Color.FromArgb(255, 0, 67, 159));
+        private SolidColorBrush bg_subdivisionP = new SolidColorBrush(Color.FromArgb(255, 57, 57, 57));
         public event EventHandler<SelectionEventArgs> ActiveRowChanged;
         public VirtualizedMPTPattern(TrackerPattern src)
         {
@@ -44,8 +45,8 @@ namespace MidiSynth7.entities.controls
             };
             seq.Patterns.Add(TrackerPattern.GetEmptyPattern(seq, 32, 20));
             PatternData = seq.Patterns[0];
-            Width = 120 * PatternData.ChannelCount;
-            Height = 22 * PatternData.RowCount;
+            Width = SeqData.Width * PatternData.ChannelCount;
+            Height = SeqData.Height * PatternData.RowCount;
         }
         protected override void OnRender(DrawingContext dc)
         {
@@ -57,7 +58,7 @@ namespace MidiSynth7.entities.controls
             }
         }
 
-        public void UpdateRow(int i, bool hot = false)
+        public void UpdateRow(int i, bool hot = false, bool ignoreBits = false)
         {
             SolidColorBrush bg = bg_subdivisionN;
             if (i % PatternData.RowsPerBeat == 0)
@@ -73,7 +74,12 @@ namespace MidiSynth7.entities.controls
                 bg = bg_subdivisionH;
                 ActiveRowChanged?.Invoke(this, new SelectionEventArgs(i));
             }
-            PatternData.Rows[i].UpdateRow(i,bg,hot);
+            if (ignoreBits && hot)
+            {
+                bg = bg_subdivisionP;
+            }
+            if (i > PatternData.RowCount - 1) return;
+            PatternData.Rows[i].UpdateRow(i,bg,hot,ignoreBits);
         }
         public void UpdateBit(int col, int row, bool hot = false)
         {

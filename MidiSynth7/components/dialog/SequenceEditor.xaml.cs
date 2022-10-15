@@ -279,8 +279,8 @@ namespace MidiSynth7.components.dialog
 
         private async void Bn_PlayRow_Click(object sender, RoutedEventArgs e)
         {
-            await Task.Run(() =>{
-                Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(ActivePattern.ActiveRow, false));
+             await  Task.Run(() =>{
+                Dispatcher.Invoke( () => ActivePattern.UpdateRow(ActivePattern.ActiveRow, false,true));
                 ActiveSequence.Patterns[currentPatternIndex].Rows[ActivePattern.ActiveRow].Play(ActiveSequence, _win.MidiEngine, null);
                 ActivePattern.ActiveRow++;
                 if (ActivePattern.ActiveRow > ActiveSequence.Patterns[currentPatternIndex].RowCount - 1)
@@ -288,8 +288,9 @@ namespace MidiSynth7.components.dialog
                 //TODO: Load next pattern
                     ActivePattern.ActiveRow = 0;
                 }
-                Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(ActivePattern.ActiveRow, true));
+                Dispatcher.Invoke(() => ActivePattern.UpdateRow(ActivePattern.ActiveRow, true,true));
             });
+            await Task.Delay(1);
             
         }
 
@@ -336,8 +337,8 @@ namespace MidiSynth7.components.dialog
                             return;
                         }
                         int pstep = step - 1; if (pstep < 0) pstep = ActivePattern.RowCount - 1;
-                        Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(pstep, false));
-                        Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(step, true));
+                        Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(pstep, false),System.Windows.Threading.DispatcherPriority.Render);
+                        Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(step, true), System.Windows.Threading.DispatcherPriority.Render);
                         _win.ActiveSequence.Patterns[activePatternIndex].Rows[step].Play(_win.ActiveSequence, _win.MidiEngine, null);
                         //TODO: Further process the sequence parameters within it.
                         
