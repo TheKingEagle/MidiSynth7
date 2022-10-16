@@ -75,6 +75,8 @@ namespace MidiSynth7.components.views
             UpdateInstrumentSelection(config);
             #endregion
 
+            NFXProfileUpdate();
+
             #region ADD ellipses
             AppContext.channelIndicators.Clear();
             AppContext.channelElipses.Clear();
@@ -181,11 +183,10 @@ namespace MidiSynth7.components.views
             }
         }
 
-        private void MIO_bn_stop_Click(object sender, RoutedEventArgs e)
+        private async void MIO_bn_stop_Click(object sender, RoutedEventArgs e)
         {
             MidiEngine?.MidiEngine_Panic();
-            invokeUnLightRange(0, pianomain.KeyCount).GetAwaiter().GetResult();
-
+            await invokeUnLightRange(0, pianomain.KeyCount + 21);
         }
 
         private void ToggleChecked(object sender, RoutedEventArgs e)
@@ -578,53 +579,6 @@ namespace MidiSynth7.components.views
                         MidiEngine.MidiNote_Stop(2, Offset2 + Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value);
                     }
                 }
-                if (cb_NFX_Enable.IsChecked.Value)
-                {
-                    if (rb_nfx_echo.IsChecked.Value && rb_ofx_custom.IsChecked.Value && cb_NFX_Echo_OFX.IsChecked.Value)
-                    {
-                        MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 10);
-                        MidiEngine.MidiNote_SetProgram(OFX_b1.Index, OFX_p1.Index, 11);
-                        MidiEngine.MidiNote_SetProgram(OFX_b2.Index, OFX_p2.Index, 12);
-                        MidiEngine.MidiNote_PlayTimed(10, e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value, 110, 100);
-                        //offsets {g, t, ofx3_1, ofx3_2}
-                        int Offset1 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.PitchOffsets[2];
-                        int Offset2 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.PitchOffsets[3];
-                        MidiEngine.MidiNote_PlayTimed(11, (e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value) + Offset1 - 12, 110, 100);
-                        MidiEngine.MidiNote_PlayTimed(12, (e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value) + Offset2 - 12, 110, 100);
-                    }
-                    if (rb_nfx_echo.IsChecked.Value && rb_ofx_custom.IsChecked.Value && !cb_NFX_Echo_OFX.IsChecked.Value)
-                    {
-                        MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 10);
-                        MidiEngine.MidiNote_SetProgram(OFX_b1.Index, OFX_p1.Index, 11);
-                        MidiEngine.MidiNote_SetProgram(OFX_b2.Index, OFX_p2.Index, 12);
-                        MidiEngine.MidiNote_PlayTimed(10, e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value, 110, 100);
-                        //offsets {g, t, ofx3_1, ofx3_2}
-                        int Offset1 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.PitchOffsets[2];
-                        int Offset2 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.PitchOffsets[3];
-                        MidiEngine.MidiNote_PlayTimed(11, (e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value) + Offset1, 110, 100);
-                        MidiEngine.MidiNote_PlayTimed(12, (e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value) + Offset2, 110, 100);
-                    }
-
-                    if (rb_nfx_echo.IsChecked.Value && rb_ofx_Orchestral.IsChecked.Value && !cb_NFX_Echo_OFX.IsChecked.Value)
-                    {
-                        MidiEngine.MidiNote_SetProgram(0, patch.Index, 10);
-                        MidiEngine.MidiNote_SetProgram(0, 46, 11);
-                        MidiEngine.MidiNote_SetProgram(0, 48, 12);
-                        MidiEngine.MidiNote_PlayTimed(10, e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value, 110, 100);
-                        MidiEngine.MidiNote_PlayTimed(11, (e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value) - 12, 110, 100);
-                        MidiEngine.MidiNote_PlayTimed(12, (e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value) - 24, 110, 100);
-                    }
-                    if (rb_nfx_echo.IsChecked.Value && rb_ofx_Orchestral.IsChecked.Value && cb_NFX_Echo_OFX.IsChecked.Value)
-                    {
-                        MidiEngine.MidiNote_SetProgram(0, patch.Index, 10);
-                        MidiEngine.MidiNote_SetProgram(0, 46, 11);
-                        MidiEngine.MidiNote_SetProgram(0, 48, 12);
-                        MidiEngine.MidiNote_PlayTimed(10, e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value, 110, 100);
-                        MidiEngine.MidiNote_PlayTimed(11, (e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value) - 24, 110, 100);
-                        MidiEngine.MidiNote_PlayTimed(12, (e.KeyID + Transpose + 12 + 12 * CTRL_Octave.Value) - 36, 110, 100);
-                    }
-
-                }
                 if (cb__InsS_Enable.IsChecked.Value)
                 {
                     if (e.KeyID <= 16)
@@ -677,6 +631,12 @@ namespace MidiSynth7.components.views
             {
                 pianomain.UnLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
             }
+            if (cb_NFX_Enable.IsChecked.Value)
+            {
+#pragma warning disable CS4014 // need to continue regardless of state. because I said so 🙃
+                Dispatcher.InvokeAsync(() => PlayDelayedNFX((Bank)cb_mBank.SelectedItem, (NumberedEntry)cb_mPatch.SelectedItem, e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, e.ChannelMssge.Data2, AppContext.ActiveNFXProfile.Delay, AppContext.ActiveNFXProfile.OffsetMap.Count));
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            }
         }
 
         public async void HandleNoteOffEvent(object sender, NoteEventArgs e)
@@ -684,28 +644,36 @@ namespace MidiSynth7.components.views
             await FlashChannelActivity(e.ChannelMssge.MidiChannel);
             pianomain.UnLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
             //Pianomain_pKeyUp(sender, new PKeyEventArgs(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value));
+            if (cb_NFX_Enable.IsChecked.Value)
+            {
+#pragma warning disable CS4014 // 😏
+                Dispatcher.InvokeAsync(() => StopDelayedNFX(e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, AppContext.ActiveNFXProfile.Delay, AppContext.ActiveNFXProfile.OffsetMap.Count));
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+
+            }
         }
 
         public void HandleEvent(object sender, EventArgs e, string id = "generic")
         {
-            //placeholder for now?
-            if (id == "RefMainWin")
-            {
-                AppContext = (MainWindow)sender;
-            }
-            if (id == "MTaskWorker")
-            {
-                MidiEngine = AppContext.MidiEngine;
-            }
-            if (id == "RefAppConfig")
-            {
-                Config = AppContext.AppConfig;
-            }
-
-            if (id == "InsDEF_Changed")
+            void InsDefUpdate()
             {
                 AppContext.ActiveInstrumentDefinition = AppContext.Definitions.FirstOrDefault(x => x.AssociatedDeviceIndex == ((NumberedEntry)cb_Devices.SelectedItem).Index) ?? AppContext.Definitions[0];//associated or default
                 UpdateInstrumentSelection(AppContext.AppConfig);
+            }
+            Console.WriteLine("EventID: {0}", id);
+            switch (id)
+            {
+                case "RefMIDIEngine": AppContext.GenerateMIDIEngine(this, ((NumberedEntry)cb_Devices.SelectedItem).Index); break;
+                case "RefMainWin": AppContext = (MainWindow)sender; break;
+                case "MTaskWorker": MidiEngine = AppContext.MidiEngine; break;
+                case "RefAppConfig": Config = AppContext.AppConfig; break;
+                case "MidiEngine_FileLoadComplete": cp_Info.Text = MidiEngine.Copyright; break;
+                case "MidiEngine_SequenceBuilder_Completed": break;
+                case "InsDEF_Changed": InsDefUpdate(); break;
+                case "RefNFXDelay": NFXProfileUpdate(); break;
+                default:
+                    Console.WriteLine("Unrecognized event string: {0}... lol", id);
+                    break;
             }
         }
 
@@ -741,9 +709,94 @@ namespace MidiSynth7.components.views
 
         #endregion
 
+        #region NoteFX Functions
+
+        private async Task PlayDelayedNFX(Bank bank, NumberedEntry patch, int ch, int note, int velocity, int delay, int count)
+        {
+            if (MidiEngine == null) return;
+            if (count > 3 || count < 1)
+            {
+                throw new ArgumentException("Count must be no more than 3, no less than 1.");
+            }
+
+            async Task t()
+            {
+
+                int[,] channelMapper = new int[3, 4] { { 4, 5, 6, 7 }, { 8, 10, 11, 12 }, { 13, 14, 15, 4 } };
+
+
+                for (int i = 0; i < count; i++)
+                {
+                    await Task.Delay(delay);
+                    if (Config.EnforceInstruments)
+                    {
+                        MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, channelMapper[i, ch]);
+                    }
+                    int velo = velocity - (int)(velocity * (float)((float)AppContext.ActiveNFXProfile.OffsetMap[i].decay / 100));
+
+                    MidiEngine.MidiNote_Play(channelMapper[i, ch], note + AppContext.ActiveNFXProfile.OffsetMap[i].pitch, velo, false);
+                    await Dispatcher.InvokeAsync(() => FlashChannelActivity(channelMapper[i, ch]));
+
+                }
+            }
+            await Task.Run(() => t());
+        }
+
+        private async Task StopDelayedNFX(int ch, int note, int delay, int count)
+        {
+            if (MidiEngine == null) return;
+            if (count > 3 || count < 1)
+            {
+                throw new ArgumentException("Count must be no more than 3, no less than 1.");
+            }
+            async Task t()
+            {
+
+                int[,] channelMapper = new int[3, 4] { { 4, 5, 6, 7 }, { 8, 10, 11, 12 }, { 13, 14, 15, 4 } };
+
+                for (int i = 0; i < count; i++)
+                {
+                    await Task.Delay(delay);
+                    MidiEngine.MidiNote_Stop(channelMapper[i, ch], note + AppContext.ActiveNFXProfile.OffsetMap[i].pitch, false);
+                    await Dispatcher.InvokeAsync(() => FlashChannelActivity(channelMapper[i, ch]));
+                }
+            }
+            await Task.Run(() => t());
+        }
+
+        private void BN_CustomizeDelay_Click(object sender, RoutedEventArgs e)
+        {
+            AppContext.ShowNFX();
+        }
+
+        private void NFXProfileUpdate()
+        {
+            cb_NFX_Dropdown.Items.Clear();
+            foreach (NFXDelayProfile item in AppContext.NFXProfiles)
+            {
+                cb_NFX_Dropdown.Items.Add(item);
+            }
+            cb_NFX_Dropdown.SelectedIndex = 0;
+        }
+
+        #endregion
+
         private void Dials_TextPromptStateChanged(object sender, EventArgs e)
         {
             HaltKeyboardInput = ((DialControl)sender).InputCaptured;
+        }
+
+        private void Cb_nfx_ProfileSel_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (AppContext == null) return;
+            if (cb_NFX_Dropdown.SelectedItem == null) return;
+            var item = cb_NFX_Dropdown.SelectedItem;
+
+            AppContext.ActiveNFXProfile = (NFXDelayProfile)item;
+            if (AppContext.ActiveNFXProfile == null)
+            {
+                AppContext.ActiveNFXProfile = AppContext.NFXProfiles[0];
+            }
         }
     }
 }
