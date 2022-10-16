@@ -271,20 +271,26 @@ namespace MidiSynth7.components.views
                 
                 while (check)
                 {
-                    
+                   
                     for ( pattern = 0; pattern < 4; pattern++)
                     {
 
                         Dispatcher.Invoke(() => LC_PatternNumber.SetLight(pattern));
                         for ( step = 0; step < 32; step++)
                         {
-                            //MetronomeTick(step); // Idk what to do with this method right now... so I'm commenting it out for now
+                            
 
                             Dispatcher.Invoke(() => check = CB_Sequencer_Check.IsChecked.Value);
                             if (!check) return;
                             Dispatcher.InvokeAsync(() => LC_PatternStep.SetLight(step));
-                            
-                            AppContext.ActiveSequence.Patterns[pattern].Rows[step].Play(AppContext.ActiveSequence, AppContext.MidiEngine, null);
+                            if (AppContext.ActiveSequence == null)
+                            {
+                                MetronomeTick(step); //oh hey
+                            }
+                            else
+                            {
+                                AppContext.ActiveSequence.Patterns[pattern].Rows[step].Play(AppContext.ActiveSequence, AppContext.MidiEngine, null);
+                            }
                             //TODO: Further process the sequence parameters within it.
                             Dispatcher.InvokeAsync(() => DotDuration = (int)((float)(2500 / (float)(Dial_RiffTempo.Value * 1000)) * (ticksPerDot * 1000)));
                             System.Threading.Thread.Sleep(DotDuration);//This is beyond not ideal LOL
@@ -710,7 +716,7 @@ namespace MidiSynth7.components.views
             if (cb_NFX_Enable.IsChecked.Value)
             {
 #pragma warning disable CS4014 // need to continue regardless of state. because I said so 🙃
-                Dispatcher.InvokeAsync(() => PlayDelayedNFX(e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, e.ChannelMssge.Data2, AppContext.ActiveNFXProfile.Delay, AppContext.ActiveNFXProfile.OffsetMap.Count));
+                Dispatcher.InvokeAsync(() => PlayDelayedNFX((Bank)cb_mBank.SelectedItem,(NumberedEntry)cb_mPatch.SelectedItem, e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, e.ChannelMssge.Data2, AppContext.ActiveNFXProfile.Delay, AppContext.ActiveNFXProfile.OffsetMap.Count));
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
         }
@@ -828,16 +834,13 @@ namespace MidiSynth7.components.views
 
         #region NoteFX Functions
 
-        private async Task PlayDelayedNFX(int ch, int note, int velocity, int delay, int count)
+        private async Task PlayDelayedNFX(Bank bank, NumberedEntry patch, int ch, int note, int velocity, int delay, int count)
         {
             if (MidiEngine == null) return;
             if(count > 3 || count < 1)
             {
                 throw new ArgumentException("Count must be no more than 3, no less than 1.");
             }
-            //thread it
-            Bank bank = (Bank)cb_mBank.SelectedItem;
-            NumberedEntry patch = (NumberedEntry)cb_mPatch.SelectedItem;
 
             async Task t()
             {
@@ -869,10 +872,6 @@ namespace MidiSynth7.components.views
             {
                 throw new ArgumentException("Count must be no more than 3, no less than 1.");
             }
-            //thread it
-            Bank bank = (Bank)cb_mBank.SelectedItem;
-            NumberedEntry patch = (NumberedEntry)cb_mPatch.SelectedItem;
-
             async Task t()
             {
 
