@@ -330,20 +330,6 @@ namespace MidiSynth7.components
         }
 
         /// <summary>
-        /// Play a note with specified parameters and time in milliseconds.
-        /// </summary>
-        /// <param name="channel">0 - 15</param>
-        /// <param name="pitch">0 - 15</param>
-        /// <param name="velocity">0 - 127</param>
-        /// <param name="time">Time in milliseconds.</param>
-        public void MidiNote_PlayTimed(int channel, int pitch, int velocity, int time, int output=-1)
-        {
-
-            MidiNote_Play(channel, pitch, velocity,true,output);
-            new p(this, channel, pitch, velocity, time);
-        }
-
-        /// <summary>
         /// Set the instrument(Patch)
         /// </summary>
         /// <param name="bank">Bank of patch</param>
@@ -849,12 +835,6 @@ namespace MidiSynth7.components
 
             midiSequence.LoadCompleted += MidiSequence_LoadCompleted;
         }
-
-        private void GenerateRiffSequence() //Used internally by the mainform?
-        {
-            riffSequence = new Sequence();
-            riffSequence.LoadCompleted += RiffSequence_LoadCompleted;
-        }
         
         private void GenerateSequencer()
         {
@@ -863,13 +843,6 @@ namespace MidiSynth7.components
             midiSequencer.MetaMessagePlayed += MidiSequencer_MetaMessagePlayed;
         }
         
-        private void GenerateRiffSequencer() //Used internally by the mainform?
-        {
-            ModableSequencer = new Sanford.Multimedia.Midi.Sequencer();
-            ModableSequencer.ChannelMessagePlayed += MidiSequencer_ChannelMessagePlayed;
-            midiSequencer.MetaMessagePlayed += MidiSequencer_MetaMessagePlayed;
-        }
-
         #region Internal component events
         
         private void MidiSequencer_MetaMessagePlayed(object sender, MetaMessageEventArgs e)
@@ -973,36 +946,6 @@ namespace MidiSynth7.components
         #endregion
     }
 
-    //Extra cryptic... isn't it?
-    class p
-    {
-        int tt = 0;
-        int cc = 0;
-        int pss = 0;
-        int vv = 0;
-        MidiEngine oo;
-        DispatcherTimer ta;
-        public p(MidiEngine o, int c, int ps, int v, int t)
-        {
-
-            oo = o;
-            cc = c;
-            pss = ps;
-            vv = v;
-            tt = t;
-            ta = new DispatcherTimer();
-            ta.Interval = TimeSpan.FromMilliseconds(t);
-            ta.Tick += ta_Tick;
-            ta.Start();
-        }
-
-        void ta_Tick(object sender, EventArgs e)
-        {
-            oo.MidiNote_Stop(cc, pss);
-            ta.Stop();
-        }
-
-    }
 
     #region Custom event args
     public class NoteEventArgs : EventArgs
