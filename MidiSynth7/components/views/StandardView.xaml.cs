@@ -534,7 +534,7 @@ namespace MidiSynth7.components.views
             }
         }
 
-        private void Pianomain_pKeyUp(object sender, entities.controls.PKeyEventArgs e)
+        private void Pianomain_pKeyUp(object sender, PKeyEventArgs e)
         {
             if (MidiEngine != null)
             {

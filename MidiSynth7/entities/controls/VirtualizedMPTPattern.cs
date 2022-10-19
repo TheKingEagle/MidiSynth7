@@ -1,6 +1,8 @@
 ﻿using MidiSynth7.components;
 using System;
+using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace MidiSynth7.entities.controls
@@ -14,18 +16,32 @@ namespace MidiSynth7.entities.controls
         public int ActiveRow { get; set; }
 
         public int RowCount { get => PatternData?.RowCount ?? 0; }
+        
         public int ChannelCount { get => PatternData?.ChannelCount ?? 0; }
+        
         public TrackerPattern PatternData { get; private set; }
 
+        private FrameworkElement _parent;
         private SolidColorBrush bg_subdivision1 = new SolidColorBrush(Color.FromArgb(255, 24, 30, 40));
         private SolidColorBrush bg_subdivision2 = new SolidColorBrush(Color.FromArgb(255, 20, 26, 34));
         private SolidColorBrush bg_subdivisionN = new SolidColorBrush(Color.FromArgb(255, 12, 16, 20));
         private SolidColorBrush bg_subdivisionH = new SolidColorBrush(Color.FromArgb(255, 0, 67, 159));
         private SolidColorBrush bg_subdivisionP = new SolidColorBrush(Color.FromArgb(255, 57, 57, 57));
-        public event EventHandler<SelectionEventArgs> ActiveRowChanged;
-        public VirtualizedMPTPattern(TrackerPattern src)
+        
+        public event EventHandler<ActiveRowEventArgs> ActiveRowChanged;
+
+        private Point SelPoint1 = new Point(0, 0);
+        private Point SelPoint2 = new Point(0, 0);
+        public Rect GetSelectedBounds()
+        {
+            return new Rect(SelPoint1, SelPoint2);
+        }
+        private bool mouseDowned = false;
+
+        public VirtualizedMPTPattern(TrackerPattern src, FrameworkElement parent)
         {
             PatternData = src;
+            _parent = parent;
             Width = SeqData.Width * PatternData.ChannelCount;
             Height = SeqData.Height * PatternData.RowCount;
             for (int i = 0; i < PatternData.RowCount; i++)
@@ -33,21 +49,7 @@ namespace MidiSynth7.entities.controls
                 UpdateRow(i, i == ActiveRow);
             }
         }
-        public VirtualizedMPTPattern()
-        {
-            TrackerSequence seq = new TrackerSequence()
-            {
-                Instruments = new System.Collections.Generic.List<TrackerInstrument>(),
-                Patterns = new System.Collections.Generic.List<TrackerPattern>(),
-                SelectedInstrument = -1,
-                SelectedOctave = 3,
-                SequenceName = "Test sequence",
-            };
-            seq.Patterns.Add(TrackerPattern.GetEmptyPattern(seq, 32, 20));
-            PatternData = seq.Patterns[0];
-            Width = SeqData.Width * PatternData.ChannelCount;
-            Height = SeqData.Height * PatternData.RowCount;
-        }
+        
         protected override void OnRender(DrawingContext dc)
         {
             base.OnRender(dc);
@@ -55,6 +57,63 @@ namespace MidiSynth7.entities.controls
             for (int i = 0; i < PatternData.RowCount; i++)
             {
                 PatternData.Rows[i].Render(dc);
+            }
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+        }
+
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            base.OnKeyUp(e);
+        }
+
+        protected override void OnMouseDown(MouseButtonEventArgs e)
+        {
+            base.OnMouseDown(e);
+            if (!mouseDowned)
+            {
+                SelPoint1 = e.GetPosition(this);
+                SelPoint2 = e.GetPosition(this);
+            }
+            mouseDowned = true;
+            CaptureMouse();
+            
+            Console.WriteLine("MultiSEL: " + GetSelection(GetSelectedBounds()));
+
+        }
+
+        protected override void OnMouseUp(MouseButtonEventArgs e)
+        {
+            base.OnMouseUp(e);
+
+            ReleaseMouseCapture();
+            mouseDowned = false;
+            //SelPoint1 = e.GetPosition(Frame);
+            //SelPoint2 = e.GetPosition(Frame);
+            
+            bool f = GetSelection(GetSelectedBounds());
+            if (!f)
+            {
+                //set active row.
+                UpdateRow(ActiveRow);
+                ActiveRow = PatternData.Rows.Where(x => x.rowbounds.IntersectsWith(GetSelectedBounds())).First().Notes[0].Row;
+                UpdateRow(ActiveRow,true);
+            }
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+
+            if (mouseDowned)
+            {
+                SelPoint2 = e.GetPosition(this);
+                Console.WriteLine("MultiSEL: " + GetSelection(GetSelectedBounds()));
+                Rect f = new Rect(e.GetPosition(this), new Size(SeqData.Width, SeqData.Height));
+                _parent.BringIntoView(f);
             }
         }
 
@@ -72,7 +131,7 @@ namespace MidiSynth7.entities.controls
             if (hot)
             {
                 bg = bg_subdivisionH;
-                ActiveRowChanged?.Invoke(this, new SelectionEventArgs(i));
+                ActiveRowChanged?.Invoke(this, new ActiveRowEventArgs(i));
             }
             if (ignoreBits && hot)
             {
@@ -81,16 +140,47 @@ namespace MidiSynth7.entities.controls
             if (i > PatternData.RowCount - 1) return;
             PatternData.Rows[i].UpdateRow(i,bg,hot,ignoreBits);
         }
+
         public void UpdateBit(int col, int row, bool hot = false)
         {
             PatternData.Rows[row].Notes[col].UpdateBit(hot);
         }
+        /// <summary>
+        /// Get selection from bounds
+        /// </summary>
+        /// <param name="bounds">the selection bounds</param>
+        /// <returns>true if multiple bits are selected</returns>
+        public bool GetSelection(Rect bounds)
+        {
+            
+            var sel = PatternData.Rows.Where(x => x.rowbounds.IntersectsWith(bounds));
+            if(bounds.Height < 2)
+            {
+                 sel = PatternData.Rows.Where(x => x.rowbounds.IntersectsWith(bounds)).Take(1);
+            }
+            var ssel = PatternData.Rows.Where(zz=>zz.Notes.Where(pn=>pn.SelectedBits.Where(ff=>ff).Count()>0).Count()>0);
+            foreach (var item in ssel)
+            {
+                var notes = item.Notes.Where(nn=> nn.SelectedBits.Where(xx=> xx).Count() > 0 && !nn.SqDatBit_Bounds.IntersectsWith(bounds));
+                foreach (var note in notes)
+                {
+                    note.ClearSelection(ActiveRow);
+                }
+            }
+            foreach (var item in sel)
+            {
+                item.DetectSelection(bounds,ActiveRow);
+            }
+            return bounds.Height > 2 || bounds.Width > 2;
+
+        }
     }
-    public class SelectionEventArgs : EventArgs
+
+    public class ActiveRowEventArgs : EventArgs
     {
         public int selectedIndex { get; private set; }
 
-        public SelectionEventArgs(int sel)
+        public ActiveRowEventArgs(int sel)
         {
             selectedIndex = sel;
         }

@@ -91,7 +91,7 @@ namespace MidiSynth7.components.dialog
             Dispatcher.Invoke(() =>
             {
                 
-                ActivePattern = new VirtualizedMPTPattern(ActiveSequence.Patterns[index]);
+                ActivePattern = new VirtualizedMPTPattern(ActiveSequence.Patterns[index],PatternContainer);
                 ActivePattern.ActiveRowChanged += ActivePattern_ActiveRowChanged; ;
                 PatternContainer.Children.Add(ActivePattern);
 
@@ -119,7 +119,7 @@ namespace MidiSynth7.components.dialog
             });
         }
 
-        private void ActivePattern_ActiveRowChanged(object sender, SelectionEventArgs e)
+        private void ActivePattern_ActiveRowChanged(object sender, ActiveRowEventArgs e)
         {
             PatternScroller.ScrollToVerticalOffset(((PatternScroller.ViewportHeight - 21) / 2) + (e.selectedIndex * 22) - ((PatternScroller.ViewportHeight - 21) / 2));
 
