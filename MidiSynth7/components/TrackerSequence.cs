@@ -218,7 +218,7 @@ namespace MidiSynth7.components
             return ControlList;
         }
 
-        public void UpdateRow(int index, SolidColorBrush back, bool hot=false, bool ignorebits = false)
+        public void UpdateRow(int index, SolidColorBrush back, bool hot=false, bool ignorebits = false, Rect? debugrect=null)
         {
             var dc = RowRender.Open();
             dc.DrawRectangle(back, null, new Rect(0, index * 22, 126 * Notes.Count, 22));
@@ -228,6 +228,7 @@ namespace MidiSynth7.components
                 if (!ignorebits) item.UpdateBit(hot);
                 item.Render(dc);
             }
+            
             dc.Close();
         }
 
@@ -236,12 +237,18 @@ namespace MidiSynth7.components
             dc.DrawDrawing(RowRender);
         }
 
-        internal bool DetectSelection(Rect Selection, int active=0)
+        internal bool DetectSelection(Rect Selection, out int cellIndex, out int bitIndex, int active=0 )
         {
+            cellIndex = 0;
+            bitIndex = 0;
             var sel = Notes.Where(x => x.SqDatBit_Bounds.IntersectsWith(Selection));
             foreach (SeqData item in sel)
             {
-                item.DetectSelection(Selection,active);
+                item.DetectSelection(Selection,out bitIndex,active);
+            }
+            if(Selection.Width < 2 && Selection.Height < 2)
+            {
+                cellIndex = sel.ToList()[0].Column;
             }
             return Selection.Width > 2 || Selection.Height > 2;
         }
@@ -268,6 +275,15 @@ namespace MidiSynth7.components
             new DrawingGroup()
         };
         internal bool[] SelectedBits = new bool[] { false, false, false, false, false };
+
+        public static readonly int[] BitWidths = new int[]
+        {
+            34,24,34,10,20
+        };
+        public static readonly int[] BitOffsets = new int[]
+        {
+            0,34,58,92,102
+        };
         internal Rect SqDatBit_Bounds;  // overall dimensions
         internal Rect SqTxtBit_Bounds;  // text dimensions
         private List<Rect> boundList = new List<Rect>();
@@ -336,21 +352,21 @@ namespace MidiSynth7.components
             dc.DrawDrawing(Renderer);
         }
 
-        public void UpdateBit(bool hot = false)
+        public void UpdateBit(bool hot = false, Rect? debugsel = null)
         {
             boundList.Clear();
             double offset = 0;
             SqDatBit_Bounds = new Rect(Column * Width, Row * Height, Width, Height);
             SqTxtBit_Bounds = new Rect((Column * Width) + 2, (Row * Height) + 1, Width - 6, Height - 2);
-            Rect PitchBit_Bounds = new Rect(SqTxtBit_Bounds.X, SqDatBit_Bounds.Y, 34, Height);
+            Rect PitchBit_Bounds = new Rect(SqTxtBit_Bounds.X, SqDatBit_Bounds.Y, BitWidths[0], Height);
             offset += PitchBit_Bounds.Width;
-            Rect InstrBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 24, Height);
+            Rect InstrBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, BitWidths[1], Height);
             offset += InstrBit_Bounds.Width;
-            Rect VelocBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 34, Height);
+            Rect VelocBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, BitWidths[2], Height);
             offset += VelocBit_Bounds.Width;
-            Rect SqParBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 10, Height);
+            Rect SqParBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, BitWidths[3], Height);
             offset += SqParBit_Bounds.Width;
-            Rect SqValBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 20, Height);
+            Rect SqValBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, BitWidths[4], Height);
             boundList.Add(PitchBit_Bounds);
             boundList.Add(InstrBit_Bounds);
             boundList.Add(VelocBit_Bounds);
@@ -375,6 +391,10 @@ namespace MidiSynth7.components
 
             rc.DrawLine(new Pen(BR_BdrEn, 4), tr2, br2);
             rc.DrawLine(new Pen(BR_BdrEx, 2), SqDatBit_Bounds.TopRight, SqDatBit_Bounds.BottomRight);
+            if (debugsel.HasValue)
+            {
+                rc.DrawRectangle(Brushes.Red, null, debugsel.Value);
+            }
             rc.Close();
         }
         
@@ -383,8 +403,9 @@ namespace MidiSynth7.components
             return new FormattedText(text, System.Globalization.CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, SystemComponent.MPTEditorFont, 16, foreground, 1);
         }
         
-        internal bool DetectSelection(Rect Selection, int active=0)
+        internal bool DetectSelection(Rect Selection, out int activeBit, int active=0)
         {
+            activeBit = 0;
             var lb = new bool[5];
             SelectedBits.CopyTo(lb, 0);
             for (int i = 0; i < SelectedBits.Length; i++)
@@ -397,7 +418,10 @@ namespace MidiSynth7.components
             }
             //scroll to active corner
 
-            
+            if(Selection.Width < 2 && Selection.Height < 2)
+            {
+                activeBit = SelectedBits.ToList().IndexOf(true);
+            }
             return Selection.Width > 2 || Selection.Height > 2;
         }
 
@@ -503,6 +527,7 @@ namespace MidiSynth7.components
             rc.Close();
 
         }
+
     }
 
     public class TrackerInstrument

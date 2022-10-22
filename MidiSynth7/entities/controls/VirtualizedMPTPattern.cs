@@ -15,6 +15,9 @@ namespace MidiSynth7.entities.controls
     {
         public int ActiveRow { get; set; }
 
+        private int ActiveBitIndex = 0;//cell bit (pitch, instrument etc.);
+        private int ActiveCell = 0; //active cell (the whole column row thing)
+
         public int RowCount { get => PatternData?.RowCount ?? 0; }
         
         public int ChannelCount { get => PatternData?.ChannelCount ?? 0; }
@@ -74,6 +77,7 @@ namespace MidiSynth7.entities.controls
                         ActiveRow = RowCount - 1;
                     }
                     UpdateRow(ActiveRow, true);
+                    MoveSelectBit();
                     break;
                 case Key.Down:
                     UpdateRow(ActiveRow, false);
@@ -84,10 +88,34 @@ namespace MidiSynth7.entities.controls
                         ActiveRow = 0;
                     }
                     UpdateRow(ActiveRow, true);
+                    MoveSelectBit();
                     break;
                 case Key.Left:
+                    ActiveBitIndex--;
+                    if (ActiveBitIndex < 0)
+                    {
+                        ActiveBitIndex = 4;
+                        ActiveCell--;
+                    }
+                    if(ActiveCell < 0)
+                    {
+                        ActiveCell = ChannelCount - 1;
+                    }
+                    MoveSelectBit();
                     break;
                 case Key.Right:
+                    ActiveBitIndex++;
+                    if (ActiveBitIndex > 4)
+                    {
+                        ActiveBitIndex = 0;
+                        ActiveCell++;
+                    }
+                    if (ActiveCell > ChannelCount-1)
+                    {
+                        ActiveCell = 0;
+                    }
+                    
+                    MoveSelectBit();
                     break;
                 case Key.L:
                     if (Keyboard.Modifiers == ModifierKeys.Control)
@@ -174,6 +202,9 @@ namespace MidiSynth7.entities.controls
             }
             if (i > PatternData.RowCount - 1) return;
             PatternData.Rows[i].UpdateRow(i,bg,hot,ignoreBits);
+
+
+
         }
 
         public void UpdateBit(int col, int row, bool hot = false)
@@ -199,9 +230,17 @@ namespace MidiSynth7.entities.controls
             }
             foreach (var item in sel)
             {
-                item.DetectSelection(bounds,ActiveRow);
+                item.DetectSelection(bounds,out ActiveCell,out ActiveBitIndex,ActiveRow);
             }
             return bounds.Height > 2 || bounds.Width > 2;
+        }
+
+        internal void MoveSelectBit()
+        {
+            SelPoint1 = new Point((ActiveCell * SeqData.Width) + SeqData.BitOffsets[ActiveBitIndex] + (SeqData.BitWidths[ActiveBitIndex] / 2), (ActiveRow * SeqData.Height) + (SeqData.Height / 2));
+            SelPoint2 = new Point((ActiveCell * SeqData.Width) + SeqData.BitOffsets[ActiveBitIndex] + (SeqData.BitWidths[ActiveBitIndex] / 2)+1, (ActiveRow * SeqData.Height) + (SeqData.Height / 2)+1);
+            GetSelection(GetSelectedBounds());
+            _parent.BringIntoView(PatternData.Rows[ActiveRow].Notes[ActiveCell].SqDatBit_Bounds);
         }
     }
 
