@@ -40,8 +40,6 @@ namespace MidiSynth7.entities.controls
 
         public VirtualizedMPTPattern(TrackerPattern src, FrameworkElement parent)
         {
-            Focusable = true;
-            Focus();
             PatternData = src;
             _parent = parent;
             Width = SeqData.Width * PatternData.ChannelCount;
@@ -124,18 +122,13 @@ namespace MidiSynth7.entities.controls
             CaptureMouse();
             
             GetSelection(GetSelectedBounds());
-
         }
 
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
             base.OnMouseUp(e);
-
             ReleaseMouseCapture();
             mouseDowned = false;
-            //SelPoint1 = e.GetPosition(Frame);
-            //SelPoint2 = e.GetPosition(Frame);
-            
             bool f = GetSelection(GetSelectedBounds());
             if (!f)
             {
@@ -187,14 +180,9 @@ namespace MidiSynth7.entities.controls
         {
             PatternData.Rows[row].Notes[col].UpdateBit(hot);
         }
-        /// <summary>
-        /// Get selection from bounds
-        /// </summary>
-        /// <param name="bounds">the selection bounds</param>
-        /// <returns>true if multiple bits are selected</returns>
+
         public bool GetSelection(Rect bounds)
         {
-            
             var sel = PatternData.Rows.Where(x => x.rowbounds.IntersectsWith(bounds));
             if(bounds.Height < 2)
             {
@@ -214,7 +202,6 @@ namespace MidiSynth7.entities.controls
                 item.DetectSelection(bounds,ActiveRow);
             }
             return bounds.Height > 2 || bounds.Width > 2;
-
         }
     }
 

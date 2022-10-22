@@ -825,10 +825,10 @@ namespace MidiSynth7
 
                 ts.Patterns = new List<TrackerPattern>()
                 {
-                    TrackerPattern.GetEmptyPattern(ts,32, 20),
-                    TrackerPattern.GetEmptyPattern(ts,32, 20),
-                    TrackerPattern.GetEmptyPattern(ts, 32, 20),
-                    TrackerPattern.GetEmptyPattern(ts,32, 20),
+                    TrackerPattern.GetEmptyPattern(32, 20),
+                    TrackerPattern.GetEmptyPattern(32, 20),
+                    TrackerPattern.GetEmptyPattern(32, 20),
+                    TrackerPattern.GetEmptyPattern(32, 20),
                 };
                 ts.SelectedOctave = 3;
                 ts.Instruments = new List<TrackerInstrument>()

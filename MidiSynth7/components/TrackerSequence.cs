@@ -14,14 +14,14 @@ namespace MidiSynth7.components
     ///  - Compatibility with OpenMPT's standard (At least mostly)
     ///      - Ability to copy-paste track data
     ///      - Ability to understand controller macros
-    ///  - figure out how to display the tracker
-    ///  
+    ///  - Performance improvements
     /// </summary>
 
     public class TrackerSequence
     {
         string path = App.APP_DATA_DIR + "Sequences\\";
         string name = "";
+        
         public string SequenceName { get=>name; set
             {
                 if (string.IsNullOrWhiteSpace(value))
@@ -43,9 +43,13 @@ namespace MidiSynth7.components
                 name = value;
             }
         }
+        
         public List<TrackerPattern> Patterns { get; set; }
+        
         public List<TrackerInstrument> Instruments { get; set; }
+        
         public int SelectedOctave { get; set; }
+        
         public int SelectedInstrument{ get; set; }
 
         public void SaveSequence()
@@ -97,14 +101,14 @@ namespace MidiSynth7.components
         public string PatternName { get; set; }
         public List<TrackerRow> Rows { get; set; }
 
-        public static TrackerPattern GetEmptyPattern(TrackerSequence seq, int rows, int channels)
+        public static TrackerPattern GetEmptyPattern(int rows, int channels)
         {
             return new TrackerPattern()
             {
                 ChannelCount = channels,
                 RowCount = rows,
                 PatternName = "New Pattern",
-                Rows = TrackerRow.GetEmptyRows(seq, rows, channels),
+                Rows = TrackerRow.GetEmptyRows(rows, channels),
                 RowsPerBeat = 4,
                 RowsPerMeasure = 16
             };
@@ -113,18 +117,18 @@ namespace MidiSynth7.components
 
     public class TrackerRow
     {
-        
         internal Rect rowbounds;
-        internal DrawingGroup RowRender { get; private set; } = new DrawingGroup();
-        public TrackerRow( List<SeqData> notes)
-        {
-            Notes = notes;
-            //UpdateRow();
-            rowbounds = new Rect(0, notes[0].Row * 22, SeqData.Width * notes.Count, 22);
-        }
+        internal DrawingGroup RowRender = new DrawingGroup();
+        
         public List<SeqData> Notes { get; set; }
 
-        public static List<TrackerRow> GetEmptyRows(TrackerSequence seq, int rows, int ChannelCount)
+        public TrackerRow(List<SeqData> notes)
+        {
+            Notes = notes;
+            rowbounds = new Rect(0, notes[0].Row * 22, SeqData.Width * notes.Count, 22);
+        }
+
+        public static List<TrackerRow> GetEmptyRows(int rows, int ChannelCount)
         {
             List<TrackerRow> Rows = new List<TrackerRow>();
             for (int i = 0; i < rows; i++)
@@ -242,11 +246,20 @@ namespace MidiSynth7.components
             return Selection.Width > 2 || Selection.Height > 2;
         }
     }
+    
     public class SeqData
     {
-        #region Element Rendering
-        internal DrawingGroup Renderer { get; private set; } = new DrawingGroup();
-        internal DrawingGroup[] TextRenderer { get; private set; } = new DrawingGroup[]
+        #region Data Properties
+        public int midiChannel;
+        public int? Pitch { get; set; }
+        public byte? Velocity { get; set; }
+        public byte? Instrument { get; set; }
+        public SeqParam Parameter { get; set; }
+        #endregion
+
+        #region Rendering Properties
+        internal DrawingGroup Renderer = new DrawingGroup();
+        internal DrawingGroup[] TextRenderer = new DrawingGroup[]
         {
             new DrawingGroup(),
             new DrawingGroup(),
@@ -255,17 +268,13 @@ namespace MidiSynth7.components
             new DrawingGroup()
         };
         internal bool[] SelectedBits = new bool[] { false, false, false, false, false };
-
-        //private bool NeedsRender = false;
         internal Rect SqDatBit_Bounds;  // overall dimensions
         internal Rect SqTxtBit_Bounds;  // text dimensions
         private List<Rect> boundList = new List<Rect>();
         private FormattedText[] BitFormattedText = new FormattedText[5];
+
         public static readonly int Width = 126;
         public static readonly int Height = 22;
-
-        public int Column { get; set; }
-        public int Row { get; set; }
 
         public static SolidColorBrush BR_Empty = new SolidColorBrush(Color.FromArgb(255, 035, 067, 103));    // blank and some params
         public static SolidColorBrush BR_HotFG = new SolidColorBrush(Color.FromArgb(255, 223, 236, 255));    // Active row text
@@ -278,21 +287,10 @@ namespace MidiSynth7.components
         public static SolidColorBrush BR_BdrEn = new SolidColorBrush(Color.FromArgb(255, 012, 016, 020));    // Dark border
         public static SolidColorBrush BR_BdrEx = new SolidColorBrush(Color.FromArgb(255, 039, 070, 120));    // Light border
 
+        public int Column { get; set; }
+        public int Row { get; set; }
+
         #endregion
-
-        #region Sequence Data
-        public int midiChannel;
-
-        public int? Pitch { get; set; }
-        public byte? Velocity { get; set; }
-        public byte? Instrument { get; set; }
-        public SeqParam Parameter { get; set; }
-        #endregion
-
-        public SeqData()
-        {
-            
-        }
 
         public override string ToString()
         {
@@ -336,6 +334,83 @@ namespace MidiSynth7.components
         public void Render(DrawingContext dc)
         {
             dc.DrawDrawing(Renderer);
+        }
+
+        public void UpdateBit(bool hot = false)
+        {
+            boundList.Clear();
+            double offset = 0;
+            SqDatBit_Bounds = new Rect(Column * Width, Row * Height, Width, Height);
+            SqTxtBit_Bounds = new Rect((Column * Width) + 2, (Row * Height) + 1, Width - 6, Height - 2);
+            Rect PitchBit_Bounds = new Rect(SqTxtBit_Bounds.X, SqDatBit_Bounds.Y, 34, Height);
+            offset += PitchBit_Bounds.Width;
+            Rect InstrBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 24, Height);
+            offset += InstrBit_Bounds.Width;
+            Rect VelocBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 34, Height);
+            offset += VelocBit_Bounds.Width;
+            Rect SqParBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 10, Height);
+            offset += SqParBit_Bounds.Width;
+            Rect SqValBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 20, Height);
+            boundList.Add(PitchBit_Bounds);
+            boundList.Add(InstrBit_Bounds);
+            boundList.Add(VelocBit_Bounds);
+            boundList.Add(SqParBit_Bounds);
+            boundList.Add(SqValBit_Bounds);
+            var rc = Renderer.Open();
+            //render text and selection if need
+            for (int i = 0; i < SelectedBits.Length; i++)
+            {
+                Brush bg = SelectedBits[i] ? BR_SelBG : null;
+                if(bg != null)
+                {
+                    rc.DrawRectangle(bg, null, boundList[i]);
+                }
+                
+                UpdateBitText(i,hot);
+                rc.DrawDrawing(TextRenderer[i]);
+            }
+            //draw borders
+            Point tr2 = SqDatBit_Bounds.TopRight;
+            Point br2 = SqDatBit_Bounds.BottomRight;
+
+            rc.DrawLine(new Pen(BR_BdrEn, 4), tr2, br2);
+            rc.DrawLine(new Pen(BR_BdrEx, 2), SqDatBit_Bounds.TopRight, SqDatBit_Bounds.BottomRight);
+            rc.Close();
+        }
+        
+        private FormattedText Text(string text, Brush foreground)
+        {
+            return new FormattedText(text, System.Globalization.CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, SystemComponent.MPTEditorFont, 16, foreground, 1);
+        }
+        
+        internal bool DetectSelection(Rect Selection, int active=0)
+        {
+            var lb = new bool[5];
+            SelectedBits.CopyTo(lb, 0);
+            for (int i = 0; i < SelectedBits.Length; i++)
+            {
+                SelectedBits[i] = boundList[i].IntersectsWith(Selection);
+            }
+            if (!Enumerable.SequenceEqual(lb, SelectedBits))
+            {
+                UpdateBit(Row == active);
+            }
+            //scroll to active corner
+
+            
+            return Selection.Width > 2 || Selection.Height > 2;
+        }
+
+        internal void ClearSelection(int activeRow=0)
+        {
+            var lb = new bool[5];
+            SelectedBits.CopyTo(lb, 0);
+            SelectedBits = new bool[] { false, false, false, false, false };
+            if (!Enumerable.SequenceEqual(lb, SelectedBits))
+            {
+
+                UpdateBit(Row == activeRow);
+            }
         }
 
         internal void UpdateBitText(int i, bool hot)
@@ -420,91 +495,13 @@ namespace MidiSynth7.components
                 else
                 {
                     BitFormattedText[i] = Text(text, fg);
-                    
+
                 }
             }
             var rc = TextRenderer[i].Open();
             rc.DrawText(BitFormattedText[i], new Point(boundList[i].TopLeft.X + 2, boundList[i].TopLeft.Y));
             rc.Close();
 
-        }
-
-        public void UpdateBit(bool hot = false)
-        {
-            //only update if something is changed.
-            
-            boundList.Clear();
-            double offset = 0;
-            SqDatBit_Bounds = new Rect(Column * Width, Row * Height, Width, Height);
-            SqTxtBit_Bounds = new Rect((Column * Width) + 2, (Row * Height) + 1, Width - 6, Height - 2);
-            Rect PitchBit_Bounds = new Rect(SqTxtBit_Bounds.X, SqDatBit_Bounds.Y, 34, Height);
-            offset += PitchBit_Bounds.Width;
-            Rect InstrBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 24, Height);
-            offset += InstrBit_Bounds.Width;
-            Rect VelocBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 34, Height);
-            offset += VelocBit_Bounds.Width;
-            Rect SqParBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 10, Height);
-            offset += SqParBit_Bounds.Width;
-            Rect SqValBit_Bounds = new Rect(SqTxtBit_Bounds.X + offset, SqDatBit_Bounds.Y, 20, Height);
-            boundList.Add(PitchBit_Bounds);
-            boundList.Add(InstrBit_Bounds);
-            boundList.Add(VelocBit_Bounds);
-            boundList.Add(SqParBit_Bounds);
-            boundList.Add(SqValBit_Bounds);
-            var rc = Renderer.Open();
-            //render text and selection if need
-            for (int i = 0; i < SelectedBits.Length; i++)
-            {
-                Brush bg = SelectedBits[i] ? BR_SelBG : null;
-                if(bg != null)
-                {
-                    rc.DrawRectangle(bg, null, boundList[i]);
-                }
-                
-                UpdateBitText(i,hot);
-                rc.DrawDrawing(TextRenderer[i]);
-            }
-            //draw borders
-            Point tr2 = SqDatBit_Bounds.TopRight;
-            Point br2 = SqDatBit_Bounds.BottomRight;
-
-            rc.DrawLine(new Pen(BR_BdrEn, 4), tr2, br2);
-            rc.DrawLine(new Pen(BR_BdrEx, 2), SqDatBit_Bounds.TopRight, SqDatBit_Bounds.BottomRight);
-            rc.Close();
-        }
-        private FormattedText Text(string text, Brush foreground)
-        {
-            
-            return new FormattedText(text, System.Globalization.CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, SystemComponent.MPTEditorFont, 16, foreground, 1);
-        }
-        internal bool DetectSelection(Rect Selection, int active=0)
-        {
-            var lb = new bool[5];
-            SelectedBits.CopyTo(lb, 0);
-            for (int i = 0; i < SelectedBits.Length; i++)
-            {
-                SelectedBits[i] = boundList[i].IntersectsWith(Selection);
-            }
-            if (!Enumerable.SequenceEqual(lb, SelectedBits))
-            {
-                UpdateBit(Row == active);
-            }
-            //scroll to active corner
-
-            
-            return Selection.Width > 2 || Selection.Height > 2;
-        }
-
-        internal void ClearSelection(int activeRow=0)
-        {
-            var lb = new bool[5];
-            SelectedBits.CopyTo(lb, 0);
-            SelectedBits = new bool[] { false, false, false, false, false };
-            if (!Enumerable.SequenceEqual(lb, SelectedBits))
-            {
-
-                UpdateBit(Row == activeRow);
-            }
         }
     }
 
