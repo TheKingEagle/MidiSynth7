@@ -138,52 +138,9 @@ namespace MidiSynth7.components.dialog
 
         private void PatternScroller_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            e.Handled = true;
-            if(e.Key == Key.Up)
-            {
-                ActivePattern.UpdateRow(ActivePattern.ActiveRow, false);
-                ActivePattern.ActiveRow--;
-                if (ActivePattern.ActiveRow < 0)
-                {
-                    //TODO: Load previous pattern
-                    ActivePattern.ActiveRow = ActivePattern.RowCount - 1;
-                }
-                ActivePattern.UpdateRow(ActivePattern.ActiveRow, true);
-            }
             
-            if (e.Key == Key.Down)
-            {
-                ActivePattern.UpdateRow(ActivePattern.ActiveRow, false);
-                ActivePattern.ActiveRow++;
-                if (ActivePattern.ActiveRow > ActivePattern.RowCount - 1)
-                {
-                    //TODO: Load next pattern
-                    ActivePattern.ActiveRow = 0;
-                }
-                ActivePattern.UpdateRow(ActivePattern.ActiveRow, true);
-            }
-            if (e.Key == Key.L && Keyboard.Modifiers == ModifierKeys.Control)
-            {
-                //ActivePattern.SelectActiveChannel();
-                return;
-            }
-            if (e.Key == Key.L && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
-            {
-                //ActivePattern.SelectActiveChannelBit();
-                return;
-
-            }
-            if (e.Key == Key.Delete)
-            {
-                //if (ActivePattern.activeBits?.Count > 1)
-                //{
-                //    foreach (MPTBit item in ActivePattern.activeBits)
-                //    {
-                //        item.DelSelection(ActivePattern.GetSelectedBounds(), PatternContainer);
-                //    }
-                //    return;
-                //}
-            }
+            
+            
 
             //int bit = ActivePattern.selectedBit;
             //int ch = ActivePattern.selectedChannel;

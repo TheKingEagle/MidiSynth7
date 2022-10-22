@@ -63,6 +63,52 @@ namespace MidiSynth7.entities.controls
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
+            switch (e.Key)
+            {
+                case Key.Up:
+                    UpdateRow(ActiveRow, false);
+                    ActiveRow--;
+                    if (ActiveRow < 0)
+                    {
+                        ActiveRow = RowCount - 1;
+                    }
+                    UpdateRow(ActiveRow, true);
+                    break;
+                case Key.Down:
+                    UpdateRow(ActiveRow, false);
+                    ActiveRow++;
+                    if (ActiveRow > RowCount - 1)
+                    {
+                        //TODO: Load next pattern
+                        ActiveRow = 0;
+                    }
+                    UpdateRow(ActiveRow, true);
+                    break;
+                case Key.Left:
+                    break;
+                case Key.Right:
+                    break;
+                case Key.L:
+                    if (Keyboard.Modifiers == ModifierKeys.Control)
+                    {
+                        //ActivePattern.SelectActiveChannel();
+                        return;
+                    }
+                    if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
+                    {
+                        //ActivePattern.SelectActiveChannelBit();
+                        return;
+
+                    }
+                    break;
+                case Key.Oem5:
+                    break;
+                default:
+                    break;
+            }
+            
+            
+            
         }
 
         protected override void OnKeyUp(KeyEventArgs e)
@@ -81,7 +127,7 @@ namespace MidiSynth7.entities.controls
             mouseDowned = true;
             CaptureMouse();
             
-            Console.WriteLine("MultiSEL: " + GetSelection(GetSelectedBounds()));
+            GetSelection(GetSelectedBounds());
 
         }
 
@@ -111,7 +157,7 @@ namespace MidiSynth7.entities.controls
             if (mouseDowned)
             {
                 SelPoint2 = e.GetPosition(this);
-                Console.WriteLine("MultiSEL: " + GetSelection(GetSelectedBounds()));
+                GetSelection(GetSelectedBounds());
                 Rect f = new Rect(e.GetPosition(this), new Size(SeqData.Width, SeqData.Height));
                 _parent.BringIntoView(f);
             }

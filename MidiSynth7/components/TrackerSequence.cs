@@ -246,12 +246,21 @@ namespace MidiSynth7.components
     {
         #region Element Rendering
         internal DrawingGroup Renderer { get; private set; } = new DrawingGroup();
+        internal DrawingGroup[] TextRenderer { get; private set; } = new DrawingGroup[]
+        {
+            new DrawingGroup(),
+            new DrawingGroup(),
+            new DrawingGroup(),
+            new DrawingGroup(),
+            new DrawingGroup()
+        };
         internal bool[] SelectedBits = new bool[] { false, false, false, false, false };
 
         //private bool NeedsRender = false;
         internal Rect SqDatBit_Bounds;  // overall dimensions
         internal Rect SqTxtBit_Bounds;  // text dimensions
         private List<Rect> boundList = new List<Rect>();
+        private FormattedText[] BitFormattedText = new FormattedText[5];
         public static readonly int Width = 126;
         public static readonly int Height = 22;
 
@@ -282,7 +291,7 @@ namespace MidiSynth7.components
 
         public SeqData()
         {
-            //UpdateBit();
+            
         }
 
         public override string ToString()
@@ -329,6 +338,97 @@ namespace MidiSynth7.components
             dc.DrawDrawing(Renderer);
         }
 
+        internal void UpdateBitText(int i, bool hot)
+        {
+            Brush fg = BR_Empty;
+            string text = "...";
+            switch (i)
+            {
+                case 0:
+                    fg = SelectedBits[i] ? BR_SelFG : (Pitch.HasValue ? BR_Pitch : BR_Empty);
+                    if (Pitch.HasValue)
+                    {
+                        var note = MidiEngine.GetNote(Pitch.Value, "-");
+                        text = note.noteLabel + note.octave;
+                        if (Pitch == -1)
+                        {
+                            fg = SelectedBits[i] ? BR_SelFG : BR_Empty;
+                            text = "== ";
+                        }
+                        if (Pitch == -2)
+                        {
+                            fg = SelectedBits[i] ? BR_SelFG : BR_Empty;
+                            text = "~~ ";
+                        }
+                        if (Pitch == -2)
+                        {
+                            fg = SelectedBits[i] ? BR_SelFG : BR_Empty;
+                            text = "^^ ";
+                        }
+                    }
+                    break;
+                case 1:
+                    fg = SelectedBits[i] ? BR_SelFG : (Instrument.HasValue ? BR_Patch : BR_Empty);
+                    text = "..";
+                    if (Instrument.HasValue)
+                    {
+                        text = Instrument.Value.ToString("X2");
+
+                    }
+                    break;
+                case 2:
+                    fg = SelectedBits[i] ? BR_SelFG : (Velocity.HasValue ? BR_Veloc : BR_Empty);
+                    text = " ..";
+                    if (Velocity.HasValue)
+                    {
+                        text = "v" + Velocity.Value.ToString("X2");
+                    }
+                    break;
+                case 3:
+                    text = ".";
+                    fg = SelectedBits[i] ? BR_SelFG : (Parameter?.Mark == 'A' ? BR_AParV : BR_Empty);
+                    if (Parameter != null)
+                    {
+                        text = Parameter.Mark.ToString();
+                    }
+                    break;
+                case 4:
+                    text = "..";
+
+                    fg = SelectedBits[i] ? BR_SelFG : (Parameter?.Mark == 'A' ? BR_AParV : BR_Empty);
+                    if (Parameter != null)
+                    {
+                        text = Parameter.Value.ToString("X2");
+                    }
+                    break;
+                default: break;
+            }
+            if (hot && fg == BR_Empty)
+            {
+                fg = BR_Pitch;
+            }
+            if (BitFormattedText[i] == null)
+            {
+                BitFormattedText[i] = Text(text, fg);
+            }
+            else
+            {
+                if (BitFormattedText[i].Text == text)
+                {
+                    BitFormattedText[i].SetForegroundBrush(fg);
+                }
+                else
+                {
+                    BitFormattedText[i] = Text(text, fg);
+                    
+                }
+            }
+            var rc = TextRenderer[i].Open();
+            rc.DrawText(BitFormattedText[i], new Point(boundList[i].TopLeft.X + 2, boundList[i].TopLeft.Y));
+            rc.Close();
+
+        }
+
         public void UpdateBit(bool hot = false)
         {
             //only update if something is changed.
@@ -356,76 +456,13 @@ namespace MidiSynth7.components
             for (int i = 0; i < SelectedBits.Length; i++)
             {
                 Brush bg = SelectedBits[i] ? BR_SelBG : null;
-                rc.DrawRectangle(bg, null, boundList[i]);
-                Brush fg = BR_Empty;
-                string text = "...";
-                switch (i)
+                if(bg != null)
                 {
-                    case 0:
-                        fg = SelectedBits[i] ? BR_SelFG : (Pitch.HasValue ? BR_Pitch : BR_Empty);
-                        if (Pitch.HasValue)
-                        {
-                            var note = MidiEngine.GetNote(Pitch.Value, "-");
-                            text = note.noteLabel + note.octave;
-                            if (Pitch == -1)
-                            {
-                                fg = SelectedBits[i] ? BR_SelFG : BR_Empty;
-                                text = "== ";
-                            }
-                            if (Pitch == -2)
-                            {
-                                fg = SelectedBits[i] ? BR_SelFG : BR_Empty;
-                                text = "~~ ";
-                            }
-                            if (Pitch == -2)
-                            {
-                                fg = SelectedBits[i] ? BR_SelFG : BR_Empty;
-                                text = "^^ ";
-                            }
-                        }
-                        break;
-                    case 1:
-                        fg = SelectedBits[i] ? BR_SelFG : (Instrument.HasValue ? BR_Patch : BR_Empty);
-                        text = "..";
-                        if (Instrument.HasValue)
-                        {
-                            text = Instrument.Value.ToString("X2");
-
-                        }
-                        break;
-                    case 2:
-                        fg = SelectedBits[i] ? BR_SelFG : (Velocity.HasValue ? BR_Veloc : BR_Empty);
-                        text = " ..";
-                        if (Velocity.HasValue)
-                        {
-                            text = "v" + Velocity.Value.ToString("X2");
-                        }
-                        break;
-                    case 3:
-                        text = ".";
-                        fg = SelectedBits[i] ? BR_SelFG : (Parameter?.Mark == 'A' ? BR_AParV : BR_Empty);
-                        if (Parameter != null)
-                        {
-                            text = Parameter.Mark.ToString();
-                        }
-                        break;
-                    case 4:
-                        text = "..";
-
-                        fg = SelectedBits[i] ? BR_SelFG : (Parameter?.Mark == 'A' ? BR_AParV : BR_Empty);
-                        if (Parameter != null)
-                        {
-                            text = Parameter.Value.ToString("X2");
-                        }
-                        break;
-                    default: break;
+                    rc.DrawRectangle(bg, null, boundList[i]);
                 }
-                if (hot && fg == BR_Empty)
-                {
-                    fg = BR_Pitch;
-                }
-                rc.DrawText(Text(text, fg), new Point(boundList[i].TopLeft.X+2,boundList[i].TopLeft.Y));
-
+                
+                UpdateBitText(i,hot);
+                rc.DrawDrawing(TextRenderer[i]);
             }
             //draw borders
             Point tr2 = SqDatBit_Bounds.TopRight;
@@ -437,7 +474,8 @@ namespace MidiSynth7.components
         }
         private FormattedText Text(string text, Brush foreground)
         {
-            return new FormattedText(text, System.Globalization.CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,SystemComponent.MPTEditorFont, 16, foreground, 1);
+            
+            return new FormattedText(text, System.Globalization.CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, SystemComponent.MPTEditorFont, 16, foreground, 1);
         }
         internal bool DetectSelection(Rect Selection, int active=0)
         {

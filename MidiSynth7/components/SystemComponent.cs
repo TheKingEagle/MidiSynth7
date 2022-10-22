@@ -38,5 +38,6 @@ namespace MidiSynth7.components
         }
 
         public static Typeface MPTEditorFont = new Typeface(new FontFamily("Segoe UI Mono"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal);
+        
     }
 }
