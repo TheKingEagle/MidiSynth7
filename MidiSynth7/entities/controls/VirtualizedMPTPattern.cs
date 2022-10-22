@@ -40,6 +40,8 @@ namespace MidiSynth7.entities.controls
 
         public VirtualizedMPTPattern(TrackerPattern src, FrameworkElement parent)
         {
+            Focusable = true;
+            Focus();
             PatternData = src;
             _parent = parent;
             Width = SeqData.Width * PatternData.ChannelCount;
@@ -49,7 +51,8 @@ namespace MidiSynth7.entities.controls
                 UpdateRow(i, i == ActiveRow);
             }
         }
-        
+
+
         protected override void OnRender(DrawingContext dc)
         {
             base.OnRender(dc);
@@ -60,9 +63,9 @@ namespace MidiSynth7.entities.controls
             }
         }
 
-        protected override void OnKeyDown(KeyEventArgs e)
+        public void RaiseKeyDown(KeyEventArgs e)
         {
-            base.OnKeyDown(e);
+            e.Handled = true;
             switch (e.Key)
             {
                 case Key.Up:
@@ -106,15 +109,8 @@ namespace MidiSynth7.entities.controls
                 default:
                     break;
             }
-            
-            
-            
         }
 
-        protected override void OnKeyUp(KeyEventArgs e)
-        {
-            base.OnKeyUp(e);
-        }
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {

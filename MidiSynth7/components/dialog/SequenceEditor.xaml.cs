@@ -138,10 +138,8 @@ namespace MidiSynth7.components.dialog
 
         private void PatternScroller_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            
-            
-            
-
+            e.Handled = true;
+            ActivePattern.RaiseKeyDown(e);//seriously?
             //int bit = ActivePattern.selectedBit;
             //int ch = ActivePattern.selectedChannel;
             //if (e.Key == Key.Left)
