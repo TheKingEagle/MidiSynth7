@@ -29,7 +29,7 @@
             <ScrollViewer UseLayoutRounding="True" Grid.Row="1" Grid.Column="1" PreviewKeyDown="PatternScroller_PreviewKeyDown" x:Name="PatternScroller" IsDeferredScrollingEnabled="False" HorizontalScrollBarVisibility="Visible" Background="Black" Foreground="White" ScrollChanged="Scroller_Scrolled" Margin="0,1,0,0" >
                 <Grid x:Name="PatternContainer" Margin="0,200"></Grid>
             </ScrollViewer>
-            <Grid Grid.Row="1" Grid.Column="1" Background="Black" Margin="0,3,20,21" x:Name="loader">
+            <Grid Grid.Row="1" Grid.Column="1" Background="Black" Margin="0,3,18,18" x:Name="loader">
                 <TextBlock Foreground="White" FontSize="72" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center"><Run Text="Loading..."/></TextBlock>
             </Grid>
             <!--================= Row header container =================-->
