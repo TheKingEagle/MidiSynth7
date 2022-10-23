@@ -271,10 +271,9 @@ namespace MidiSynth7.components
             {
                 item.DetectSelection(Selection,out bitIndex,active);
             }
-            if(Selection.Width < 2 && Selection.Height < 2)
-            {
-                cellIndex = sel.ToList()[0].Column;
-            }
+
+            cellIndex = sel.ToList()[0].Column;
+
             return Selection.Width > 2 || Selection.Height > 2;
         }
     }
@@ -443,10 +442,7 @@ namespace MidiSynth7.components
             }
             //scroll to active corner
 
-            if(Selection.Width < 2 && Selection.Height < 2)
-            {
-                activeBit = SelectedBits.ToList().IndexOf(true);
-            }
+            activeBit = SelectedBits.ToList().IndexOf(true);
             return Selection.Width > 2 || Selection.Height > 2;
         }
 

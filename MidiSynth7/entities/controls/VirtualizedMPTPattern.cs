@@ -120,12 +120,12 @@ namespace MidiSynth7.entities.controls
                 case Key.L:
                     if (Keyboard.Modifiers == ModifierKeys.Control)
                     {
-                        //ActivePattern.SelectActiveChannel();
+                        SelectChannelColumn();
                         return;
                     }
                     if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
                     {
-                        //ActivePattern.SelectActiveChannelBit();
+                        SelectChannelColumnBit();
                         return;
 
                     }
@@ -231,6 +231,7 @@ namespace MidiSynth7.entities.controls
             foreach (var item in sel)
             {
                 item.DetectSelection(bounds,out ActiveCell,out ActiveBitIndex,ActiveRow);
+                
             }
             return bounds.Height > 2 || bounds.Width > 2;
         }
@@ -242,6 +243,19 @@ namespace MidiSynth7.entities.controls
             GetSelection(GetSelectedBounds());
             _parent.BringIntoView(PatternData.Rows[ActiveRow].Notes[ActiveCell].SqDatBit_Bounds);
         }
+        internal void SelectChannelColumn()
+        {
+            SelPoint1 = new Point((ActiveCell * SeqData.Width) + 2, 1);
+            SelPoint2 = new Point((ActiveCell * SeqData.Width) + SeqData.Width-2 , RowCount * SeqData.Height);
+            GetSelection(GetSelectedBounds());
+        }
+        internal void SelectChannelColumnBit()
+        {
+            SelPoint1 = new Point((ActiveCell * SeqData.Width) + SeqData.BitOffsets[ActiveBitIndex] + (SeqData.BitWidths[ActiveBitIndex] / 2), 1);
+            SelPoint2 = new Point((ActiveCell * SeqData.Width) + SeqData.BitOffsets[ActiveBitIndex] + (SeqData.BitWidths[ActiveBitIndex] / 2) + 1, RowCount * SeqData.Height);
+            GetSelection(GetSelectedBounds());
+        }
+
     }
 
     public class ActiveRowEventArgs : EventArgs
