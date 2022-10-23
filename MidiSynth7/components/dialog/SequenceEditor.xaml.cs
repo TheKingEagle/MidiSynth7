@@ -134,50 +134,13 @@ namespace MidiSynth7.components.dialog
             ActivePattern = null;
 
             DialogClosed?.Invoke(this, new DialogEventArgs(_win, _container));
+            _win.PopulateSequences();
         }
 
         private void PatternScroller_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             e.Handled = true;
             ActivePattern.RaiseKeyDown(e);//seriously?
-            //int bit = ActivePattern.selectedBit;
-            //int ch = ActivePattern.selectedChannel;
-            //if (e.Key == Key.Left)
-            //{
-            //    bit--;
-            //}
-            //if (e.Key == Key.Right)
-            //{
-            //    bit++;
-            //}
-            //if (bit > 4)
-            //{
-            //    bit = 0;
-            //    ch++;
-            //    if(ch > ActivePattern.ChannelCount-1)
-            //    {
-            //        ch = 0;
-            //    }
-            //}
-            //if (bit < 0)
-            //{
-            //    bit = 4;
-            //    ch--;
-            //    if (ch < 0)
-            //    {
-            //        ch = ActivePattern.ChannelCount - 1;
-            //    }
-            //}
-            //ActivePattern.MoveBitActiveRow(ch, bit);
-            ////will this actually?
-            //Rect selectBit = ActivePattern.ActiveBit.BoundsRelativeTo(ActivePattern);
-            //PatternContainer.BringIntoView(selectBit);
-            
-            
-            //if (ActivePattern.ActiveBit != null)
-            //{
-            //    ActivePattern.ActiveBit.ProcessKey(e.Key, CTRL_MPTOctave.Value,(CB_MPTInstrument.SelectedItem as TrackerInstrument).Index);
-            //}
         }
 
         private void Scroller_Scrolled(object sender, ScrollChangedEventArgs e)
@@ -228,6 +191,7 @@ namespace MidiSynth7.components.dialog
                 PatternContainer.Children.Clear();
                 ActivePattern = null;
                 DialogClosed?.Invoke(this, new DialogEventArgs(_win, _container));
+                _win.PopulateSequences();
             }
             
         }
@@ -249,9 +213,10 @@ namespace MidiSynth7.components.dialog
             
         }
 
-        private void Bn_StopPattern_Click(object sender, RoutedEventArgs e)
+        private async void Bn_StopPattern_Click(object sender, RoutedEventArgs e)
         {
             isPatternPlaying = false;
+            await Task.Run(() => StopMIDI());
         }
 
         private void StopMIDI()
@@ -269,6 +234,7 @@ namespace MidiSynth7.components.dialog
         {
             if (isPatternPlaying)
             {
+                
                 return;
             }
             isPatternPlaying = true;
@@ -285,15 +251,18 @@ namespace MidiSynth7.components.dialog
                     for (int step = 0; step < ActivePattern.RowCount; step++)
                     {
 
-                        
+                        int pstep = step - 1; if (pstep < 0) pstep = ActivePattern.RowCount - 1;
                         if (!isPatternPlaying)
                         {
+                           
+                            Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(pstep, false), System.Windows.Threading.DispatcherPriority.Normal);
+                            Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(step, false), System.Windows.Threading.DispatcherPriority.Normal);
                             StopMIDI();
                             return;
                         }
-                        int pstep = step - 1; if (pstep < 0) pstep = ActivePattern.RowCount - 1;
-                        Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(pstep, false),System.Windows.Threading.DispatcherPriority.Render);
-                        Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(step, true), System.Windows.Threading.DispatcherPriority.Render);
+                        
+                        Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(pstep, false),System.Windows.Threading.DispatcherPriority.Normal);
+                        Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(step, true), System.Windows.Threading.DispatcherPriority.Normal);
                         _win.ActiveSequence.Patterns[activePatternIndex].Rows[step].Play(_win.ActiveSequence, _win.MidiEngine);
                         //TODO: Further process the sequence parameters within it.
                         
