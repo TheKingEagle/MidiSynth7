@@ -397,15 +397,17 @@ namespace MidiSynth7.components
             boundList.Add(SqParBit_Bounds);
             boundList.Add(SqValBit_Bounds);
             var rc = Renderer.Open();
+            
             //render text and selection if need
             for (int i = 0; i < SelectedBits.Length; i++)
             {
                 Brush bg = SelectedBits[i] ? BR_SelBG : null;
-                if(bg != null)
+                if (bg != null)
                 {
+                    //TODO: Optimize selection rectangle drawing!
                     rc.DrawRectangle(bg, null, boundList[i]);
                 }
-                
+
                 UpdateBitText(i,hot);
                 rc.DrawDrawing(TextRenderer[i]);
             }
@@ -547,6 +549,51 @@ namespace MidiSynth7.components
             rc.DrawText(BitFormattedText[i], new Point(boundList[i].TopLeft.X + 2, boundList[i].TopLeft.Y));
             rc.Close();
 
+        }
+
+        internal void DeleteBitInfo(bool hot = false)
+        {
+            for (int i = 0; i < SelectedBits.Length; i++)
+            {
+                if (SelectedBits[i])
+                {
+                    switch (i)
+                    {
+                        case 0://note
+                            Pitch = null;
+                            break;
+                        case 1://instrument
+                            Instrument = null;
+                            break;
+                        case 2://velocity
+                            if(SelectedBits[1] || Instrument == null || Pitch == null)
+                            {
+                                Velocity = null;
+                            }
+                            else
+                            {
+                                Velocity = 127;
+                            }
+                            break;
+                        case 3://parammark
+                            Parameter = null;
+                            break;
+                        case 4://paramvalue
+                            if (SelectedBits[3])
+                            {
+                                Parameter = null;
+                            } else
+                            {
+                                Parameter.Value = 0;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            UpdateBit(hot);
         }
 
     }

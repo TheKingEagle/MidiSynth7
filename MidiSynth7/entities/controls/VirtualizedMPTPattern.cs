@@ -1,5 +1,6 @@
 ﻿using MidiSynth7.components;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -35,6 +36,8 @@ namespace MidiSynth7.entities.controls
 
         private Point SelPoint1 = new Point(0, 0);
         private Point SelPoint2 = new Point(0, 0);
+
+        private SeqData[] SelectedNotes;
         public Rect GetSelectedBounds()
         {
             return new Rect(SelPoint1, SelPoint2);
@@ -139,6 +142,13 @@ namespace MidiSynth7.entities.controls
                     }
                     //ELSE: Process key
                     break;
+
+                case Key.Delete:
+                    foreach (var item in SelectedNotes)
+                    {
+                        item.DeleteBitInfo(item.Row == ActiveRow);
+                    }
+                    break;
                 default:
                     break;
             }
@@ -156,7 +166,7 @@ namespace MidiSynth7.entities.controls
             mouseDowned = true;
             CaptureMouse();
             
-            GetSelection(GetSelectedBounds());
+            GetSelection(GetSelectedBounds(), out SelectedNotes);
         }
 
         protected override void OnMouseUp(MouseButtonEventArgs e)
@@ -164,7 +174,7 @@ namespace MidiSynth7.entities.controls
             base.OnMouseUp(e);
             ReleaseMouseCapture();
             mouseDowned = false;
-            bool f = GetSelection(GetSelectedBounds());
+            bool f = GetSelection(GetSelectedBounds(), out SelectedNotes);
             if (!f)
             {
                 //set active row.
@@ -181,7 +191,7 @@ namespace MidiSynth7.entities.controls
             if (mouseDowned)
             {
                 SelPoint2 = e.GetPosition(this);
-                GetSelection(GetSelectedBounds());
+                GetSelection(GetSelectedBounds(), out SelectedNotes);
                 Rect f = new Rect(e.GetPosition(this), new Size(SeqData.Width, SeqData.Height));
                 _parent.BringIntoView(f);
             }
@@ -214,13 +224,9 @@ namespace MidiSynth7.entities.controls
 
         }
 
-        public void UpdateBit(int col, int row, bool hot = false)
+        public bool GetSelection(Rect bounds, out SeqData[] SelectedNotes)
         {
-            PatternData.Rows[row].Notes[col].UpdateBit(hot);
-        }
-
-        public bool GetSelection(Rect bounds)
-        {
+            var slist = new List<SeqData>();
             var sel = PatternData.Rows.Where(x => x.rowbounds.IntersectsWith(bounds));
             if(bounds.Height < 2)
             {
@@ -237,9 +243,12 @@ namespace MidiSynth7.entities.controls
             }
             foreach (var item in sel)
             {
-                item.DetectSelection(bounds,out ActiveCell,out ActiveBitIndex,ActiveRow);
+                item.DetectSelection(bounds, out ActiveCell, out ActiveBitIndex, ActiveRow);
+                slist.AddRange(item.Notes.Where(xx => xx.SqDatBit_Bounds.IntersectsWith(bounds)));
                 
             }
+            SelectedNotes = slist.ToArray();
+            Console.WriteLine("SelNoteCount: {0}", SelectedNotes.Count());
             return bounds.Height > 2 || bounds.Width > 2;
         }
 
@@ -247,27 +256,27 @@ namespace MidiSynth7.entities.controls
         {
             SelPoint1 = new Point((ActiveCell * SeqData.Width) + SeqData.BitOffsets[ActiveBitIndex] + (SeqData.BitWidths[ActiveBitIndex] / 2), (ActiveRow * SeqData.Height) + (SeqData.Height / 2));
             SelPoint2 = new Point((ActiveCell * SeqData.Width) + SeqData.BitOffsets[ActiveBitIndex] + (SeqData.BitWidths[ActiveBitIndex] / 2)+1, (ActiveRow * SeqData.Height) + (SeqData.Height / 2)+1);
-            GetSelection(GetSelectedBounds());
+            GetSelection(GetSelectedBounds(), out SelectedNotes);
             _parent.BringIntoView(PatternData.Rows[ActiveRow].Notes[ActiveCell].SqDatBit_Bounds);
         }
         internal void SelectChannelColumn()
         {
             SelPoint1 = new Point((ActiveCell * SeqData.Width) + 2, 1);
             SelPoint2 = new Point((ActiveCell * SeqData.Width) + SeqData.Width-2 , RowCount * SeqData.Height);
-            GetSelection(GetSelectedBounds());
+            GetSelection(GetSelectedBounds(), out SelectedNotes);
         }
         internal void SelectChannelColumnBit()
         {
             SelPoint1 = new Point((ActiveCell * SeqData.Width) + SeqData.BitOffsets[ActiveBitIndex] + (SeqData.BitWidths[ActiveBitIndex] / 2), 1);
             SelPoint2 = new Point((ActiveCell * SeqData.Width) + SeqData.BitOffsets[ActiveBitIndex] + (SeqData.BitWidths[ActiveBitIndex] / 2) + 1, RowCount * SeqData.Height);
-            GetSelection(GetSelectedBounds());
+            GetSelection(GetSelectedBounds(), out SelectedNotes);
         }
 
         internal void SelectEntirePattern()
         {
             SelPoint1 = new Point(0, 0);
             SelPoint2 = new Point(SeqData.Width * ChannelCount, SeqData.Height * RowCount);
-            GetSelection(GetSelectedBounds());
+            GetSelection(GetSelectedBounds(), out SelectedNotes);
         }
 
     }
