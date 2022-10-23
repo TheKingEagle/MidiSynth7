@@ -127,10 +127,17 @@ namespace MidiSynth7.entities.controls
                     {
                         SelectChannelColumnBit();
                         return;
-
                     }
+                    //ELSE: Process key
                     break;
-                case Key.Oem5:
+                case Key.D5:
+                    if (Keyboard.Modifiers == ModifierKeys.Control)
+                    {
+                        //WARNING: Slow!
+                        SelectEntirePattern();
+                        return;
+                    }
+                    //ELSE: Process key
                     break;
                 default:
                     break;
@@ -253,6 +260,13 @@ namespace MidiSynth7.entities.controls
         {
             SelPoint1 = new Point((ActiveCell * SeqData.Width) + SeqData.BitOffsets[ActiveBitIndex] + (SeqData.BitWidths[ActiveBitIndex] / 2), 1);
             SelPoint2 = new Point((ActiveCell * SeqData.Width) + SeqData.BitOffsets[ActiveBitIndex] + (SeqData.BitWidths[ActiveBitIndex] / 2) + 1, RowCount * SeqData.Height);
+            GetSelection(GetSelectedBounds());
+        }
+
+        internal void SelectEntirePattern()
+        {
+            SelPoint1 = new Point(0, 0);
+            SelPoint2 = new Point(SeqData.Width * ChannelCount, SeqData.Height * RowCount);
             GetSelection(GetSelectedBounds());
         }
 
