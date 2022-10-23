@@ -22,7 +22,10 @@ namespace MidiSynth7.components
         string path = App.APP_DATA_DIR + "Sequences\\";
         string name = "";
         
-        public string SequenceName { get=>name; set
+        public string SequenceName 
+        { 
+            get=>name; 
+            set
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
@@ -44,6 +47,8 @@ namespace MidiSynth7.components
             }
         }
         
+        internal List<ISeqParamPlayer> Players = new List<ISeqParamPlayer>();
+
         public List<TrackerPattern> Patterns { get; set; }
         
         public List<TrackerInstrument> Instruments { get; set; }
@@ -51,6 +56,22 @@ namespace MidiSynth7.components
         public int SelectedOctave { get; set; }
         
         public int SelectedInstrument{ get; set; }
+
+        public TrackerSequence()
+        {
+            AddParameterPlayer(new seqparams.Sxx());
+        }
+
+        //This could be useful to plugins?
+        public void AddParameterPlayer(ISeqParamPlayer paramPlayer)
+        {
+            ISeqParamPlayer check = Players.FirstOrDefault(x => x.Mark == paramPlayer.Mark);
+            if (check != null)
+            {
+                throw new InvalidOperationException($"A parameter player with the designated mark '{check.Mark}' already exists.");
+            }
+            Players.Add(paramPlayer);
+        }
 
         public void SaveSequence()
         {
@@ -126,6 +147,7 @@ namespace MidiSynth7.components
         {
             Notes = notes;
             rowbounds = new Rect(0, notes[0].Row * 22, SeqData.Width * notes.Count, 22);
+            
         }
 
         public static List<TrackerRow> GetEmptyRows(int rows, int ChannelCount)
@@ -171,21 +193,25 @@ namespace MidiSynth7.components
             return midiChannel;
         }
 
-        public List<SeqParam> Play(TrackerSequence seq, MidiEngine engine, ControllerType[] ActiveControl)
+        
+
+        public void Play(TrackerSequence seq, MidiEngine engine)
         {
-            List<SeqParam> ControlList = new List<SeqParam>();
+            
             foreach (SeqData item in Notes)
             {
-                TrackerInstrument ti = seq.Instruments.FirstOrDefault(x => x.Index == item.Instrument);
-                int output = ti?.DeviceIndex ?? -1;
-                ControlList.Add(item.Parameter);//even if null
                 if (item.Parameter != null)
                 {
-                    if (item.Parameter.Mark == 'Z' && ActiveControl !=  null)//3 is unused, and will be considered "default/null"
+                    ISeqParamPlayer Player = seq.Players.FirstOrDefault(x => x.Mark == item.Parameter.Mark);
+                    if (Player != null)
                     {
-                        engine.MidiNote_SetControl(ActiveControl[item.midiChannel], item.midiChannel, item.Parameter.Value, output);
+                        Player.Play(item, engine, seq);
+                        continue;//Ok batman, the player will take it from here.
                     }
                 }
+                TrackerInstrument ti = seq.Instruments.FirstOrDefault(x => x.Index == item.Instrument);
+                int output = ti?.DeviceIndex ?? -1;
+
                 if(ti != null)
                 {
                     engine.MidiNote_SetProgram(ti.Bank, ti.Instrument, item.midiChannel, output);
@@ -215,7 +241,6 @@ namespace MidiSynth7.components
                     }
                 }
             }
-            return ControlList;
         }
 
         public void UpdateRow(int index, SolidColorBrush back, bool hot=false, bool ignorebits = false, Rect? debugrect=null)

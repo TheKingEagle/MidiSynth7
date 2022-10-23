@@ -236,7 +236,7 @@ namespace MidiSynth7.components.dialog
         {
              await  Task.Run(() =>{
                 Dispatcher.Invoke( () => ActivePattern.UpdateRow(ActivePattern.ActiveRow, false,true));
-                ActiveSequence.Patterns[currentPatternIndex].Rows[ActivePattern.ActiveRow].Play(ActiveSequence, _win.MidiEngine, null);
+                ActiveSequence.Patterns[currentPatternIndex].Rows[ActivePattern.ActiveRow].Play(ActiveSequence, _win.MidiEngine);
                 ActivePattern.ActiveRow++;
                 if (ActivePattern.ActiveRow > ActiveSequence.Patterns[currentPatternIndex].RowCount - 1)
                 {
@@ -294,7 +294,7 @@ namespace MidiSynth7.components.dialog
                         int pstep = step - 1; if (pstep < 0) pstep = ActivePattern.RowCount - 1;
                         Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(pstep, false),System.Windows.Threading.DispatcherPriority.Render);
                         Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(step, true), System.Windows.Threading.DispatcherPriority.Render);
-                        _win.ActiveSequence.Patterns[activePatternIndex].Rows[step].Play(_win.ActiveSequence, _win.MidiEngine, null);
+                        _win.ActiveSequence.Patterns[activePatternIndex].Rows[step].Play(_win.ActiveSequence, _win.MidiEngine);
                         //TODO: Further process the sequence parameters within it.
                         
                         Thread.Sleep(DotDuration);//This is beyond not ideal LOL

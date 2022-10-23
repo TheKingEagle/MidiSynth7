@@ -289,7 +289,7 @@ namespace MidiSynth7.components.views
                             }
                             else
                             {
-                                AppContext.ActiveSequence.Patterns[pattern].Rows[step].Play(AppContext.ActiveSequence, AppContext.MidiEngine, null);
+                                AppContext.ActiveSequence.Patterns[pattern].Rows[step].Play(AppContext.ActiveSequence, AppContext.MidiEngine);
                             }
                             //TODO: Further process the sequence parameters within it.
                             Dispatcher.InvokeAsync(() => DotDuration = (int)((float)(2500 / (float)(Dial_RiffTempo.Value * 1000)) * (ticksPerDot * 1000)));
