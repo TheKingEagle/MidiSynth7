@@ -154,7 +154,7 @@ namespace MidiSynth7
             Loadview(AppConfig.DisplayMode);
         }
 
-        private void PopulateSequences()
+        internal void PopulateSequences()
         {
             Tracks = new List<TrackerSequence>();
             foreach (string item in Directory.GetFiles(App.APP_DATA_DIR + "sequences\\", "*.mton"))
