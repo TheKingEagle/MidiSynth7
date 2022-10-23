@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MidiSynth7.components.seqparams
 {
-    internal class S : ISeqParamPlayer
+    internal class Sxx : ISeqParamPlayer
     {
         public char Mark => 'S';
 
