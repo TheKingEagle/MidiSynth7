@@ -160,7 +160,10 @@ namespace MidiSynth7.entities.controls
 
         public void RaiseMIDIEvent(ChannelMessage Message, byte patch= 0)
         {
-            SelectedNotes[0].ProcessMIDIMessage(Message, patch, SelectedNotes[0].Row == ActiveRow);
+            if(SelectedNotes?.Length > 0)
+            {
+                SelectedNotes[0].ProcessMIDIMessage(Message, patch, SelectedNotes[0].Row == ActiveRow);
+            }
         }
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
