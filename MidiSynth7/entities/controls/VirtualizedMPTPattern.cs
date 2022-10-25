@@ -1,4 +1,5 @@
 ﻿using MidiSynth7.components;
+using Sanford.Multimedia.Midi;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -157,7 +158,10 @@ namespace MidiSynth7.entities.controls
             }
         }
 
-
+        public void RaiseMIDIEvent(ChannelMessage Message, byte patch= 0)
+        {
+            SelectedNotes[0].ProcessMIDIMessage(Message, patch, SelectedNotes[0].Row == ActiveRow);
+        }
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
             base.OnMouseDown(e);

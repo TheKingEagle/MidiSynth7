@@ -632,6 +632,24 @@ namespace MidiSynth7.components
             UpdateBit(hot);
         }
 
+        internal void ProcessMIDIMessage(ChannelMessage m, byte patchindex, bool hot=false)
+        {
+            if(m.Command == ChannelCommand.NoteOn && m.Data2 > 0)
+            {
+                Pitch = m.Data1;
+                Instrument = patchindex;
+                Velocity = (byte)m.Data2;
+            }
+            if ((m.Command == ChannelCommand.NoteOff || (m.Command == ChannelCommand.NoteOn && m.Data2 == 0)) && Pitch == null)
+            {
+                Pitch = -1;
+                Instrument = null;
+                Velocity = null;
+            }
+
+            UpdateBit(hot);
+        }
+
         private byte ParseInputAsHex(Key key, int i)
         {
             if (keybuffers.Length < 2)

@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Sanford.Multimedia.Midi;
 
 namespace MidiSynth7.components.dialog
 {
@@ -21,11 +22,24 @@ namespace MidiSynth7.components.dialog
         {
             _win = win;
             _container = container;
-            
+            win.MidiEngine.inDevice.ChannelMessageReceived += MidiIn_ChannelMessageReceived;
+            win.MidiEngine.inDevice2.ChannelMessageReceived += MidiIn_ChannelMessageReceived;
             bw.DoWork += Bw_DoWork;
             bw.RunWorkerCompleted += Bw_RunWorkerCompleted;
             InitializeComponent();
 
+        }
+        ~SequenceEditor()
+        {
+            _win.MidiEngine.inDevice.ChannelMessageReceived -= MidiIn_ChannelMessageReceived;
+            _win.MidiEngine.inDevice2.ChannelMessageReceived -= MidiIn_ChannelMessageReceived;
+        }
+        private void MidiIn_ChannelMessageReceived(object sender, ChannelMessageEventArgs e)
+        {
+            if(ActivePattern != null)
+            {
+                Dispatcher.Invoke(()=>ActivePattern.RaiseMIDIEvent(e.Message, ((TrackerInstrument)CB_MPTInstrument.SelectedItem).Index));
+            }
         }
 
         private void Bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
