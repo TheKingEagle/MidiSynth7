@@ -6,6 +6,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using System.Windows.Media;
 using System.Windows;
+using System.Windows.Input;
 
 namespace MidiSynth7.components
 {
@@ -299,6 +300,7 @@ namespace MidiSynth7.components
             new DrawingGroup()
         };
         internal bool[] SelectedBits = new bool[] { false, false, false, false, false };
+        private string[] keybuffers = new string[] { "", "", "", "", "" };
 
         public static readonly int[] BitWidths = new int[]
         {
@@ -596,6 +598,68 @@ namespace MidiSynth7.components
             UpdateBit(hot);
         }
 
+        internal void ProcessBitKey(int octave, byte patchindex, Key key, bool hot = false)
+        {
+            int i = Array.IndexOf(SelectedBits, true);
+            switch (i)
+            {
+                case 0:
+                    Pitch = Array.IndexOf(SystemComponent.MPTKeysTable, key) + 21 + octave;
+                    Instrument = patchindex;
+                    if(Velocity == null)
+                    {
+                        Velocity = 127;
+                    }
+                    break;
+                case 1:
+                    //instrument editor
+                    Instrument = ParseInputAsHex(key, i);
+                    break;
+                case 2:
+                    Velocity = ParseInputAsHex(key, i);
+                    if(Velocity > 127)
+                    {
+                        Velocity = 127;
+                    }
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                default:
+                    break;
+            }
+            UpdateBit(hot);
+        }
+
+        private byte ParseInputAsHex(Key key, int i)
+        {
+            if (keybuffers.Length < 2)
+            {
+                keybuffers[i] = keybuffers[i].PadLeft(2, '0');
+            }
+            string prv = keybuffers[i];
+            keybuffers[i] += SystemComponent.GetCharFromKey(key);
+            if (keybuffers[i].Length > 2)
+            {
+                keybuffers[i] = keybuffers[i].Remove(0, 1);
+            }
+            //try parse hex
+
+            if (byte.TryParse(keybuffers[i], System.Globalization.NumberStyles.HexNumber, null, out byte res))
+            {
+                return res;
+            }
+            else
+            {
+                keybuffers[i] = prv;
+                if (byte.TryParse(keybuffers[i], System.Globalization.NumberStyles.HexNumber, null, out byte fallback))
+                {
+                    return fallback;
+                }
+            }
+            return 0;
+        }
     }
 
     public class TrackerInstrument

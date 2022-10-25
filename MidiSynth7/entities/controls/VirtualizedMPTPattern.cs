@@ -67,7 +67,7 @@ namespace MidiSynth7.entities.controls
             }
         }
 
-        public void RaiseKeyDown(KeyEventArgs e)
+        public void RaiseKeyDown(KeyEventArgs e, int octave=3,byte patch=0)
         {
             e.Handled = true;
             switch (e.Key)
@@ -132,6 +132,7 @@ namespace MidiSynth7.entities.controls
                         return;
                     }
                     //ELSE: Process key
+                    SelectedNotes[0].ProcessBitKey(octave, patch, e.Key, SelectedNotes[0].Row == ActiveRow);
                     break;
                 case Key.D5:
                     if (Keyboard.Modifiers == ModifierKeys.Control)
@@ -141,6 +142,7 @@ namespace MidiSynth7.entities.controls
                         return;
                     }
                     //ELSE: Process key
+                    SelectedNotes[0].ProcessBitKey(octave, patch, e.Key, SelectedNotes[0].Row == ActiveRow);
                     break;
 
                 case Key.Delete:
@@ -150,6 +152,7 @@ namespace MidiSynth7.entities.controls
                     }
                     break;
                 default:
+                    SelectedNotes[0].ProcessBitKey(octave, patch, e.Key, SelectedNotes[0].Row == ActiveRow);
                     break;
             }
         }

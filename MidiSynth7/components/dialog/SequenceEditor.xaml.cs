@@ -140,7 +140,7 @@ namespace MidiSynth7.components.dialog
         private void PatternScroller_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             e.Handled = true;
-            ActivePattern.RaiseKeyDown(e);//seriously?
+            ActivePattern.RaiseKeyDown(e,CTRL_MPTOctave.Value,((TrackerInstrument)CB_MPTInstrument.SelectedItem).Index);//seriously?
         }
 
         private void Scroller_Scrolled(object sender, ScrollChangedEventArgs e)
