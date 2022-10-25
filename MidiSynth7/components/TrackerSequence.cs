@@ -604,7 +604,7 @@ namespace MidiSynth7.components
             switch (i)
             {
                 case 0:
-                    Pitch = Array.IndexOf(SystemComponent.MPTKeysTable, key) + 21 + octave;
+                    Pitch = Array.IndexOf(SystemComponent.MPTKeysTable, key) + 21 + (12*octave);
                     Instrument = patchindex;
                     if(Velocity == null)
                     {
