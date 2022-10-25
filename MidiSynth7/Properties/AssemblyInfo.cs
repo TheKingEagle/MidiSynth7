@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("MidiSynth7")]
-[assembly: AssemblyCopyright("Copyright © RMSoftware Development 2021")]
+[assembly: AssemblyCopyright("Copyright © RMSoftware Development 2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -51,5 +51,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("7.0.1913.1970")]
-[assembly: AssemblyFileVersion("7.0.1912.1969")]
+[assembly: AssemblyVersion("7.0.1914.1971")]
+[assembly: AssemblyFileVersion("7.0.1914.1971")]
