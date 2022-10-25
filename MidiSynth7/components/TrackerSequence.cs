@@ -604,15 +604,32 @@ namespace MidiSynth7.components
             switch (i)
             {
                 case 0:
-                    Pitch = Array.IndexOf(SystemComponent.MPTKeysTable, key) + 21 + (12*octave);
-                    Instrument = patchindex;
-                    if(Velocity == null)
+                    int index = Array.IndexOf(SystemComponent.MPTKeysTable, key);
+                    if(index > -1)
                     {
-                        Velocity = 127;
+                        Pitch = index + 21 + (12 * octave);
+                        Instrument = patchindex;
+                        if (Velocity == null)
+                        {
+                            Velocity = 127;
+                        }
+                    }
+                    if(key == KeyInterop.KeyFromVirtualKey(187))
+                    {
+                        Pitch = -1;
+                        Instrument = null;
+                        Velocity = null;
                     }
                     break;
                 case 1:
                     //instrument editor
+                    if (key == KeyInterop.KeyFromVirtualKey(187))
+                    {
+                        Pitch = -1;
+                        Instrument = null;
+                        Velocity = null;
+                        break;
+                    }
                     Instrument = ParseInputAsHex(key, i);
                     break;
                 case 2:
@@ -639,15 +656,17 @@ namespace MidiSynth7.components
                 Pitch = m.Data1;
                 Instrument = patchindex;
                 Velocity = (byte)m.Data2;
+                UpdateBit(hot);
             }
             if ((m.Command == ChannelCommand.NoteOff || (m.Command == ChannelCommand.NoteOn && m.Data2 == 0)) && Pitch == null)
             {
                 Pitch = -1;
                 Instrument = null;
                 Velocity = null;
+                UpdateBit(hot);
             }
 
-            UpdateBit(hot);
+            
         }
 
         private byte ParseInputAsHex(Key key, int i)
