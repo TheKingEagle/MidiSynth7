@@ -219,11 +219,12 @@ namespace MidiSynth7.components.dialog
             var mbd = MessageBox.Show("Abandon changes?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if(mbd == MessageBoxResult.Yes)
             {
+                StopMIDI();
                 isPatternPlaying = false;
                 PatternContainer.Children.Clear();
                 ActivePattern = null;
                 DialogClosed?.Invoke(this, new DialogEventArgs(_win, _container));
-                _win.PopulateSequences();
+                //_win.PopulateSequences();
             }
             
         }
@@ -280,22 +281,26 @@ namespace MidiSynth7.components.dialog
 
                 while (isPatternPlaying)
                 {
-                    for (int step = 0; step < ActivePattern.RowCount; step++)
+                    for (int step = 0; step < ActivePattern?.RowCount; step++)
                     {
-
+                        if (ActivePattern == null)
+                        {
+                            StopMIDI();
+                            return;
+                        }
                         int pstep = step - 1; if (pstep < 0) pstep = ActivePattern.RowCount - 1;
                         if (!isPatternPlaying)
                         {
                            
-                            Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(pstep, false), System.Windows.Threading.DispatcherPriority.Normal);
-                            Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(step, false), System.Windows.Threading.DispatcherPriority.Normal);
+                            Dispatcher.InvokeAsync(() => ActivePattern?.UpdateRow(pstep, false), System.Windows.Threading.DispatcherPriority.Normal);
+                            Dispatcher.InvokeAsync(() => ActivePattern?.UpdateRow(step, false), System.Windows.Threading.DispatcherPriority.Normal);
                             StopMIDI();
                             return;
                         }
                         
-                        Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(pstep, false),System.Windows.Threading.DispatcherPriority.Normal);
-                        Dispatcher.InvokeAsync(() => ActivePattern.UpdateRow(step, true), System.Windows.Threading.DispatcherPriority.Normal);
-                        _win.ActiveSequence.Patterns[activePatternIndex].Rows[step].Play(_win.ActiveSequence, _win.MidiEngine);
+                        Dispatcher.InvokeAsync(() => ActivePattern?.UpdateRow(pstep, false),System.Windows.Threading.DispatcherPriority.Normal);
+                        Dispatcher.InvokeAsync(() => ActivePattern?.UpdateRow(step, true), System.Windows.Threading.DispatcherPriority.Normal);
+                        ActivePattern?.PatternData.Rows[step].Play(_win.ActiveSequence, _win.MidiEngine);
                         //TODO: Further process the sequence parameters within it.
                         
                         Thread.Sleep(DotDuration);//This is beyond not ideal LOL
