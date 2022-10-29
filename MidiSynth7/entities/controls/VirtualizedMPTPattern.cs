@@ -2,6 +2,7 @@
 using Sanford.Multimedia.Midi;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -51,13 +52,20 @@ namespace MidiSynth7.entities.controls
             _parent = parent;
             Width = SeqData.Width * PatternData.ChannelCount;
             Height = SeqData.Height * PatternData.RowCount;
+            
+        }
+
+        public void PresentMPT()
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             for (int i = 0; i < PatternData.RowCount; i++)
             {
                 UpdateRow(i, i == ActiveRow);
             }
+            sw.Stop();
+            Console.WriteLine("PresentMPT: " + sw.ElapsedMilliseconds + "ms");
         }
-
-
         protected override void OnRender(DrawingContext dc)
         {
             base.OnRender(dc);

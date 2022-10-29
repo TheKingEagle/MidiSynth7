@@ -50,13 +50,15 @@ namespace MidiSynth7.components.dialog
 
         private void Bw_DoWork(object sender, DoWorkEventArgs e)
         {
-            (TrackerSequence sequence, int index) = ((TrackerSequence sequence, int index))e.Argument ;
-            BWLoadPattern(sequence, index);
+             int index = (int)e.Argument ;
+            BWLoadPattern( index);
         }
 
         private MainWindow _win;
         private Grid _container;
         private TrackerSequence ActiveSequence;
+        private List<VirtualizedMPTPattern> Patterns = new List<VirtualizedMPTPattern>();
+
         private VirtualizedMPTPattern ActivePattern;
         bool isPatternPlaying = false;
         int currentPatternIndex = 0;
@@ -74,14 +76,14 @@ namespace MidiSynth7.components.dialog
         {
             throw new NotImplementedException();
         }
-        public void LoadPattern(TrackerSequence sequence, int index = 0)
+
+        public void LoadSequence(TrackerSequence sequence)
         {
-            
-            string ttl = DialogTitle;
-            loader.Visibility = Visibility.Visible;
-            UpdateLayout();
-            currentPatternIndex = index;
-            (TrackerSequence sequence, int index) arg = (sequence, index);
+            Patterns.Clear();
+            foreach (var item in sequence.Patterns)
+            {
+                Patterns.Add(new VirtualizedMPTPattern(item, PatternContainer));
+            }
             //Populate instruments; This should be moved.
             int prvInst = sequence.SelectedInstrument;
             CB_MPTInstrument.Items.Clear();
@@ -91,24 +93,40 @@ namespace MidiSynth7.components.dialog
                 CB_MPTInstrument.Items.Add(item);
             }
             CB_MPTInstrument.SelectedIndex = prvInst;
+            ActiveSequence = sequence;
+        }
+
+        public void LoadPattern(int index = 0)
+        {
+            
+            string ttl = DialogTitle;
+            loader.Visibility = Visibility.Visible;
+            //UpdateLayout();
+            currentPatternIndex = index;
+            int arg = index;
+            if (bw.IsBusy) return;
             bw.RunWorkerAsync(arg);
         }
-        private void BWLoadPattern(TrackerSequence sequence, int index=0 )
+        private void BWLoadPattern(int index=0 )
         {
             Thread.Sleep(50);//this is just so ui can show the loader. Which is also stupid, but go off for now.
             Dispatcher.Invoke(()=> PatternContainer.Children.Clear());
             
-            ActiveSequence = sequence;
+            
             StopMIDI();//just for safe
 
             Console.WriteLine("Yup");
             Dispatcher.Invoke(() =>
             {
-                
-                ActivePattern = new VirtualizedMPTPattern(ActiveSequence.Patterns[index],PatternContainer);
+             
+                if(ActivePattern != null)
+                {
+                    ActivePattern.ActiveRowChanged -= ActivePattern_ActiveRowChanged; ;
+                }
+                ActivePattern = Patterns[index];
                 ActivePattern.ActiveRowChanged += ActivePattern_ActiveRowChanged; ;
                 PatternContainer.Children.Add(ActivePattern);
-
+                ActivePattern.PresentMPT();
                 PatternContainer.Margin = new Thickness(0, (PatternScroller.ViewportHeight - 21) / 2, 0, (PatternScroller.ViewportHeight - 21) / 2);
                 RowHeadContainer.Margin = new Thickness(0, (PatternScroller.ViewportHeight - 21) / 2, 0, (PatternScroller.ViewportHeight - 21) / 2);
                 RowHeadScroller.Padding = new Thickness(0, 0, 0, 21);
@@ -185,7 +203,7 @@ namespace MidiSynth7.components.dialog
         private void LC_PatternSel_LightIndexChanged(object sender, LightCellEventArgs e)
         {
             isPatternPlaying = false;
-            LoadPattern(ActiveSequence, e.LightIndex);
+            LoadPattern(e.LightIndex);
             activePatternIndex = e.LightIndex;
         }
 

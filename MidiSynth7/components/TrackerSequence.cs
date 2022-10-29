@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 using System.Windows.Media;
 using System.Windows;
 using System.Windows.Input;
-
 namespace MidiSynth7.components
 {
     /// <summary>
@@ -252,7 +251,6 @@ namespace MidiSynth7.components
             foreach (var item in Notes)
             {
                 if (!ignorebits) item.UpdateBit(hot);
-                item.Render(dc);
             }
             
             dc.Close();
@@ -261,6 +259,11 @@ namespace MidiSynth7.components
         public void Render(DrawingContext dc)
         {
             dc.DrawDrawing(RowRender);
+            foreach (var item in Notes)
+            {
+                //if (!ignorebits) item.UpdateBit(hot);
+                item.Render(dc);
+            }
         }
 
         internal bool DetectSelection(Rect Selection, out int cellIndex, out int bitIndex, int active=0 )
@@ -291,18 +294,10 @@ namespace MidiSynth7.components
 
         #region Rendering Properties
         internal DrawingGroup Renderer = new DrawingGroup();
-        internal DrawingGroup[] TextRenderer = new DrawingGroup[]
-        {
-            new DrawingGroup(),
-            new DrawingGroup(),
-            new DrawingGroup(),
-            new DrawingGroup(),
-            new DrawingGroup()
-        };
         internal bool[] SelectedBits = new bool[] { false, false, false, false, false };
         private string[] keybuffers = new string[] { "", "", "", "", "" };
 
-        public static readonly int[] BitWidths = new int[]
+        public static readonly double[] BitWidths = new double[]
         {
             34,24,34,10,20
         };
@@ -410,8 +405,7 @@ namespace MidiSynth7.components
                     rc.DrawRectangle(bg, null, boundList[i]);
                 }
 
-                UpdateBitText(i,hot);
-                rc.DrawDrawing(TextRenderer[i]);
+                UpdateBitText(rc,i,hot);
             }
             //draw borders
             Point tr2 = SqDatBit_Bounds.TopRight;
@@ -430,7 +424,45 @@ namespace MidiSynth7.components
         {
             return new FormattedText(text, System.Globalization.CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, SystemComponent.MPTEditorFont, 16, foreground, 1);
         }
-        
+        private GlyphRun GlyphText(string text, Point origin)
+        {
+            bool v = SystemComponent.MPTEditorFont.TryGetGlyphTypeface(out GlyphTypeface cachedTypeface);
+            if (!v)
+            {
+                throw new InvalidOperationException("Cannot get typeface!");
+            }
+            double fontSize = 16;
+            ushort[] glyphIndexes = new ushort[text.Length];
+            double[] advanceWidths = new double[text.Length];
+
+            double totalWidth = 0;
+            for (int n = 0; n < text.Length; n++)
+            {
+                ushort glyphIndex;
+                cachedTypeface.CharacterToGlyphMap.TryGetValue(text[n], out glyphIndex);
+                glyphIndexes[n] = glyphIndex;
+                double width = cachedTypeface.AdvanceWidths[glyphIndex] * fontSize;
+                advanceWidths[n] = width;
+                totalWidth += width;
+            }
+
+            GlyphRun run = new GlyphRun(cachedTypeface,
+                                        bidiLevel: 0,
+                                        isSideways: false,
+                                        renderingEmSize: fontSize,
+                                        pixelsPerDip: 1,
+                                        glyphIndices: glyphIndexes,
+                                        baselineOrigin: origin,
+                                        advanceWidths: advanceWidths,
+                                        glyphOffsets: null,
+                                        characters: null,
+                                        deviceFontName: null,
+                                        clusterMap: null,
+                                        caretStops: null,
+                                        language: null);
+
+            return run;
+        }
         internal bool DetectSelection(Rect Selection, out int activeBit, int active=0)
         {
             activeBit = 0;
@@ -462,7 +494,7 @@ namespace MidiSynth7.components
             }
         }
 
-        internal void UpdateBitText(int i, bool hot)
+        internal void UpdateBitText(DrawingContext rc, int i, bool hot)
         {
             Brush fg = BR_Empty;
             string text = "...";
@@ -531,26 +563,11 @@ namespace MidiSynth7.components
             {
                 fg = BR_Pitch;
             }
-            if (BitFormattedText[i] == null)
-            {
-                BitFormattedText[i] = Text(text, fg);
-            }
-            else
-            {
-                if (BitFormattedText[i].Text == text)
-                {
-                    BitFormattedText[i].SetForegroundBrush(fg);
-                }
-                else
-                {
-                    BitFormattedText[i] = Text(text, fg);
-
-                }
-            }
-            var rc = TextRenderer[i].Open();
-            rc.DrawText(BitFormattedText[i], new Point(boundList[i].TopLeft.X + 2, boundList[i].TopLeft.Y));
-            rc.Close();
-
+            
+            
+            //rc.DrawText(Text(text, fg), new Point(boundList[i].TopLeft.X + 2, boundList[i].TopLeft.Y));
+            rc.DrawGlyphRun(fg, GlyphText(text, new Point(boundList[i].TopLeft.X + 2, boundList[i].TopLeft.Y+16)));
+            //rc.Close();
         }
 
         internal void DeleteBitInfo(bool hot = false)

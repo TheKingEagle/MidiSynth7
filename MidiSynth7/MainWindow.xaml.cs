@@ -841,12 +841,14 @@ namespace MidiSynth7
                 ts.SelectedInstrument = 1;
                 ts.SequenceName = "Untitled Sequence" + (Tracks.Count + 1);
                 ActiveSequence = ts;
-                editor.LoadPattern(ts, 0);
+                editor.LoadSequence(ts);
+                editor.LoadPattern(0);
 
             }
             else
             {
-                editor.LoadPattern(ActiveSequence, 0);
+                editor.LoadSequence(ActiveSequence);
+                editor.LoadPattern(0);
             }
             PatternLoaded = true;
         }
