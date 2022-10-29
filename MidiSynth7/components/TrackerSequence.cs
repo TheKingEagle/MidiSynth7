@@ -7,6 +7,8 @@ using Newtonsoft.Json;
 using System.Windows.Media;
 using System.Windows;
 using System.Windows.Input;
+using System.Diagnostics;
+
 namespace MidiSynth7.components
 {
     /// <summary>
@@ -134,6 +136,11 @@ namespace MidiSynth7.components
                 RowsPerMeasure = 16
             };
         }
+
+        public override string ToString()
+        {
+            return $"RowCount: {RowCount} | Pattern Name: {PatternName} | Actual row count: {Rows.Count}";
+        }
     }
 
     public class TrackerRow
@@ -248,12 +255,16 @@ namespace MidiSynth7.components
             var dc = RowRender.Open();
             dc.DrawRectangle(back, null, new Rect(0, index * 22, 126 * Notes.Count, 22));
             
-            foreach (var item in Notes)
-            {
-                if (!ignorebits) item.UpdateBit(hot);
-            }
+            //foreach (var item in Notes)
+            //{
+            //    if (!ignorebits) item.UpdateBit(hot);
+            //}
             
             dc.Close();
+            for (int i = 0; i < Notes.Count; i++)
+            {
+                if (!ignorebits) Notes[i].UpdateBit(hot);
+            }
         }
 
         public void Render(DrawingContext dc)
@@ -308,7 +319,15 @@ namespace MidiSynth7.components
         internal Rect SqDatBit_Bounds;  // overall dimensions
         internal Rect SqTxtBit_Bounds;  // text dimensions
         private List<Rect> boundList = new List<Rect>();
-        private FormattedText[] BitFormattedText = new FormattedText[5];
+        private (string text, Brush FG, GlyphRun cached)?[] cachedRuns = new (string text, Brush FG, GlyphRun cached)?[5];
+        private DrawingGroup[] txtrender = new DrawingGroup[5]
+        {
+            new DrawingGroup(),
+            new DrawingGroup(),
+            new DrawingGroup(),
+            new DrawingGroup(),
+            new DrawingGroup()
+        };
 
         public static readonly int Width = 126;
         public static readonly int Height = 22;
@@ -405,7 +424,8 @@ namespace MidiSynth7.components
                     rc.DrawRectangle(bg, null, boundList[i]);
                 }
 
-                UpdateBitText(rc,i,hot);
+                UpdateBitText(i,hot);
+                rc.DrawDrawing(txtrender[i]);
             }
             //draw borders
             Point tr2 = SqDatBit_Bounds.TopRight;
@@ -420,17 +440,18 @@ namespace MidiSynth7.components
             rc.Close();
         }
         
-        private FormattedText Text(string text, Brush foreground)
-        {
-            return new FormattedText(text, System.Globalization.CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, SystemComponent.MPTEditorFont, 16, foreground, 1);
-        }
+  
         private GlyphRun GlyphText(string text, Point origin)
         {
-            bool v = SystemComponent.MPTEditorFont.TryGetGlyphTypeface(out GlyphTypeface cachedTypeface);
-            if (!v)
+            if(SystemComponent.MPTGlyphTypeFace == null)
             {
-                throw new InvalidOperationException("Cannot get typeface!");
+                bool v = SystemComponent.MPTEditorFont.TryGetGlyphTypeface(out SystemComponent.MPTGlyphTypeFace);
+                if (!v)
+                {
+                    throw new InvalidOperationException("Cannot get typeface!");
+                }
             }
+            
             double fontSize = 16;
             ushort[] glyphIndexes = new ushort[text.Length];
             double[] advanceWidths = new double[text.Length];
@@ -439,14 +460,14 @@ namespace MidiSynth7.components
             for (int n = 0; n < text.Length; n++)
             {
                 ushort glyphIndex;
-                cachedTypeface.CharacterToGlyphMap.TryGetValue(text[n], out glyphIndex);
+                SystemComponent.MPTGlyphTypeFace.CharacterToGlyphMap.TryGetValue(text[n], out glyphIndex);
                 glyphIndexes[n] = glyphIndex;
-                double width = cachedTypeface.AdvanceWidths[glyphIndex] * fontSize;
+                double width = SystemComponent.MPTGlyphTypeFace.AdvanceWidths[glyphIndex] * fontSize;
                 advanceWidths[n] = width;
                 totalWidth += width;
             }
 
-            GlyphRun run = new GlyphRun(cachedTypeface,
+            GlyphRun run = new GlyphRun(SystemComponent.MPTGlyphTypeFace,
                                         bidiLevel: 0,
                                         isSideways: false,
                                         renderingEmSize: fontSize,
@@ -494,8 +515,9 @@ namespace MidiSynth7.components
             }
         }
 
-        internal void UpdateBitText(DrawingContext rc, int i, bool hot)
+        internal void UpdateBitText(int i, bool hot)
         {
+            
             Brush fg = BR_Empty;
             string text = "...";
             switch (i)
@@ -563,11 +585,33 @@ namespace MidiSynth7.components
             {
                 fg = BR_Pitch;
             }
-            
-            
+            if(cachedRuns[i] == null)
+            {
+                cachedRuns[i] = (text,fg, GlyphText(text, new Point(boundList[i].TopLeft.X + 2, boundList[i].TopLeft.Y + 16)));
+                var rc = txtrender[i].Open();
+                rc.DrawGlyphRun(fg, cachedRuns[i].Value.cached);
+                rc.Close();
+            }
+            if (cachedRuns[i]?.text != text)
+            {
+                cachedRuns[i] = (text,fg, GlyphText(text, new Point(boundList[i].TopLeft.X + 2, boundList[i].TopLeft.Y + 16)));
+                var rc = txtrender[i].Open();
+                rc.DrawGlyphRun(fg,cachedRuns[i].Value.cached);
+                rc.Close();
+            }
+
+            if (cachedRuns[i]?.FG != fg)
+            {
+                cachedRuns[i] = (text, fg, GlyphText(text, new Point(boundList[i].TopLeft.X + 2, boundList[i].TopLeft.Y + 16)));
+                var rc = txtrender[i].Open();
+                rc.DrawGlyphRun(fg, cachedRuns[i].Value.cached);
+                rc.Close();
+            }
+
             //rc.DrawText(Text(text, fg), new Point(boundList[i].TopLeft.X + 2, boundList[i].TopLeft.Y));
-            rc.DrawGlyphRun(fg, GlyphText(text, new Point(boundList[i].TopLeft.X + 2, boundList[i].TopLeft.Y+16)));
+
             //rc.Close();
+
         }
 
         internal void DeleteBitInfo(bool hot = false)
