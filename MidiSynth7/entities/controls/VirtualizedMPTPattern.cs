@@ -17,7 +17,7 @@ namespace MidiSynth7.entities.controls
     public class VirtualizedMPTPattern : FrameworkElement
     {
         public int ActiveRow { get; set; }
-
+        private DrawingVisual vs = new DrawingVisual();
         private int ActiveBitIndex = 0;//cell bit (pitch, instrument etc.);
         private int ActiveCell = 0; //active cell (the whole column row thing)
 
@@ -65,6 +65,7 @@ namespace MidiSynth7.entities.controls
             }
             sw.Stop();
             Console.WriteLine("PresentMPT: " + sw.ElapsedMilliseconds + "ms");
+            Console.WriteLine("PatternData: " + PatternData.ToString() + "...");
         }
         protected override void OnRender(DrawingContext dc)
         {
@@ -74,6 +75,7 @@ namespace MidiSynth7.entities.controls
             {
                 PatternData.Rows[i].Render(dc);
             }
+            
         }
 
         public void RaiseKeyDown(KeyEventArgs e, int octave=3,byte patch=0)
