@@ -156,7 +156,14 @@ namespace MidiSynth7
 
         internal void PopulateSequences()
         {
-            Tracks = new List<TrackerSequence>();
+            if(Tracks != null)
+            {
+                Tracks.Clear();
+            } 
+            else
+            {
+                Tracks = new List<TrackerSequence>();
+            }
             foreach (string item in Directory.GetFiles(App.APP_DATA_DIR + "sequences\\", "*.mton"))
             {
                 using (StreamReader sr = new StreamReader(item))
