@@ -253,7 +253,7 @@ namespace MidiSynth7.components.views
             
         }
 
-        private void riffcenter_toggleCheck(object sender, RoutedEventArgs e)
+        private async void riffcenter_toggleCheck(object sender, RoutedEventArgs e)
         {
             gb_riff.IsEnabled = true;
             bool check = CB_Sequencer_Check.IsChecked ?? false;
@@ -266,7 +266,7 @@ namespace MidiSynth7.components.views
             int DotDuration = (int)((float)(2500 / (float)(Dial_RiffTempo.Value * 1000)) * (ticksPerDot*1000));
             Console.WriteLine("DotDuration:" + DotDuration);
             // Play the selected sequence
-            Task.Run(() =>
+            await Task.Run(() =>
             {
                 
                 while (check)
@@ -275,12 +275,12 @@ namespace MidiSynth7.components.views
                     for ( pattern = 0; pattern < 4; pattern++)
                     {
 
-                        Dispatcher.Invoke(() => LC_PatternNumber.SetLight(pattern));
+                        Dispatcher.InvokeAsync(() => LC_PatternNumber.SetLight(pattern));
                         for ( step = 0; step < 32; step++)
                         {
                             
 
-                            Dispatcher.Invoke(() => check = CB_Sequencer_Check.IsChecked.Value);
+                            Dispatcher.InvokeAsync(() => check = CB_Sequencer_Check.IsChecked.Value);
                             if (!check) return;
                             Dispatcher.InvokeAsync(() => LC_PatternStep.SetLight(step));
                             if (AppContext.ActiveSequence == null)
