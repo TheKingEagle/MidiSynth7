@@ -67,7 +67,6 @@ namespace MidiSynth7
         public MainWindow()
         {
             InitializeComponent();
-
             if (!Directory.Exists(App.APP_DATA_DIR + "sequences\\"))
             {
                 Directory.CreateDirectory(App.APP_DATA_DIR + "sequences\\");
