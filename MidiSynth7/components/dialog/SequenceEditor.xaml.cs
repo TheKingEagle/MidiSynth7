@@ -10,6 +10,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Sanford.Multimedia.Midi;
+using System.Windows.Threading;
 
 namespace MidiSynth7.components.dialog
 {
@@ -127,8 +128,10 @@ namespace MidiSynth7.components.dialog
                 ActivePattern.ActiveRowChanged += ActivePattern_ActiveRowChanged; ;
                 PatternContainer.Children.Add(ActivePattern);
                 ActivePattern.PresentMPT();
-                PatternContainer.Margin = new Thickness(0, (PatternScroller.ViewportHeight - 21) / 2, 0, (PatternScroller.ViewportHeight - 21) / 2);
-                RowHeadContainer.Margin = new Thickness(0, (PatternScroller.ViewportHeight - 21) / 2, 0, (PatternScroller.ViewportHeight - 21) / 2);
+                PatternContainer.Margin = new Thickness(0, (PatternScroller.ViewportHeight - 21) / 2, 0, 
+                    (PatternScroller.ViewportHeight - 21) / 2);
+                RowHeadContainer.Margin = new Thickness(0, (PatternScroller.ViewportHeight - 21) / 2, 0, 
+                    (PatternScroller.ViewportHeight - 21) / 2);
                 RowHeadScroller.Padding = new Thickness(0, 0, 0, 21);
                 ChannelHeadScroller.Padding = new Thickness(0, 0, SystemParameters.VerticalScrollBarWidth + 2, 0);
                 RowHeadContainer.Children.Clear();
@@ -153,7 +156,8 @@ namespace MidiSynth7.components.dialog
 
         private void ActivePattern_ActiveRowChanged(object sender, ActiveRowEventArgs e)
         {
-            PatternScroller.ScrollToVerticalOffset(((PatternScroller.ViewportHeight - 21) / 2) + (e.selectedIndex * 22) - ((PatternScroller.ViewportHeight - 21) / 2));
+            PatternScroller.ScrollToVerticalOffset(((PatternScroller.ViewportHeight - 21) / 2) 
+                + (e.selectedIndex * 22) - ((PatternScroller.ViewportHeight - 21) / 2));
 
         }
 
@@ -292,14 +296,14 @@ namespace MidiSynth7.components.dialog
                         if (!isPatternPlaying)
                         {
                            
-                            Dispatcher.InvokeAsync(() => ActivePattern?.UpdateRow(pstep, false), System.Windows.Threading.DispatcherPriority.Normal);
-                            Dispatcher.InvokeAsync(() => ActivePattern?.UpdateRow(step, false), System.Windows.Threading.DispatcherPriority.Normal);
+                            Dispatcher.InvokeAsync(() => ActivePattern?.UpdateRow(pstep, false), DispatcherPriority.Normal);
+                            Dispatcher.InvokeAsync(() => ActivePattern?.UpdateRow(step, false), DispatcherPriority.Normal);
                             StopMIDI();
                             return;
                         }
                         
-                        Dispatcher.InvokeAsync(() => ActivePattern?.UpdateRow(pstep, false),System.Windows.Threading.DispatcherPriority.Normal);
-                        Dispatcher.InvokeAsync(() => ActivePattern?.UpdateRow(step, true), System.Windows.Threading.DispatcherPriority.Normal);
+                        Dispatcher.InvokeAsync(() => ActivePattern?.UpdateRow(pstep, false),DispatcherPriority.Normal);
+                        Dispatcher.InvokeAsync(() => ActivePattern?.UpdateRow(step, true), DispatcherPriority.Normal);
                         ActivePattern?.PatternData.Rows[step].Play(_win.ActiveSequence, _win.MidiEngine);
                         //TODO: Further process the sequence parameters within it.
                         
@@ -309,6 +313,23 @@ namespace MidiSynth7.components.dialog
                 }
 
             });
+        }
+
+        private void TBX_SequenceName_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                if(_win.Tracks.Where(x=>x.SequenceName == TBX_SequenceName.Text).Count() > 0 
+                    && TBX_SequenceName.Text.ToLower() != ActiveSequence.SequenceName.ToLower())
+                {
+                    Dialog.Message(_win, _container, "Sequence with name already exists.", "Duplicate", Icons.Warning, 128);
+                    TBX_SequenceName.Text = ActiveSequence.SequenceName;
+                }
+                if (ActiveSequence == null) return;
+                string old = ActiveSequence.SequenceName;
+                ActiveSequence.SequenceName = TBX_SequenceName.Text;
+                ActiveSequence.SaveSequence(old);
+            }
         }
     }
 }

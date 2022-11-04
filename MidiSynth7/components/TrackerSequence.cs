@@ -75,7 +75,7 @@ namespace MidiSynth7.components
             Players.Add(paramPlayer);
         }
 
-        public void SaveSequence()
+        public void SaveSequence(string oldname = "")
         {
             //verify row numbers
             foreach (TrackerPattern item in Patterns)
@@ -98,6 +98,16 @@ namespace MidiSynth7.components
                 Directory.CreateDirectory(path);
             }
             string safeSeqName = Path.GetInvalidFileNameChars().Aggregate(SequenceName, (current, c) => current.Replace(c, '-'));
+
+            if (!string.IsNullOrWhiteSpace(oldname))
+            {
+                string safeoldSeqName = Path.GetInvalidFileNameChars().Aggregate(oldname, (current, c) => current.Replace(c, '-'));
+                if (File.Exists(path + safeoldSeqName + ".mton"))
+                {
+                    //delete then rewrite, to prevent corruptions
+                    File.Delete(path + safeoldSeqName + ".mton");
+                }
+            }
             if (File.Exists(path + safeSeqName+".mton"))
             {
                 //delete then rewrite, to prevent corruptions

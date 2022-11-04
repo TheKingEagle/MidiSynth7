@@ -65,7 +65,7 @@
                     <GradientStop Color="#FF151515" Offset="0.547"/>
                 </LinearGradientBrush>
             </Grid.Background>
-            <Border x:Name="Bdr_InstrumentContainer" Margin="5,5,1185,0" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Top">
+            <Border x:Name="Bdr_InstrumentContainer" Margin="5,5,0,0" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="285">
                 <Grid Margin="3,3">
                     <ComboBox x:Name="CB_MPTInstrument" VerticalAlignment="Center" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" Margin="0,0,76,0" SelectedIndex="0">
                         <ComboBox.Background>
@@ -82,8 +82,8 @@
 
                 </Grid>
             </Border>
-            <Border x:Name="Bdr_MiscButtons" Margin="295,5,1044,0" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Top">
-                <StackPanel Margin="3,3" Orientation="Horizontal">
+            <Border x:Name="Bdr_MiscButtons" Margin="295,5,0,0" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="136">
+                <StackPanel Margin="3,3" Orientation="Horizontal" SnapsToDevicePixels="True">
 
                     <Button Content="Zxx" VerticalAlignment="Top" Focusable="False" FontSize="14" Background="#FF2C2C2C" Height="22" Padding="5,0" HorizontalAlignment="Right" ToolTip="Manage Zxx Macros" Margin="0,0,3,0"/>
                     <Button x:Name="Bn_PlayPattern" Content="▶" VerticalAlignment="Top" Focusable="False" FontSize="14" Background="#FF2C2C2C" Height="22" Padding="5,0" HorizontalAlignment="Right" ToolTip="Play Pattern" Margin="0,0,3,0" Click="Bn_PlayPattern_Click"/>
@@ -112,17 +112,17 @@
                 </StackPanel>
             </Border>
 
-            <Border x:Name="Bdr_ActivePatternName" Margin="5,0,1260,5" BorderBrush="Gray" BorderThickness="1" Height="30" VerticalAlignment="Bottom">
+            <Border x:Name="Bdr_ActivePatternName" Margin="5,0,0,5" BorderBrush="Gray" BorderThickness="1" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="210">
                 <Grid Margin="3,3">
                     <TextBlock Text="Pattern Name" Width="auto" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBlock>
                     <TextBox x:Name="TBX_PatternName" Margin="78,0,0,0" Background="#FF333337" BorderBrush="#FF434346" Foreground="White" Padding="0,2,0,0"></TextBox>
                 </Grid>
             </Border>
 
-            <Border x:Name="Bdr_ActiveSequenceName" Margin="220,0,1044,5" BorderBrush="Gray" BorderThickness="1" Height="30" VerticalAlignment="Bottom">
+            <Border x:Name="Bdr_ActiveSequenceName" Margin="220,0,0,5" BorderBrush="Gray" BorderThickness="1" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="211">
                 <Grid Margin="3,3">
                     <TextBlock Text="Sequence" Width="auto" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBlock>
-                    <TextBox x:Name="TBX_SequenceName" Margin="56,0,0,0" Background="#FF333337" BorderBrush="#FF434346" Foreground="White" Padding="0,2,0,0"></TextBox>
+                    <TextBox x:Name="TBX_SequenceName" Margin="56,0,0,0" Background="#FF333337" BorderBrush="#FF434346" Foreground="White" Padding="0,2,0,0" KeyDown="TBX_SequenceName_KeyDown"></TextBox>
                 </Grid>
             </Border>
 
