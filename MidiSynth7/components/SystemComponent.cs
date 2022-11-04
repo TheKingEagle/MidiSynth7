@@ -12,6 +12,7 @@ namespace MidiSynth7.components
 {
     public static class SystemComponent
     {
+        
         public static Key[] KeysTable =
         {
            Key.Z, Key.S,Key.X,Key.C,Key.F,Key.V,Key.G,Key.B,Key.N,Key.J,Key.M,Key.K,KeyInterop.KeyFromVirtualKey(188),Key.L,KeyInterop.KeyFromVirtualKey(190),KeyInterop.KeyFromVirtualKey(191),KeyInterop.KeyFromVirtualKey(222),Key.RightShift,KeyInterop.KeyFromVirtualKey(13),
@@ -86,9 +87,10 @@ namespace MidiSynth7.components
             }
             return ch;
         }
-        
+
         public static Typeface MPTEditorFont = new Typeface(new FontFamily("Segoe UI Mono"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal);
-        public static GlyphTypeface MPTGlyphTypeFace;
         
+        public static GlyphTypeface MPTGlyphTypeFace;
+
     }
 }
