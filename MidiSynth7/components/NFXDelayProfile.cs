@@ -19,5 +19,14 @@ namespace MidiSynth7.components
             return ProfileName;
         }
 
+        public NFXDelayProfile Clone()
+        {
+            return new NFXDelayProfile()
+            {
+                Delay = this.Delay,
+                OffsetMap = this.OffsetMap,
+                ProfileName = "Duplicate: " + ProfileName
+            };
+        }
     }
 }

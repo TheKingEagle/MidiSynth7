@@ -188,6 +188,20 @@ namespace MidiSynth7.components.dialog
                 PopulateSavedNFXProfiles();
             }
         }
+
+        private void BN_NFX_Duplicate_Click(object sender, RoutedEventArgs e)
+        {
+            if(LB_SavedProfiles.SelectedItem == null)
+            {
+                return;
+            }
+            NFXDelayProfile prof = (NFXDelayProfile)LB_SavedProfiles.SelectedItem;
+            NFXDelayProfile c = prof.Clone();
+            ActiveWindow.NFXProfiles.Add(c);
+            ActiveWindow.SaveNFXProfiles();
+            PopulateSavedNFXProfiles();
+            LB_SavedProfiles.SelectedItem = c;
+        }
     }
 
 }
