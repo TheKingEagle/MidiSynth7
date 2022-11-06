@@ -1,12 +1,13 @@
 ﻿using MidiSynth7.components;
 using MidiSynth7.components.dialog;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-
+using System.Linq;
 namespace MidiSynth7.entities.controls
 {
     /// <summary>
@@ -78,13 +79,17 @@ namespace MidiSynth7.entities.controls
         }
         private void ActiveDialog_DialogClosed(object sender, DialogEventArgs e)
         {
-            if(e.Container.Children.IndexOf(ModalOverlay) > -1)
+            if (e.Container.Children.IndexOf(ModalOverlay) > -1)
             {
                 e.Container.Children.Remove(ModalOverlay);
             }
+           
             shown = false;
             e.Window.ScaleUI(1.0, 0.8, this);
-            if (e.Container.Children.Count > 1) return;//don't fade the container if there's more than one dialog inside.
+            if (e.Container.Children.OfType<Dialog>().Where(x=>x.activeDialog.GetType() != typeof(Message)).Count() > 1)
+            {
+                return;
+            }
             e.Window.FadeUI(1.0, 0, e.Container);
             
 
@@ -137,11 +142,12 @@ namespace MidiSynth7.entities.controls
 
         public static async Task<bool> Message(MainWindow win, Grid container, string text,string caption, Icons icon, byte overlayOpacity = 0)
         {
-            if (container.Children.Contains(ModalOverlay)) return false;
-            ModalOverlay.Background = new SolidColorBrush(Color.FromArgb(overlayOpacity, 0, 0, 0));
-            container.Children.Add(ModalOverlay);
+            if (!container.Children.Contains(ModalOverlay))
+            {
+                container.Children.Add(ModalOverlay);
+            }
             Dialog d = new Dialog();
-            
+            ModalOverlay.Background = new SolidColorBrush(Color.FromArgb(overlayOpacity, 0, 0, 0));
             Message v = new Message(win, container, caption, text, icon,true);
             v.DialogClosed += V_DialogClosed;
             return await d.ShowDialog(v, win, container,true,128);

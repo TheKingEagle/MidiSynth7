@@ -807,7 +807,7 @@ namespace MidiSynth7
 
         
 
-        public void ShowMPT()
+        public async void ShowMPT()
         {
             PatternLoaded = false;
             if (GR_OverlayContent.Visibility == Visibility.Visible)
@@ -818,7 +818,7 @@ namespace MidiSynth7
             Dialog g = new Dialog();
             g.DialogShown += G_Shown;
             g.SnapsToDevicePixels = true;
-            g.ShowDialog(editor, this, GR_OverlayContent);
+            await g.ShowDialog(editor, this, GR_OverlayContent);
         }
         
         private void G_Shown(object sender, EventArgs e)
