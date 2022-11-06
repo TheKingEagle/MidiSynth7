@@ -52,7 +52,7 @@
                         <Label Foreground="White" Margin="10,0,39,59" Padding="0,2,0,0" Height="23" VerticalAlignment="Bottom">Name:</Label>
                         <TextBox x:Name="TB_NFX_profile_name" HorizontalAlignment="Left" Height="23" Margin="56,0,0,59" TextWrapping="Wrap" Text="" VerticalAlignment="Bottom" Width="123" Background="#FF323232" Foreground="White" Grid.ColumnSpan="2" Padding="0,2,0,0" KeyUp="TB_NFX_profile_name_KeyUp"/>
                         <Button x:Name="BN_NFX_Duplicate" Content="Duplicate" Margin="10,0,2,10" VerticalAlignment="Bottom" Background="Black" ToolTip="Copy this profile into a new one" Click="BN_NFX_Duplicate_Click"/>
-                        <Button x:Name="BN_NFX_ResetValues" Content="Revert" HorizontalAlignment="Left" Margin="2,0,0,10" VerticalAlignment="Bottom" Width="81" Background="#FF340000" Grid.Column="1" ToolTip="Undo all changes made to this profile since last save."/>
+                        <Button x:Name="BN_NFX_ResetValues" Content="Revert" HorizontalAlignment="Left" Margin="2,0,0,10" VerticalAlignment="Bottom" Width="81" Background="#FF340000" Grid.Column="1" ToolTip="Undo all changes made to this profile since last save." Click="BN_NFX_ResetValues_Click"/>
                         <Button x:Name="BN_NFX_Import" Content="Import" Margin="10,0,2,33" VerticalAlignment="Bottom" Background="Black" ToolTip="Import settings into this profile"/>
                         <Button x:Name="BN_NFX_Export" Content="Export" HorizontalAlignment="Left" Margin="2,0,0,33" VerticalAlignment="Bottom" Width="81" Background="Black" Grid.Column="1" ToolTip="Export current profile"/>
                     </Grid>
@@ -115,7 +115,7 @@
                     <GradientStop Color="#FF151515" Offset="0.547"/>
                 </LinearGradientBrush>
             </Grid.Background>
-            <Button x:Name="bn_NFXProfSave" Content="Save &amp; Close" HorizontalAlignment="Right"  Margin="0,14,10,14" Width="89" Background="#FF001D40" BorderBrush="White" BorderThickness="1" Click="bn_NFXProfSave_Click" Grid.Row="1" ToolTip="Commit to the bit... lol"/>
+            <Button x:Name="bn_NFXProfSave" Content="Save &amp; Close" HorizontalAlignment="Right"  Margin="0,14,10,14" Width="89" Background="#FF001D40" BorderThickness="1" Click="bn_NFXProfSave_Click" Grid.Row="1" ToolTip="Commit to the bit... lol"/>
         </Grid>
     </Grid>
 </Page>
