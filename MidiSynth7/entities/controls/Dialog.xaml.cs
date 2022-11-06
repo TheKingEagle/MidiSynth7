@@ -42,7 +42,7 @@ namespace MidiSynth7.entities.controls
 
         public async Task<bool> ShowDialog(IDialogView View, MainWindow window, Grid container, bool OverlayModal=false, byte overlayOpacity = 128)
         {
-           async Task<bool> fuck()
+           async Task<bool> threader()
             {
                 await Dispatcher.InvokeAsync(() =>
                 {//fading out during view switching does not work well.
@@ -62,7 +62,10 @@ namespace MidiSynth7.entities.controls
                                 container.Children.Add(ModalOverlay);
                             }
                         }
-                        container.Children.Add(this);
+                        if (!container.Children.Contains(this))
+                        {
+                            container.Children.Add(this);
+                        }
                         if (container.Visibility != Visibility.Visible)
                         {
                             window.FadeUI(0, 1, container);
@@ -75,22 +78,30 @@ namespace MidiSynth7.entities.controls
                 return DialogResult;
             }
 
-            return await Task.Run(() => fuck());
+            return await Task.Run(() => threader());
         }
         private void ActiveDialog_DialogClosed(object sender, DialogEventArgs e)
         {
-            if (e.Container.Children.IndexOf(ModalOverlay) > -1)
+            if (e.Container.Children.Contains(ModalOverlay))
             {
                 e.Container.Children.Remove(ModalOverlay);
+                
             }
-           
             shown = false;
             e.Window.ScaleUI(1.0, 0.8, this);
-            if (e.Container.Children.OfType<Dialog>().Where(x=>x.activeDialog.GetType() != typeof(Message)).Count() > 1)
+            async Task doFadeOut()
             {
-                return;
+                bool f = false;
+                while (!f)
+                {
+                    System.Threading.SpinWait.SpinUntil(() => Dispatcher.Invoke(() => e.Container.Children.Count == 0));
+                    await Dispatcher.InvokeAsync(() => e.Window.FadeUI(1.0, 0, e.Container));
+                    f = true;
+                }
+                
             }
-            e.Window.FadeUI(1.0, 0, e.Container);
+
+            Task.Run(() => doFadeOut());
             
 
         }
@@ -140,17 +151,19 @@ namespace MidiSynth7.entities.controls
             return FindVisualParent<T>(Mouse.DirectlyOver as UIElement);
         }
 
-        public static async Task<bool> Message(MainWindow win, Grid container, string text,string caption, Icons icon, byte overlayOpacity = 0)
+        public static async Task<bool?> Message(MainWindow win, Grid container, string text,string caption, Icons icon, byte overlayOpacity = 0,bool enableCancel=true)
         {
             if (!container.Children.Contains(ModalOverlay))
             {
                 container.Children.Add(ModalOverlay);
+                Dialog d = new Dialog();
+                ModalOverlay.Background = new SolidColorBrush(Color.FromArgb(overlayOpacity, 0, 0, 0));
+                Message v = new Message(win, container, caption, text, icon, enableCancel);
+                v.DialogClosed += V_DialogClosed;
+                return await d.ShowDialog(v, win, container, true, 128);
             }
-            Dialog d = new Dialog();
-            ModalOverlay.Background = new SolidColorBrush(Color.FromArgb(overlayOpacity, 0, 0, 0));
-            Message v = new Message(win, container, caption, text, icon,true);
-            v.DialogClosed += V_DialogClosed;
-            return await d.ShowDialog(v, win, container,true,128);
+
+            return null;
 
             
             
@@ -159,7 +172,6 @@ namespace MidiSynth7.entities.controls
         private static void V_DialogClosed(object sender, DialogEventArgs e)
         {
             DialogResult = e.Result;
-            e.Container.Children.Remove(ModalOverlay);
         }
     }
 }

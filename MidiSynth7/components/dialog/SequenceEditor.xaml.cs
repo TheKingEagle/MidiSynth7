@@ -222,7 +222,7 @@ namespace MidiSynth7.components.dialog
             //TODO: Add a confirmation dialog that blocks until a result is returned.
             var mbd = await Dialog.Message(_win, _container, "Abandon any changes you have on this sequence?", "Confirmation Required", Icons.Warning, 128);
             
-            if(mbd)
+            if(mbd.HasValue && mbd == true)
             {
                 StopMIDI();
                 isPatternPlaying = false;

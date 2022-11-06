@@ -70,7 +70,8 @@ namespace MidiSynth7.components.dialog
                 await Dialog.Message(ActiveWindow, Container, "You may not delete this profile.", "Invalid Operation", Icons.Critical, 128);
                 return;
             }
-            if (!await Dialog.Message(ActiveWindow, Container, "Are you sure you wantto delete this profile? This cannot be undone.", $"Delete {((NFXDelayProfile)LB_SavedProfiles.SelectedItem).ProfileName}", Icons.Warning, 128))
+            bool? v = await Dialog.Message(ActiveWindow, Container, "Are you sure you want to delete this profile? This cannot be undone.", $"Delete {((NFXDelayProfile)LB_SavedProfiles.SelectedItem).ProfileName}", Icons.Warning, 128);
+            if (v.HasValue && v==false)
             {
                 return;
             }
