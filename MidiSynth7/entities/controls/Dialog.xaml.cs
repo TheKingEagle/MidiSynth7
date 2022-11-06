@@ -80,6 +80,7 @@ namespace MidiSynth7.entities.controls
 
             return await Task.Run(() => threader());
         }
+        static bool runningDoFade = false;
         private void ActiveDialog_DialogClosed(object sender, DialogEventArgs e)
         {
             if (e.Container.Children.Contains(ModalOverlay))
@@ -91,17 +92,16 @@ namespace MidiSynth7.entities.controls
             e.Window.ScaleUI(1.0, 0.8, this);
             async Task doFadeOut()
             {
-                bool f = false;
-                while (!f)
-                {
-                    System.Threading.SpinWait.SpinUntil(() => Dispatcher.Invoke(() => e.Container.Children.Count == 0));
-                    await Dispatcher.InvokeAsync(() => e.Window.FadeUI(1.0, 0, e.Container));
-                    f = true;
-                }
-                
-            }
 
-            Task.Run(() => doFadeOut());
+                System.Threading.SpinWait.SpinUntil(() => Dispatcher.Invoke(() => e.Container.Children.Count == 0));
+                await Dispatcher.InvokeAsync(() => e.Window.FadeUI(1.0, 0, e.Container));
+                Dispatcher.Invoke(() => runningDoFade = false);
+            }
+            if (!runningDoFade)
+            {
+                runningDoFade = true;
+                Task.Run(() => doFadeOut());
+            }
             
 
         }
@@ -155,7 +155,7 @@ namespace MidiSynth7.entities.controls
         {
             if (!container.Children.Contains(ModalOverlay))
             {
-                container.Children.Add(ModalOverlay);
+                
                 Dialog d = new Dialog();
                 ModalOverlay.Background = new SolidColorBrush(Color.FromArgb(overlayOpacity, 0, 0, 0));
                 Message v = new Message(win, container, caption, text, icon, enableCancel);
