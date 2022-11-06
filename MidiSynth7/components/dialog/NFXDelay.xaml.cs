@@ -1,9 +1,12 @@
 ﻿using MidiSynth7.entities.controls;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Effects;
 
 namespace MidiSynth7.components.dialog
 {
@@ -40,9 +43,15 @@ namespace MidiSynth7.components.dialog
 
         public void InvokeHelpRequested(Control sender)
         {
+            
+            string HelperTitle = "";
+            if(sender as DialControl != null)
+            {
+                HelperTitle = ": " + ((DialControl)sender).Text;
+            }
             if(sender.ToolTip != null)
             {
-                MessageBox.Show(sender.ToolTip.ToString(), "Context" );
+                Dialog.Message(ActiveWindow,Container,sender.ToolTip.ToString(), "Display Help"+HelperTitle,Icons.Info,128,false);
             }
         }
 
@@ -83,6 +92,16 @@ namespace MidiSynth7.components.dialog
         {
             if (LB_SavedProfiles.SelectedItem == null) return;
             NFXProfileSetEditor((NFXDelayProfile)LB_SavedProfiles.SelectedItem);
+            NFXDelayProfile f = (NFXDelayProfile)LB_SavedProfiles.SelectedItem;
+            _backupProfile = new NFXDelayProfile()
+            {
+                Delay = f.Delay,
+                ProfileName = f.ProfileName
+            };
+            _backupProfile.OffsetMap = new List<(int pitch, int decay)>();
+            _backupProfile.OffsetMap.AddRange(f.OffsetMap.ToArray());
+            ToggleElement(BN_NFX_ResetValues, false);
+
         }
 
         private void Lv_steps_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -105,6 +124,8 @@ namespace MidiSynth7.components.dialog
         private void Dial_NFX_ValChanged(object sender, EventArgs e)
         {
             //profile
+            ToggleElement(BN_NFX_ResetValues, true);
+
             if (LB_SavedProfiles.SelectedItem == null) return;
             NFXDelayProfile prof = (NFXDelayProfile)LB_SavedProfiles.SelectedItem;
             prof.Delay = Dial_NFX_Interval.Value;
@@ -127,6 +148,8 @@ namespace MidiSynth7.components.dialog
 
         private void Dial_NFX_STEP_ValChanged(object sender, EventArgs e)
         {
+            ToggleElement(BN_NFX_ResetValues, true);
+
             if (lv_steps.SelectedIndex < 0) return;
             if (LB_SavedProfiles.SelectedItem == null) return;
             NFXDelayProfile prof = (NFXDelayProfile)LB_SavedProfiles.SelectedItem;
@@ -142,23 +165,24 @@ namespace MidiSynth7.components.dialog
             lv_steps.SelectedIndex = index;//pain!
         }
 
-        internal void PopulateSavedNFXProfiles()
+        internal int PopulateSavedNFXProfiles()
         {
+            ToggleElement(BN_NFX_ResetValues, false);
+
+            int last = LB_SavedProfiles.SelectedIndex;
             LB_SavedProfiles.Items.Clear();
 
             foreach (NFXDelayProfile item in NFXProfiles)
             {
                 LB_SavedProfiles.Items.Add(item);
             }
-            LB_SavedProfiles.SelectedIndex = LB_SavedProfiles.Items.Count - 1;
+            return last;
         }
 
         private void NFXProfileSetEditor(NFXDelayProfile profile)
         {
             
             gb_NFXProfEditor.IsEnabled = true;
-            _backupProfile = profile;
-
             TB_NFX_profile_name.Text = profile.ProfileName;
             Dial_NFX_Interval.SetValueSuppressed(profile.Delay);
             Dial_NFX_StepCount.SetValueSuppressed(profile.OffsetMap.Count);
@@ -178,6 +202,7 @@ namespace MidiSynth7.components.dialog
 
         private void TB_NFX_profile_name_KeyUp(object sender, KeyEventArgs e)
         {
+            ToggleElement(BN_NFX_ResetValues,true);
             if (e.Key == Key.Enter)
             {
                 if (LB_SavedProfiles.SelectedItem == null) return;
@@ -193,6 +218,14 @@ namespace MidiSynth7.components.dialog
             }
         }
 
+        private void ToggleElement(Control ele,bool enabled)
+        {
+            ele.IsEnabled = enabled;
+            ele.Opacity = enabled ? 1:0.55;
+            ele.BorderBrush = enabled ? (SolidColorBrush)TryFindResource("ButtonDefaultBorderBrush") : Brushes.DarkGray;
+            //ele.Effect = enabled ? null : new BlurEffect() { Radius = 4 };
+        }
+
         private void BN_NFX_Duplicate_Click(object sender, RoutedEventArgs e)
         {
             if(LB_SavedProfiles.SelectedItem == null)
@@ -205,6 +238,20 @@ namespace MidiSynth7.components.dialog
             ActiveWindow.SaveNFXProfiles();
             PopulateSavedNFXProfiles();
             LB_SavedProfiles.SelectedItem = c;
+        }
+
+        private async void BN_NFX_ResetValues_Click(object sender, RoutedEventArgs e)
+        {
+            bool? md = await Dialog.Message(ActiveWindow, Container, "Revert all unsaved changes to this preset?", "Confirm Revert", Icons.Warning, 128, true);
+
+            if(md.HasValue && md == true)
+            {
+                Dial_NFX_Interval.SetValueSuppressed(_backupProfile.Delay);
+                NFXPopulateSteps(_backupProfile);
+                Dial_NFX_StepCount.SetValueSuppressed(_backupProfile.OffsetMap.Count);
+                TB_NFX_profile_name.Text = _backupProfile.ProfileName;
+                ToggleElement(BN_NFX_ResetValues, false);
+            }
         }
     }
 
