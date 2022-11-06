@@ -63,14 +63,17 @@ namespace MidiSynth7.components.dialog
             PopulateSavedNFXProfiles();
         }
 
-        private void bn_NFXProfDel_Click(object sender, RoutedEventArgs e)
+        private async void bn_NFXProfDel_Click(object sender, RoutedEventArgs e)
         {
             if(LB_SavedProfiles.SelectedIndex == 0)
             {
-                Dialog.Message(ActiveWindow, Container, "You may not delete this profile.", "Invalid Operation", Icons.Critical, 128);
+                await Dialog.Message(ActiveWindow, Container, "You may not delete this profile.", "Invalid Operation", Icons.Critical, 128);
                 return;
             }
-
+            if (!await Dialog.Message(ActiveWindow, Container, "Are you sure you wantto delete this profile? This cannot be undone.", $"Delete {((NFXDelayProfile)LB_SavedProfiles.SelectedItem).ProfileName}", Icons.Warning, 128))
+            {
+                return;
+            }
             NFXProfiles.Remove((NFXDelayProfile)LB_SavedProfiles.SelectedItem);
             PopulateSavedNFXProfiles();
         }
