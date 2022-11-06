@@ -211,17 +211,18 @@ namespace MidiSynth7.components.dialog
             activePatternIndex = e.LightIndex;
         }
 
-        private void BN_MPTInsManager_Click(object sender, RoutedEventArgs e)
+        private async void BN_MPTInsManager_Click(object sender, RoutedEventArgs e)
         {
             Dialog g = new Dialog();
-            g.ShowDialog(new MPTInstrumentManager(ActiveSequence, _win, _container), _win, _container,true);
+            await g.ShowDialog(new MPTInstrumentManager(ActiveSequence, _win, _container), _win, _container,true);
         }
 
-        private void BN_cancel_Click(object sender, RoutedEventArgs e)
+        private async void BN_cancel_Click(object sender, RoutedEventArgs e)
         {
             //TODO: Add a confirmation dialog that blocks until a result is returned.
-            var mbd = MessageBox.Show("Abandon changes?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if(mbd == MessageBoxResult.Yes)
+            var mbd = await Dialog.Message(_win, _container, "Abandon any changes you have on this sequence?", "Confirmation Required", Icons.Warning, 128);
+            
+            if(mbd)
             {
                 StopMIDI();
                 isPatternPlaying = false;
@@ -315,14 +316,14 @@ namespace MidiSynth7.components.dialog
             });
         }
 
-        private void TBX_SequenceName_KeyDown(object sender, KeyEventArgs e)
+        private async void TBX_SequenceName_KeyDown(object sender, KeyEventArgs e)
         {
             if(e.Key == Key.Enter)
             {
                 if(_win.Tracks.Where(x=>x.SequenceName == TBX_SequenceName.Text).Count() > 0 
                     && TBX_SequenceName.Text.ToLower() != ActiveSequence.SequenceName.ToLower())
                 {
-                    Dialog.Message(_win, _container, "Sequence with name already exists.", "Duplicate", Icons.Warning, 128);
+                    await Dialog.Message(_win, _container, "Sequence with name already exists.", "Duplicate", Icons.Warning, 128);
                     TBX_SequenceName.Text = ActiveSequence.SequenceName;
                 }
                 if (ActiveSequence == null) return;
