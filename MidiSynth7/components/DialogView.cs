@@ -23,12 +23,13 @@ namespace MidiSynth7.components
 
         public Grid Container { get; private set; }
 
+        public bool Result { get; private set; }
 
-        public DialogEventArgs(MainWindow win, Grid container)
+        public DialogEventArgs(MainWindow win, Grid container, bool result = true)
         {
             Window = win;
             Container = container;
-            
+            Result = result;
         }
     }
 }

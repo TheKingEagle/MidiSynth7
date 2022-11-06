@@ -12,7 +12,7 @@ namespace MidiSynth7.components.dialog
         private string _title;
         private MainWindow _appContext;
         private Grid _container;
-        public Message(MainWindow AppContext, Grid Container, string Title,string Message,Icons Icon)
+        public Message(MainWindow AppContext, Grid Container, string Title,string Message,Icons Icon, bool canCancel=false)
         {
             InitializeComponent();
             _appContext = AppContext;
@@ -22,6 +22,7 @@ namespace MidiSynth7.components.dialog
             PM_Icon_Critical.Visibility = Icon == Icons.Critical ? Visibility.Visible : Visibility.Collapsed;
             PM_Icon_Info.Visibility = Icon == Icons.Info ? Visibility.Visible : Visibility.Collapsed;
             TX_Message.Text = Message;
+            bn_Cancel.Visibility = canCancel ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public string DialogTitle { get => _title; set => throw new NotImplementedException(); }
@@ -36,7 +37,12 @@ namespace MidiSynth7.components.dialog
             throw new NotImplementedException();
         }
 
-        private void Bn_cfgSave_Click(object sender, RoutedEventArgs e) => DialogClosed?.Invoke(this, new DialogEventArgs(_appContext, _container));
+        private void Bn_OK_Click(object sender, RoutedEventArgs e) => DialogClosed?.Invoke(this, new DialogEventArgs(_appContext, _container));
+
+        private void bn_Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            DialogClosed?.Invoke(this, new DialogEventArgs(_appContext, _container,false));
+        }
     }
     public enum Icons
     {
