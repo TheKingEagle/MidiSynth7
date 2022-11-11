@@ -247,6 +247,7 @@ namespace MidiSynth7.components.dialog
             if(md.HasValue && md == true)
             {
                 Dial_NFX_Interval.SetValueSuppressed(_backupProfile.Delay);
+                //Profile
                 NFXPopulateSteps(_backupProfile);
                 Dial_NFX_StepCount.SetValueSuppressed(_backupProfile.OffsetMap.Count);
                 TB_NFX_profile_name.Text = _backupProfile.ProfileName;
