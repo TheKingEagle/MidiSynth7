@@ -178,7 +178,7 @@ namespace MidiSynth7.components.views
                 Config.ActiveOutputDeviceIndex = cb_Devices.SelectedIndex;
                 AppContext.GenerateMIDIEngine(this,((NumberedEntry)cb_Devices.SelectedItem).Index);
                 //Set definition
-                AppContext.ActiveInstrumentDefinition = AppContext.Definitions.FirstOrDefault(x => x.AssociatedDeviceIndex == ((NumberedEntry)cb_Devices.SelectedItem).Index) ?? AppContext.Definitions[0];//associated or default
+                AppContext.ActiveInstrumentDefinition = AppContext.Definitions.FirstOrDefault(x => x.AssociatedDeviceIndex == (((NumberedEntry)cb_Devices.SelectedItem)?.Index ?? -1)) ?? AppContext.Definitions[0];//associated or default
                 UpdateInstrumentSelection(AppContext.AppConfig);
             }
         }

@@ -84,8 +84,8 @@ namespace MidiSynth7.components.dialog
 
         private void Bn_cfgSave_Click(object sender, RoutedEventArgs e)
         {
-            AppConfig.ActiveInputDeviceIndex = ((NumberedEntry)cm_InputDevices.SelectedItem).Index;
-            AppConfig.ActiveInputDevice2Index = ((NumberedEntry)cm_InputDevices2.SelectedItem).Index;
+            AppConfig.ActiveInputDeviceIndex = ((NumberedEntry)cm_InputDevices.SelectedItem)?.Index ?? -1;
+            AppConfig.ActiveInputDevice2Index = ((NumberedEntry)cm_InputDevices2.SelectedItem)?.Index ?? -1;
             AppContext.currentView.HandleEvent(AppContext, new EventArgs(), "RefMIDIEngine");
             for (int i = 0; i < 9; i++)
             {
