@@ -220,7 +220,7 @@ namespace MidiSynth7.components.dialog
         private async void BN_cancel_Click(object sender, RoutedEventArgs e)
         {
             //TODO: Add a confirmation dialog that blocks until a result is returned.
-            var mbd = await Dialog.Message(_win, _container, "Abandon any changes you have on this sequence?", "Confirmation Required", Icons.Warning, 128);
+            var mbd = await Dialog.Message(_win, _container, "Abandon any changes you have on this sequence?", "Confirmation Required", Icons.Warning, 128,true);
             
             if(mbd.HasValue && mbd == true)
             {

@@ -151,8 +151,25 @@ namespace MidiSynth7.entities.controls
             return FindVisualParent<T>(Mouse.DirectlyOver as UIElement);
         }
 
-        public static async Task<bool?> Message(MainWindow win, Grid container, string text,string caption, Icons icon, byte overlayOpacity = 0,bool enableCancel=true)
+        public static async Task<bool?> Message(MainWindow win, Grid container, string text,string caption, Icons icon, byte overlayOpacity = 0,bool enableCancel=false)
         {
+            switch (icon)
+            {
+                case Icons.None:
+                    System.Media.SystemSounds.Beep.Play();
+                    break;
+                case Icons.Info:
+                    System.Media.SystemSounds.Asterisk.Play();
+                    break;
+                case Icons.Warning:
+                    System.Media.SystemSounds.Exclamation.Play();
+                    break;
+                case Icons.Critical:
+                    System.Media.SystemSounds.Hand.Play();
+                    break;
+                default:
+                    break;
+            }
             if (!container.Children.Contains(ModalOverlay))
             {
                 
