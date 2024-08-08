@@ -78,7 +78,7 @@
                 <TextBlock HorizontalAlignment="Left" Margin="25,158,0,0" TextWrapping="Wrap" Text="Sustain Pedal" VerticalAlignment="Top" Grid.Column="1" Height="16" Width="70"/>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Controllers" HorizontalAlignment="Left" Margin="258,3,0,0" VerticalAlignment="Top" Height="205" Width="1230" BorderThickness="2" BorderBrush="#FF3E0000" Padding="0">
+        <GroupBox x:Name="GB_Controllers" Header="Controllers [Channel: All]" HorizontalAlignment="Left" Margin="258,3,0,0" VerticalAlignment="Top" Height="205" Width="1230" BorderThickness="2" BorderBrush="#FF3E0000" Padding="0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="13"/>
@@ -496,7 +496,7 @@
         </GroupBox>
         <SynthGUI:PianoControlFullRange x:Name="pianomain" HorizontalAlignment="Left" Margin="5,437,0,-1" VerticalAlignment="Top" pKeyDown="Pianomain_pKeyDown" pKeyUp="Pianomain_pKeyUp" Height="150"/>
 
-        <CheckBox x:Name="CB_Sequencer_Check" Content="" HorizontalAlignment="Left" Margin="381,309,0,0" VerticalAlignment="Top" Focusable="False" Checked="riffcenter_toggleCheck" Unchecked="riffcenter_toggleCheck" IsTabStop="False" Height="16" Width="21"/>
+        <CheckBox x:Name="CB_Sequencer_Check" Content="" HorizontalAlignment="Left" Margin="381,309,0,0" VerticalAlignment="Top" Focusable="False" Checked="Riffcenter_toggleCheck" Unchecked="Riffcenter_toggleCheck" IsTabStop="False" Height="16" Width="21"/>
         <CheckBox x:Name="cb_DS_Enable" Content="" HorizontalAlignment="Left" Margin="375,214,0,0" VerticalAlignment="Top" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16" Width="21"/>
         <CheckBox x:Name="cb_OFX_Enble" Content="" HorizontalAlignment="Left" Margin="779,310,0,0" VerticalAlignment="Top" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16" Width="21"/>
         <CheckBox x:Name="cb_NFX_Enable" Content="" HorizontalAlignment="Left" Margin="790,214,0,0" VerticalAlignment="Top" Width="16" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16"/>
@@ -517,154 +517,84 @@
                         <GradientStop Color="#FF01012C" Offset="1"/>
                     </LinearGradientBrush>
                 </Grid.Background>
-                <Ellipse x:Name="ch1" HorizontalAlignment="Left" Height="16" Margin="10,3,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
+                <Ellipse x:Name="ch1" HorizontalAlignment="Left" Height="16" Margin="10,3,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="0" MouseUp="ChInd_MouseUp">
                     <Ellipse.Stroke>
-                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                            <GradientStop Color="#FF706868" Offset="1"/>
-                            <GradientStop Color="#FFB6AEAE"/>
-                            <GradientStop Color="#FF272727" Offset="0.505"/>
-                            <GradientStop Color="#FF3C3C3C" Offset="0.5"/>
-                        </LinearGradientBrush>
+                        <StaticResource ResourceKey="CH_IND_STROKE"></StaticResource>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch2" HorizontalAlignment="Left" Height="16" Margin="10,24,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
+                <Ellipse x:Name="ch2" HorizontalAlignment="Left" Height="16" Margin="10,24,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="1" MouseUp="ChInd_MouseUp">
                     <Ellipse.Stroke>
-                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                            <GradientStop Color="#FF706868" Offset="1"/>
-                            <GradientStop Color="#FFB6AEAE"/>
-                            <GradientStop Color="#FF272727" Offset="0.505"/>
-                            <GradientStop Color="#FF3C3C3C" Offset="0.5"/>
-                        </LinearGradientBrush>
+                        <StaticResource ResourceKey="CH_IND_STROKE"></StaticResource>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch3" HorizontalAlignment="Left" Height="16" Margin="10,45,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
+                <Ellipse x:Name="ch3" HorizontalAlignment="Left" Height="16" Margin="10,45,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="2" MouseUp="ChInd_MouseUp">
                     <Ellipse.Stroke>
-                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                            <GradientStop Color="#FF706868" Offset="1"/>
-                            <GradientStop Color="#FFB6AEAE"/>
-                            <GradientStop Color="#FF272727" Offset="0.505"/>
-                            <GradientStop Color="#FF3C3C3C" Offset="0.5"/>
-                        </LinearGradientBrush>
+                        <StaticResource ResourceKey="CH_IND_STROKE"></StaticResource>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch4" HorizontalAlignment="Left" Height="16" Margin="10,66,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
+                <Ellipse x:Name="ch4" HorizontalAlignment="Left" Height="16" Margin="10,66,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="3" MouseUp="ChInd_MouseUp">
                     <Ellipse.Stroke>
-                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                            <GradientStop Color="#FF706868" Offset="1"/>
-                            <GradientStop Color="#FFB6AEAE"/>
-                            <GradientStop Color="#FF272727" Offset="0.505"/>
-                            <GradientStop Color="#FF3C3C3C" Offset="0.5"/>
-                        </LinearGradientBrush>
+                        <StaticResource ResourceKey="CH_IND_STROKE"></StaticResource>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch5" HorizontalAlignment="Left" Height="16" Margin="10,87,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
+                <Ellipse x:Name="ch5" HorizontalAlignment="Left" Height="16" Margin="10,87,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="4" MouseUp="ChInd_MouseUp">
                     <Ellipse.Stroke>
-                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                            <GradientStop Color="#FF706868" Offset="1"/>
-                            <GradientStop Color="#FFB6AEAE"/>
-                            <GradientStop Color="#FF272727" Offset="0.505"/>
-                            <GradientStop Color="#FF3C3C3C" Offset="0.5"/>
-                        </LinearGradientBrush>
+                        <StaticResource ResourceKey="CH_IND_STROKE"></StaticResource>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch6" HorizontalAlignment="Left" Height="16" Margin="10,108,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
+                <Ellipse x:Name="ch6" HorizontalAlignment="Left" Height="16" Margin="10,108,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="5" MouseUp="ChInd_MouseUp">
                     <Ellipse.Stroke>
-                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                            <GradientStop Color="#FF706868" Offset="1"/>
-                            <GradientStop Color="#FFB6AEAE"/>
-                            <GradientStop Color="#FF272727" Offset="0.505"/>
-                            <GradientStop Color="#FF3C3C3C" Offset="0.5"/>
-                        </LinearGradientBrush>
+                        <StaticResource ResourceKey="CH_IND_STROKE"></StaticResource>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch7" HorizontalAlignment="Left" Height="16" Margin="10,129,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
+                <Ellipse x:Name="ch7" HorizontalAlignment="Left" Height="16" Margin="10,129,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="6" MouseUp="ChInd_MouseUp">
                     <Ellipse.Stroke>
-                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                            <GradientStop Color="#FF706868" Offset="1"/>
-                            <GradientStop Color="#FFB6AEAE"/>
-                            <GradientStop Color="#FF272727" Offset="0.505"/>
-                            <GradientStop Color="#FF3C3C3C" Offset="0.5"/>
-                        </LinearGradientBrush>
+                        <StaticResource ResourceKey="CH_IND_STROKE"></StaticResource>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch8" HorizontalAlignment="Left" Height="16" Margin="10,150,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
+                <Ellipse x:Name="ch8" HorizontalAlignment="Left" Height="16" Margin="10,150,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="7" MouseUp="ChInd_MouseUp">
                     <Ellipse.Stroke>
-                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                            <GradientStop Color="#FF706868" Offset="1"/>
-                            <GradientStop Color="#FFB6AEAE"/>
-                            <GradientStop Color="#FF272727" Offset="0.505"/>
-                            <GradientStop Color="#FF3C3C3C" Offset="0.5"/>
-                        </LinearGradientBrush>
+                        <StaticResource ResourceKey="CH_IND_STROKE"></StaticResource>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch9" HorizontalAlignment="Left" Height="16" Margin="10,171,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
+                <Ellipse x:Name="ch9" HorizontalAlignment="Left" Height="16" Margin="10,171,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="8" MouseUp="ChInd_MouseUp">
                     <Ellipse.Stroke>
-                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                            <GradientStop Color="#FF706868" Offset="1"/>
-                            <GradientStop Color="#FFB6AEAE"/>
-                            <GradientStop Color="#FF272727" Offset="0.505"/>
-                            <GradientStop Color="#FF3C3C3C" Offset="0.5"/>
-                        </LinearGradientBrush>
+                        <StaticResource ResourceKey="CH_IND_STROKE"></StaticResource>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch11" HorizontalAlignment="Left" Height="16" Margin="10,213,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
+                <Ellipse x:Name="ch10" HorizontalAlignment="Left" Height="16" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Margin="10,192,0,0" Tag="9" MouseUp="ChInd_MouseUp">
                     <Ellipse.Stroke>
-                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                            <GradientStop Color="#FF706868" Offset="1"/>
-                            <GradientStop Color="#FFB6AEAE"/>
-                            <GradientStop Color="#FF272727" Offset="0.505"/>
-                            <GradientStop Color="#FF3C3C3C" Offset="0.5"/>
-                        </LinearGradientBrush>
+                        <StaticResource ResourceKey="CH_IND_STROKE"></StaticResource>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch12" HorizontalAlignment="Left" Height="16" Margin="10,234,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
+                <Ellipse x:Name="ch11" HorizontalAlignment="Left" Height="16" Margin="10,213,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="10" MouseUp="ChInd_MouseUp">
                     <Ellipse.Stroke>
-                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                            <GradientStop Color="#FF706868" Offset="1"/>
-                            <GradientStop Color="#FFB6AEAE"/>
-                            <GradientStop Color="#FF272727" Offset="0.505"/>
-                            <GradientStop Color="#FF3C3C3C" Offset="0.5"/>
-                        </LinearGradientBrush>
+                        <StaticResource ResourceKey="CH_IND_STROKE"></StaticResource>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch13" HorizontalAlignment="Left" Height="16" Margin="10,255,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
+                <Ellipse x:Name="ch12" HorizontalAlignment="Left" Height="16" Margin="10,234,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="11" MouseUp="ChInd_MouseUp">
                     <Ellipse.Stroke>
-                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                            <GradientStop Color="#FF706868" Offset="1"/>
-                            <GradientStop Color="#FFB6AEAE"/>
-                            <GradientStop Color="#FF272727" Offset="0.505"/>
-                            <GradientStop Color="#FF3C3C3C" Offset="0.5"/>
-                        </LinearGradientBrush>
+                        <StaticResource ResourceKey="CH_IND_STROKE"></StaticResource>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch14" HorizontalAlignment="Left" Height="16" Margin="10,276,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
+                <Ellipse x:Name="ch13" HorizontalAlignment="Left" Height="16" Margin="10,255,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="12" MouseUp="ChInd_MouseUp">
                     <Ellipse.Stroke>
-                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                            <GradientStop Color="#FF706868" Offset="1"/>
-                            <GradientStop Color="#FFB6AEAE"/>
-                            <GradientStop Color="#FF272727" Offset="0.505"/>
-                            <GradientStop Color="#FF3C3C3C" Offset="0.5"/>
-                        </LinearGradientBrush>
+                        <StaticResource ResourceKey="CH_IND_STROKE"></StaticResource>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch15" HorizontalAlignment="Left" Height="16" Margin="10,297,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
+                <Ellipse x:Name="ch14" HorizontalAlignment="Left" Height="16" Margin="10,276,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="13" MouseUp="ChInd_MouseUp">
                     <Ellipse.Stroke>
-                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                            <GradientStop Color="#FF706868" Offset="1"/>
-                            <GradientStop Color="#FFB6AEAE"/>
-                            <GradientStop Color="#FF272727" Offset="0.505"/>
-                            <GradientStop Color="#FF3C3C3C" Offset="0.5"/>
-                        </LinearGradientBrush>
+                        <StaticResource ResourceKey="CH_IND_STROKE"></StaticResource>
                     </Ellipse.Stroke>
                 </Ellipse>
-                <Ellipse x:Name="ch16" HorizontalAlignment="Left" Height="16" Margin="10,318,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}">
+                <Ellipse x:Name="ch15" HorizontalAlignment="Left" Height="16" Margin="10,297,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="14" MouseUp="ChInd_MouseUp">
                     <Ellipse.Stroke>
-                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                            <GradientStop Color="#FF706868" Offset="1"/>
-                            <GradientStop Color="#FFB6AEAE"/>
-                            <GradientStop Color="#FF272727" Offset="0.505"/>
-                            <GradientStop Color="#FF3C3C3C" Offset="0.5"/>
-                        </LinearGradientBrush>
+                        <StaticResource ResourceKey="CH_IND_STROKE"></StaticResource>
+                    </Ellipse.Stroke>
+                </Ellipse>
+                <Ellipse x:Name="ch16" HorizontalAlignment="Left" Height="16" Margin="10,318,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="15" MouseUp="ChInd_MouseUp">
+                    <Ellipse.Stroke>
+                        <StaticResource ResourceKey="CH_IND_STROKE"></StaticResource>
                     </Ellipse.Stroke>
                 </Ellipse>
                 <TextBlock HorizontalAlignment="Left" Margin="31,3,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top"/>
@@ -676,21 +606,9 @@
                 <TextBlock HorizontalAlignment="Left" Margin="31,129,0,0" TextWrapping="Wrap" Text="7" VerticalAlignment="Top" Height="16"/>
                 <TextBlock HorizontalAlignment="Left" Margin="31,150,0,0" TextWrapping="Wrap" Text="8" VerticalAlignment="Top" Height="16"/>
                 <TextBlock HorizontalAlignment="Left" Margin="31,171,0,0" TextWrapping="Wrap" Text="9" VerticalAlignment="Top" Height="16"/>
-                <Button Margin="3,188,21,137" Click="Ch_Indicator10_Click" BorderThickness="0">
-                    <Grid>
-                        <Ellipse x:Name="ch10" HorizontalAlignment="Left" Height="16" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" MouseUp="ch10_MouseUp">
-                            <Ellipse.Stroke>
-                                <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                                    <GradientStop Color="#FF706868" Offset="1"/>
-                                    <GradientStop Color="#FFB6AEAE"/>
-                                    <GradientStop Color="#FF272727" Offset="0.505"/>
-                                    <GradientStop Color="#FF3C3C3C" Offset="0.5"/>
-                                </LinearGradientBrush>
-                            </Ellipse.Stroke>
-                        </Ellipse>
-                        <TextBlock HorizontalAlignment="Left" Margin="21,0,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Height="16" MouseUp="ch10_MouseUp"/>
-                    </Grid>
-                </Button>
+
+                <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Height="16" Margin="0,192,0,0"/>
+
                 <TextBlock HorizontalAlignment="Left" Margin="31,213,0,0" TextWrapping="Wrap" Text="11" VerticalAlignment="Top" Height="16"/>
                 <TextBlock HorizontalAlignment="Left" Margin="31,234,0,0" TextWrapping="Wrap" Text="12" VerticalAlignment="Top" Height="16"/>
                 <TextBlock HorizontalAlignment="Left" Margin="31,255,0,0" TextWrapping="Wrap" Text="13" VerticalAlignment="Top" Height="16"/>

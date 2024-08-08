@@ -21,12 +21,12 @@ namespace MidiSynth7.components.views
         MidiEngine MidiEngine;
         MainWindow AppContext;
         private int Transpose;
-        private int RiffKey;
         private bool mfile_playing = false;
         private List<Ellipse> channelElipses = new List<Ellipse>();
         private List<MainWindow.ChInvk> channelIndicators = new List<MainWindow.ChInvk>();
         int pattern = 0;
         int step = 0;
+        int activeCh = -1;
         public bool HaltKeyboardInput { get; private set; }
 
         public StudioView(MainWindow context, ref SystemConfig config, ref MidiEngine engine)
@@ -158,19 +158,35 @@ namespace MidiSynth7.components.views
             await Dispatcher.BeginInvoke(invoker);
         }
 
-        private void UpdateMIDIControls()//TODO: Be Channel specific
+        private void UpdateMIDIControls(int channel = -1)//TODO: Be Channel specific
         {
 
             if (MidiEngine != null)
             {
-                for (int i = 0; i < 16; i++)
+                if(channel < 0)
                 {
-                    MidiEngine.MidiNote_SetReverb(i, CTRL_Reverb.Value);
-                    MidiEngine.MidiNote_SetChorus(i, CTRL_Chorus.Value);
-                    MidiEngine.MidiNote_SetModulation(i, CTRL_Modulation.Value);
-                    MidiEngine.MidiNote_SetPan(i, CTRL_Balance.Value);
-                    MidiEngine.MidiNote_SetControl(Sanford.Multimedia.Midi.ControllerType.Volume, i, CTRL_Volume.Value);
+                    for (int i = 0; i < 16; i++)
+                    {
+                        MidiEngine.MidiNote_SetReverb(i, CTRL_Reverb.Value);
+                        MidiEngine.MidiNote_SetChorus(i, CTRL_Chorus.Value);
+                        MidiEngine.MidiNote_SetModulation(i, CTRL_Modulation.Value);
+                        MidiEngine.MidiNote_SetPan(i, CTRL_Balance.Value);
+                        MidiEngine.MidiNote_SetControl(Sanford.Multimedia.Midi.ControllerType.Volume, i, CTRL_Volume.Value);
+                    }
+                } 
+                else
+                {
+                    if(channel > 15)
+                    {
+                        throw new Exception("Invalid channel specified.");
+                    }
+                    MidiEngine.MidiNote_SetReverb(channel, CTRL_Reverb.Value);
+                    MidiEngine.MidiNote_SetChorus(channel, CTRL_Chorus.Value);
+                    MidiEngine.MidiNote_SetModulation(channel, CTRL_Modulation.Value);
+                    MidiEngine.MidiNote_SetPan(channel, CTRL_Balance.Value);
+                    MidiEngine.MidiNote_SetControl(Sanford.Multimedia.Midi.ControllerType.Volume, channel, CTRL_Volume.Value);
                 }
+                
 
             }
 
@@ -253,7 +269,7 @@ namespace MidiSynth7.components.views
             
         }
 
-        private async void riffcenter_toggleCheck(object sender, RoutedEventArgs e)
+        private async void Riffcenter_toggleCheck(object sender, RoutedEventArgs e)
         {
             gb_riff.IsEnabled = true;
             bool check = CB_Sequencer_Check.IsChecked ?? false;
@@ -396,7 +412,7 @@ namespace MidiSynth7.components.views
 
         private void CTRL_ValueChanged(object sender, EventArgs e)
         {
-            UpdateMIDIControls();
+            UpdateMIDIControls(activeCh);
             if (Config != null)
             {
                 Config.ChannelReverbs[0] = CTRL_Reverb.Value;
@@ -418,7 +434,7 @@ namespace MidiSynth7.components.views
 
         private void Pianomain_pKeyDown(object sender, PKeyEventArgs e)
         {
-            RiffKey = e.KeyID;
+            
             if (MidiEngine != null)
             {
                 Bank sbank = (Bank)cb_sBank.SelectedItem;
@@ -467,8 +483,8 @@ namespace MidiSynth7.components.views
                             MidiEngine.MidiNote_SetProgram(0, 46, 1);
                             MidiEngine.MidiNote_SetProgram(0, 48, 2);
                         }
-                        MidiEngine.MidiNote_SetPan(1, 0);
-                        MidiEngine.MidiNote_SetPan(2, 127);
+                        //MidiEngine.MidiNote_SetPan(1, 0);
+                        //MidiEngine.MidiNote_SetPan(2, 127);
                         MidiEngine.MidiNote_Play(1, -12 + Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, CTRL_Volume.Value);
                         MidiEngine.MidiNote_Play(2, -24 + Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, CTRL_Volume.Value);
                     }
@@ -496,7 +512,7 @@ namespace MidiSynth7.components.views
                         {
                             MidiEngine.MidiNote_SetProgram(sbank.Index, spatch.Index, 3);
                         }
-                        MidiEngine.MidiNote_SetPan(3, CTRL_Balance.Value);
+                        //MidiEngine.MidiNote_SetPan(3, CTRL_Balance.Value);
                         MidiEngine.MidiNote_Play(3, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, CTRL_Volume.Value);
                         return;
                     }
@@ -506,7 +522,7 @@ namespace MidiSynth7.components.views
                 {
                     MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 0);
                 }
-                MidiEngine.MidiNote_SetPan(0, CTRL_Balance.Value);
+                //MidiEngine.MidiNote_SetPan(0, CTRL_Balance.Value);
                 MidiEngine.MidiNote_Play(0, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, CTRL_Volume.Value);
 
             }
@@ -514,10 +530,7 @@ namespace MidiSynth7.components.views
 
         private void Pianomain_pKeyDown_VelocitySense(object sender, PKeyEventArgs e, int velocity, int channel = 0)
         {
-            if (e.KeyID < 46)
-            {
-                RiffKey = e.KeyID;
-            }
+            
             if (MidiEngine != null)
             {
                 Bank sbank = (Bank)cb_sBank.SelectedItem;
@@ -554,8 +567,8 @@ namespace MidiSynth7.components.views
                             MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 1);
                             MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 2);
                         }
-                        MidiEngine.MidiNote_SetPan(1, 0);
-                        MidiEngine.MidiNote_SetPan(2, 127);
+                        //MidiEngine.MidiNote_SetPan(1, 0);
+                        //MidiEngine.MidiNote_SetPan(2, 127);
                         MidiEngine.MidiNote_Play(1, -12 + Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity);
                         MidiEngine.MidiNote_Play(2, -24 + Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity);
                     }
@@ -566,8 +579,8 @@ namespace MidiSynth7.components.views
                             MidiEngine.MidiNote_SetProgram(0, 46, 1);
                             MidiEngine.MidiNote_SetProgram(0, 48, 2);
                         }
-                        MidiEngine.MidiNote_SetPan(1, Config.ChannelPans[1]);
-                        MidiEngine.MidiNote_SetPan(2, Config.ChannelPans[2]);
+                        //MidiEngine.MidiNote_SetPan(1, Config.ChannelPans[1]);
+                        //MidiEngine.MidiNote_SetPan(2, Config.ChannelPans[2]);
                         MidiEngine.MidiNote_Play(1, -12 + Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity);
                         MidiEngine.MidiNote_Play(2, -24 + Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity);
                     }
@@ -578,8 +591,8 @@ namespace MidiSynth7.components.views
                             MidiEngine.MidiNote_SetProgram(OFX_b1.Index, OFX_p1.Index, 1);
                             MidiEngine.MidiNote_SetProgram(OFX_b2.Index, OFX_p2.Index, 2);
                         }
-                        MidiEngine.MidiNote_SetPan(1, 0);
-                        MidiEngine.MidiNote_SetPan(2, 127);
+                        //MidiEngine.MidiNote_SetPan(1, 0);
+                        //MidiEngine.MidiNote_SetPan(2, 127);
                         int Offset1 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.PitchOffsets[2];
                         int Offset2 = (!cb_OFX_AllowOffset.IsChecked.Value) ? 0 : Config.PitchOffsets[3];
                         MidiEngine.MidiNote_Play(1, Offset1 + Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity);
@@ -594,7 +607,7 @@ namespace MidiSynth7.components.views
                         {
                             MidiEngine.MidiNote_SetProgram(sbank.Index, spatch.Index, 3);
                         }
-                        MidiEngine.MidiNote_SetPan(3, CTRL_Balance.Value);
+                        //MidiEngine.MidiNote_SetPan(3, CTRL_Balance.Value);
                         MidiEngine.MidiNote_Play(3, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity);
                         return;
                     }
@@ -606,7 +619,7 @@ namespace MidiSynth7.components.views
                     {
                         MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 0);
                     }
-                    MidiEngine.MidiNote_SetPan(0, CTRL_Balance.Value);
+                    //MidiEngine.MidiNote_SetPan(0, CTRL_Balance.Value);
                 }
                 MidiEngine.MidiNote_Play(channel, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity);
 
@@ -822,16 +835,6 @@ namespace MidiSynth7.components.views
 
         #endregion
 
-        private void Ch_Indicator10_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void ch10_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-
-        }
-
         #region NoteFX Functions
 
         private async Task PlayDelayedNFX(Bank bank, NumberedEntry patch, int ch, int note, int velocity, int delay, int count)
@@ -923,6 +926,49 @@ namespace MidiSynth7.components.views
         private void LC_PatternStep_LightIndexChanged(object sender, LightCellEventArgs e)
         {
             step = e.LightIndex;
+        }
+
+        private void ChInd_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            
+            Ellipse invoked = sender as Ellipse; 
+            if (invoked != null) {
+                if (invoked.Tag != null && int.TryParse(invoked.Tag.ToString(), out int channelId))
+                {
+                    if(activeCh == channelId)
+                    {
+                        activeCh = -1;
+                    } else
+                    {
+                        activeCh = channelId;
+                    }
+                }
+            }
+
+            SetCHIndMarker();
+        }
+
+        private void SetCHIndMarker()
+        {
+            foreach(var ch in AppContext.channelElipses) 
+            {
+                if(int.TryParse(ch.Tag.ToString(),out int channelID))
+                {
+                    if(channelID == activeCh)
+                    {
+                        ch.Stroke = (Brush)FindResource("CH_IND_MARKER");
+                        GB_Controllers.Header = $"Controllers [Channel: {activeCh+1}]";
+                    } else
+                    {
+                        ch.Stroke = (Brush)FindResource("CH_IND_STROKE");
+                    }
+                    if(channelID == -1)
+                    {
+                        GB_Controllers.Header = $"Controllers [Channel: All]";
+                    }
+                }
+            
+            }
         }
     }
 }

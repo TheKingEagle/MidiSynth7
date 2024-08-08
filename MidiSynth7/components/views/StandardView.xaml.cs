@@ -20,10 +20,10 @@ namespace MidiSynth7.components.views
         MidiEngine MidiEngine;
         MainWindow AppContext;
         private int Transpose;
-        private int RiffKey;
         private List<Ellipse> channelElipses = new List<Ellipse>();
         private List<MainWindow.ChInvk> channelIndicators = new List<MainWindow.ChInvk>();
-
+        int pattern = 0;
+        int step = 0;
         public bool HaltKeyboardInput { get; private set; }
 
         public StandardView(MainWindow context, ref SystemConfig config, ref MidiEngine engine)
@@ -372,7 +372,7 @@ namespace MidiSynth7.components.views
 
         private void Pianomain_pKeyDown(object sender, PKeyEventArgs e)
         {
-            RiffKey = e.KeyID;
+            
             if (MidiEngine != null)
             {
                 Bank sbank = (Bank)cb_sBank.SelectedItem;
@@ -389,7 +389,7 @@ namespace MidiSynth7.components.views
                 Bank OFX_b2 = new Bank(0, "b2");
                 NumberedEntry OFX_p1 = new NumberedEntry(32, "p1"); ;
                 NumberedEntry OFX_p2 = new NumberedEntry(48, "p2"); ;
-                if (cb_RIFF_Enable.IsChecked.Value)
+                if (CB_Sequencer_Check.IsChecked.Value)
                 {
                     return;
                 }
@@ -453,7 +453,7 @@ namespace MidiSynth7.components.views
 
         private void Pianomain_pKeyDown_VelocitySense(object sender, PKeyEventArgs e, int velocity, int channel=0)
         {
-            RiffKey = e.KeyID;
+            
             if (MidiEngine != null)
             {
                 Bank sbank = (Bank)cb_sBank.SelectedItem;
@@ -470,7 +470,7 @@ namespace MidiSynth7.components.views
                 Bank OFX_b2 = new Bank(0, "b2");
                 NumberedEntry OFX_p1 = new NumberedEntry(32, "p1"); ;
                 NumberedEntry OFX_p2 = new NumberedEntry(48, "p2"); ;
-                if (cb_RIFF_Enable.IsChecked.Value)
+                if (CB_Sequencer_Check.IsChecked.Value)
                 {
                     return;
                 }
@@ -552,7 +552,7 @@ namespace MidiSynth7.components.views
                 Bank OFX_b2 = new Bank(0, "b2");
                 NumberedEntry OFX_p1 = new NumberedEntry(32, "p1"); ;
                 NumberedEntry OFX_p2 = new NumberedEntry(48, "p2"); ;
-                if (cb_RIFF_Enable.IsChecked.Value)
+                if (CB_Sequencer_Check.IsChecked.Value)
                 {
                     return;
                 }
@@ -797,6 +797,19 @@ namespace MidiSynth7.components.views
             {
                 AppContext.ActiveNFXProfile = AppContext.NFXProfiles[0];
             }
+        }
+
+        private void Cb_SequencerProfile_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (AppContext != null)
+            {
+                AppContext.ActiveSequence = Cb_SequencerProfile.SelectedItem as TrackerSequence;
+            }
+        }
+
+        private void LC_PatternStep_LightIndexChanged(object sender, LightCellEventArgs e)
+        {
+            step = e.LightIndex;
         }
     }
 }
