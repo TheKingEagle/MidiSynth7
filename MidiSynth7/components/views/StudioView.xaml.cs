@@ -415,11 +415,12 @@ namespace MidiSynth7.components.views
             UpdateMIDIControls(activeCh);
             if (Config != null)
             {
-                Config.ChannelReverbs[0] = CTRL_Reverb.Value;
-                Config.ChannelVolumes[0] = CTRL_Volume.Value;
-                Config.ChannelModulations[0] = CTRL_Modulation.Value;
-                Config.ChannelChoruses[0] = CTRL_Chorus.Value;
-                Config.ChannelPans[0] = CTRL_Balance.Value;
+
+                Config.ChannelReverbs[activeCh < 0 ? 16 : activeCh] = CTRL_Reverb.Value;
+                Config.ChannelVolumes[activeCh < 0 ? 16 : activeCh] = CTRL_Volume.Value;
+                Config.ChannelModulations[activeCh < 0 ? 16 : activeCh] = CTRL_Modulation.Value;
+                Config.ChannelChoruses[activeCh < 0 ? 16 : activeCh] = CTRL_Chorus.Value;
+                Config.ChannelPans[activeCh < 0 ? 16 : activeCh] = CTRL_Balance.Value;
                 Config.PitchOffsets[0] = CTRL_Octave.Value;//global octave
 
             }
@@ -946,6 +947,10 @@ namespace MidiSynth7.components.views
             }
 
             SetCHIndMarker();
+            CTRL_Balance.SetValueSuppressed(Config.ChannelPans[activeCh < 0 ? 16 : activeCh]);
+            CTRL_Chorus.SetValueSuppressed(Config.ChannelChoruses[activeCh < 0 ? 16 : activeCh]);
+            CTRL_Volume.SetValueSuppressed(Config.ChannelVolumes[activeCh < 0 ? 16 : activeCh]);
+            CTRL_Reverb.SetValueSuppressed(Config.ChannelReverbs[activeCh < 0 ? 16 : activeCh]);
         }
 
         private void SetCHIndMarker()
@@ -962,7 +967,7 @@ namespace MidiSynth7.components.views
                     {
                         ch.Stroke = (Brush)FindResource("CH_IND_STROKE");
                     }
-                    if(channelID == -1)
+                    if(activeCh == -1)
                     {
                         GB_Controllers.Header = $"Controllers [Channel: All]";
                     }

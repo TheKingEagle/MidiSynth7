@@ -20,12 +20,12 @@ namespace MidiSynth7.components
         public bool EnforceInstruments { get; set; }
 
         /// <summary>
-        /// Expects 16 items
+        /// Expects 17 items
         /// </summary>
         public int[] ChannelInstruments { get; set; }
 
         /// <summary>
-        /// Expects 16 items
+        /// Expects 17 items
         /// </summary>
         public int[] ChannelBanks { get; set; }
 
@@ -35,27 +35,27 @@ namespace MidiSynth7.components
         public int[] PitchOffsets { get; set; }
 
         /// <summary>
-        /// Expects 16 items
+        /// Expects 17 items
         /// </summary>
         public int[] ChannelVolumes { get; set; }
 
         /// <summary>
-        /// Expects 16 items
+        /// Expects 17 items
         /// </summary>
         public int[] ChannelPans { get; set; }
 
         /// <summary>
-        /// Expects 16 items
+        /// Expects 17 items
         /// </summary>
         public int[] ChannelReverbs { get; set; }
 
         /// <summary>
-        /// Expects 16 items
+        /// Expects 17 items
         /// </summary>
         public int[] ChannelChoruses { get; set; }
 
         /// <summary>
-        /// Expects 16 items
+        /// Expects 17 items
         /// </summary>
         public int[] ChannelModulations { get; set; }
 
@@ -91,15 +91,15 @@ namespace MidiSynth7.components
             ActiveInputDevice2Index   = -1;
             ActiveOutputDeviceIndex  = 0;
             EnableRiffs              = false;
-            ChannelInstruments       = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            ChannelBanks             = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            ChannelInstruments       = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 , 0 };
+            ChannelBanks             = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 , 0 };
             //Offset layout:                     {global octave, global transpose, ofx 3 transpose 1, ofx3 transpose 2, ..etc}
             PitchOffsets             = new int[] { 3, 0, -12, -24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            ChannelVolumes           = new int[] { 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127 };
-            ChannelPans              = new int[] { 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64 };
-            ChannelReverbs           = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            ChannelChoruses          = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            ChannelModulations       = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            ChannelVolumes           = new int[] { 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127,127 };
+            ChannelPans              = new int[] { 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64 , 64 };
+            ChannelReverbs           = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            ChannelChoruses          = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            ChannelModulations       = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             //Lists.
             ChannelCustomControls    = new List<(string name, (int controllerID, int value)[])>();
             AuxOutDevices            = new List<(int aux, int device)>();
@@ -123,11 +123,13 @@ namespace MidiSynth7.components
                 ((int)ControllerType.TremeloLevel, 0),
                 ((int)ControllerType.TremeloLevel, 0),
                 ((int)ControllerType.TremeloLevel, 0),
+                ((int)ControllerType.TremeloLevel, 0),
                 ((int)ControllerType.TremeloLevel, 0)
             };
 
             var controller2 = new (int controllerID, int value)[]
             {
+                ((int)ControllerType.PhaserLevel, 0),
                 ((int)ControllerType.PhaserLevel, 0),
                 ((int)ControllerType.PhaserLevel, 0),
                 ((int)ControllerType.PhaserLevel, 0),
@@ -165,7 +167,7 @@ namespace MidiSynth7.components
         {
             object[] items = new object[]
             {
-                PitchOffsets,ChannelInstruments,
+                ChannelInstruments,
                 ChannelVolumes,ChannelChoruses,ChannelReverbs,
                 ChannelModulations,ChannelPans,ChannelBanks
             };
@@ -173,7 +175,7 @@ namespace MidiSynth7.components
             {
                 InDeviceAllowedParams
             };
-            return items.Any(v=> ((Array)v).Length < 16) & items2.Any(v2 => ((Array)v2).Length < 9);
+            return items.Any(v=> ((Array)v).Length < 17) && items2.Any(v2 => ((Array)v2).Length < 9);
         }
 
     }
