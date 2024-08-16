@@ -119,6 +119,7 @@
                 </LinearGradientBrush>
             </Grid.Background>
             <Button x:Name="bn_InsDefSave" Content="Save &amp; Go Back" HorizontalAlignment="Right"  Margin="0,14,10,14"  Background="#FF001D40" BorderBrush="White" BorderThickness="1" Click="Bn_InsDefSave_Click" Padding="10,0"/>
+            <Button x:Name="bn_ImportSF2" Content="Import From SF2" HorizontalAlignment="Left"  Margin="534,14,0,14"  Background="#FF001D40" BorderBrush="White" BorderThickness="1" Click="bn_ImportSF2_Click" Padding="10,0"/>
         </Grid>
     </Grid>
 </Page>

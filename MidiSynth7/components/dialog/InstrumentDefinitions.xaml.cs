@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using NAudio.SoundFont;
+using Microsoft.Win32;
 
 namespace MidiSynth7.components.dialog
 {
@@ -305,6 +307,7 @@ namespace MidiSynth7.components.dialog
 
         private void Bn_InsDefSave_Click(object sender, RoutedEventArgs e)
         {
+            //FIXME: USE A CUSTOM FILE PATH
             _appContext.AppConfig.InstrumentDefinitionPath = SaveInsDef(App.APP_DATA_DIR + "Instruments.def");
             _appContext.SaveConfig();
 
@@ -392,5 +395,52 @@ namespace MidiSynth7.components.dialog
 
         #endregion
 
+        private void ExtractFromSF(string path)
+        {
+            InstrumentDefinition def = new InstrumentDefinition()
+            {
+                Name = "Imported SF2 " + (LB_SavedDefs.Items.Count + 1),
+                Banks = new ObservableCollection<Bank>(),
+                AssociatedDeviceIndex = -1
+            };
+            _appContext.Definitions.Add(def);
+            LB_SavedDefs.Items.Add(new ListBoxItem() { Content = def.Name });
+            LB_SavedDefs.SelectedIndex = LB_SavedDefs.Items.Count - 1;
+            InsDefSetEditor((ListBoxItem)LB_SavedDefs.SelectedItem, _appContext.Definitions.FirstOrDefault(x => x.Name == (string)((ListBoxItem)LB_SavedDefs.SelectedItem).Content));
+            
+            string pathToSoundFont = path;
+
+            var soundFont = new SoundFont(pathToSoundFont);
+            // Group presets by bank
+            foreach (var bankGroup in soundFont.Presets.GroupBy(p => p.Bank))
+            {
+                var bank = new Bank(bankGroup.Key, $"Bank {bankGroup.Key}");
+
+                foreach (var preset in bankGroup)
+                {
+                    var instrument = new NumberedEntry(preset.PatchNumber, preset.Name);
+                    bank.Instruments.Add(instrument);
+                }
+
+                def = _appContext.Definitions.FirstOrDefault(x => x.Name == (string)((ListBoxItem)LB_SavedDefs.SelectedItem).Content);
+                def.Banks.Add(bank);
+            }
+            
+
+        }
+
+        private void bn_ImportSF2_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Title = "Select Soundfont File";
+            ofd.Filter = "SoundFont Files (*.sf2)|*.sf2|All Files (*.*)|*.*";
+            ofd.Multiselect = false;
+            ofd.CheckFileExists = true;
+            ofd.CheckPathExists = true;
+            if(ofd.ShowDialog().Value)
+            {
+                ExtractFromSF(ofd.FileName);
+            }
+        }
     }
 }
