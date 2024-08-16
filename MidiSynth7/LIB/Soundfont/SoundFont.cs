@@ -40,7 +40,6 @@ namespace NAudio.SoundFont
                     RiffChunk list = riff.GetNextSubChunk();
                     if (list.ChunkID == "LIST")
                     {
-                        //RiffChunk r = list.GetNextSubChunk();
                         info = new InfoChunk(list);
 
                         RiffChunk r = riff.GetNextSubChunk();

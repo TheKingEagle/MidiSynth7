@@ -297,18 +297,8 @@
     <Compile Include="LIB\Soundfont\StructureBuilder.cs" />
     <Compile Include="LIB\Soundfont\Zone.cs" />
     <Compile Include="LIB\Soundfont\ZoneBuilder.cs" />
-    <Compile Include="LIB\Utils\BufferHelpers.cs" />
-    <Compile Include="LIB\Utils\ByteArrayExtensions.cs" />
     <Compile Include="LIB\Utils\ByteEncoding.cs" />
-    <Compile Include="LIB\Utils\ChunkIdentifier.cs" />
-    <Compile Include="LIB\Utils\CircularBuffer.cs" />
-    <Compile Include="LIB\Utils\Decibels.cs" />
-    <Compile Include="LIB\Utils\FieldDescriptionAttribute.cs" />
-    <Compile Include="LIB\Utils\FieldDescriptionHelper.cs" />
-    <Compile Include="LIB\Utils\HResult.cs" />
-    <Compile Include="LIB\Utils\IEEE.cs" />
     <Compile Include="LIB\Utils\IgnoreDisposeStream.cs" />
-    <Compile Include="LIB\Utils\NativeMethods.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

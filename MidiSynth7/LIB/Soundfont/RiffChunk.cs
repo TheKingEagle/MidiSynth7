@@ -75,6 +75,7 @@ namespace NAudio.SoundFont
             // If the chunk size is larger than int.MaxValue, we need to handle it differently
             if (chunkSize > int.MaxValue)
             {
+                // TKE: Since I am only interested in the presets, I can skip this
                 riffFile.BaseStream.Seek(chunkSize, SeekOrigin.Current);
                 return new byte[] { (byte)0};
             }
