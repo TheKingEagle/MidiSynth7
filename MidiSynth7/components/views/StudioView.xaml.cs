@@ -3,6 +3,7 @@ using MidiSynth7.entities.controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -269,55 +270,74 @@ namespace MidiSynth7.components.views
             
         }
 
+
+        // Class-level field for CancellationTokenSource
+        private CancellationTokenSource cancellationTokenSource;
+
         private async void Riffcenter_toggleCheck(object sender, RoutedEventArgs e)
         {
             gb_riff.IsEnabled = true;
             bool check = CB_Sequencer_Check.IsChecked ?? false;
+
+            int ticksPerDot = 6; // TODO: Ensure this value is set by the sequence
+            int DotDuration = (int)((float)(2500 / (float)(Dial_RiffTempo.Value * 1000)) * (ticksPerDot * 1000));
+            Console.WriteLine("DotDuration:" + DotDuration);
+
+            // Cancel any previous task if it was running
+            cancellationTokenSource?.Cancel();
+
+            // Create a new CancellationTokenSource
+            cancellationTokenSource = new CancellationTokenSource();
+            CancellationToken token = cancellationTokenSource.Token;
+
+            // Play the selected sequence
+            if (check)
+            {
+                await Task.Run(() =>
+                {
+                    try
+                    {
+                        while (!token.IsCancellationRequested)
+                        {
+                            if (!check || token.IsCancellationRequested) { break; }
+                            Dispatcher.InvokeAsync(() => LC_PatternNumber.SetLight(pattern));
+                            for (step = 0; step < 32; step++)
+                            {
+                                Dispatcher.InvokeAsync(() => check = CB_Sequencer_Check.IsChecked.Value);
+                                if (!check || token.IsCancellationRequested) return;
+                                Dispatcher.InvokeAsync(() => LC_PatternStep.SetLight(step));
+                                if (AppContext.ActiveSequence == null)
+                                {
+                                    MetronomeTick(step); // oh hey
+                                }
+                                else
+                                {
+                                    AppContext.ActiveSequence.Patterns[pattern].Rows[step].Play(AppContext.ActiveSequence, AppContext.MidiEngine);
+                                }
+                                // TODO: Further process the sequence parameters within it.
+                                Dispatcher.InvokeAsync(() => DotDuration = (int)((float)(2500 / (float)(Dial_RiffTempo.Value * 1000)) * (ticksPerDot * 1000)));
+                                System.Threading.Thread.Sleep(DotDuration); // Still not ideal, but better
+                            }
+                        }
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // Handle cancellation if necessary
+                    }
+                }, token);
+            }
+
             if (!check)
             {
+                // Cancel the running task
+                cancellationTokenSource?.Cancel();
+
                 LC_PatternNumber.SetLight(-1);
                 LC_PatternStep.SetLight(-1);
+                MIO_bn_stop_Click(this, new RoutedEventArgs());
             }
-            int ticksPerDot = 6; // TODO: Ensure this value is set by the sequence
-            int DotDuration = (int)((float)(2500 / (float)(Dial_RiffTempo.Value * 1000)) * (ticksPerDot*1000));
-            Console.WriteLine("DotDuration:" + DotDuration);
-            // Play the selected sequence
-            await Task.Run(() =>
-            {
-                
-                while (check)
-                {
-                   
-                    for ( pattern = 0; pattern < 4; pattern++)
-                    {
-
-                        Dispatcher.InvokeAsync(() => LC_PatternNumber.SetLight(pattern));
-                        for ( step = 0; step < 32; step++)
-                        {
-                            
-
-                            Dispatcher.InvokeAsync(() => check = CB_Sequencer_Check.IsChecked.Value);
-                            if (!check) return;
-                            Dispatcher.InvokeAsync(() => LC_PatternStep.SetLight(step));
-                            if (AppContext.ActiveSequence == null)
-                            {
-                                MetronomeTick(step); //oh hey
-                            }
-                            else
-                            {
-                                AppContext.ActiveSequence.Patterns[pattern].Rows[step].Play(AppContext.ActiveSequence, AppContext.MidiEngine);
-                            }
-                            //TODO: Further process the sequence parameters within it.
-                            Dispatcher.InvokeAsync(() => DotDuration = (int)((float)(2500 / (float)(Dial_RiffTempo.Value * 1000)) * (ticksPerDot * 1000)));
-                            System.Threading.Thread.Sleep(DotDuration);//This is beyond not ideal LOL
-                        }
-
-                    }
-                    if (!check) break;
-                }
-                
-            });
         }
+        
 
         private void MetronomeTick(int step)
         {
@@ -974,6 +994,12 @@ namespace MidiSynth7.components.views
                 }
             
             }
+        }
+
+        private void LC_PatternNumber_LIC(object sender, LightCellEventArgs e)
+        {
+            pattern = e.LightIndex;
+            step = -1;
         }
     }
 }
