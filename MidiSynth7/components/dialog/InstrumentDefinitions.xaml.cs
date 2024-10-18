@@ -416,7 +416,7 @@ namespace MidiSynth7.components.dialog
             {
                 var bank = new Bank(bankGroup.Key, $"Bank {bankGroup.Key}");
 
-                foreach (var preset in bankGroup)
+                foreach (var preset in bankGroup.OrderBy(p => p.PatchNumber))
                 {
                     var instrument = new NumberedEntry(preset.PatchNumber, preset.Name);
                     bank.Instruments.Add(instrument);
