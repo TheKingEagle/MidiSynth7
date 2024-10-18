@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using MidiSynth7.components.dialog;
 using MidiSynth7.entities.controls;
 using System;
 using System.Collections.Generic;
@@ -124,9 +125,28 @@ namespace MidiSynth7.components.views
                 //OFX_I1BankSel.Items.Add(item);
                 //OFX_I2BankSel.Items.Add(item);
             }
-            foreach (NumberedEntry item in AppContext.ActiveInstrumentDefinition.Banks.FirstOrDefault(xb => xb.Index == 127)?.Instruments)
+            var dkits = AppContext.ActiveInstrumentDefinition.Banks.FirstOrDefault(xb => xb.Index == 127);
+            if (dkits != null)
             {
-                cb_dkitlist.Items.Add(item);
+                foreach (NumberedEntry item in dkits?.Instruments)
+                {
+                    cb_dkitlist.Items.Add(item);
+                }
+            } else
+            {
+                dkits = AppContext.ActiveInstrumentDefinition.Banks.FirstOrDefault(xb => xb.Index == 128);
+                if(dkits == null)
+                {
+                    Dialog.Message(AppContext, AppContext.GR_OverlayContent, "The drumkit bank could not be found. Ensure its 127 or 128.", "Where is your drumkit?", Icons.Warning);
+                }
+                else
+                {
+                    foreach (NumberedEntry item in dkits?.Instruments)
+                    {
+                        cb_dkitlist.Items.Add(item);
+                    }
+                }
+                
             }
             //OFX_I1BankSel.SelectedIndex = 0;
             //OFX_I2BankSel.SelectedIndex = 0;
