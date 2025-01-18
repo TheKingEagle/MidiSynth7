@@ -279,7 +279,7 @@
                 </ComboBox>
             </Grid>
         </GroupBox>
-        <GroupBox x:Name="gb_nfx" Header="NoteFX" HorizontalAlignment="Left" Margin="700,213,0,0" VerticalAlignment="Top" Height="210" Width="267" BorderThickness="2" BorderBrush="#FF474747" Padding="0">
+        <GroupBox x:Name="gb_nfx" Header="NoteFX Chain" HorizontalAlignment="Left" Margin="700,213,0,0" VerticalAlignment="Top" Height="210" Width="267" BorderThickness="2" BorderBrush="#FF474747" Padding="0">
             <Grid>
 
                 <Grid.Background>
@@ -304,19 +304,9 @@
                     <ComboBoxItem Content="Profile 4"/>
                 </ComboBox>
                 <Button x:Name="bn_CustomizeDelay" HorizontalAlignment="Left" Margin="213,10,0,0" VerticalAlignment="Top" Width="36" Background="#FF2C2C2C" Focusable="False" IsTabStop="False" Click="BN_CustomizeDelay_Click" Height="36">
-                    <Canvas Width="28" Height="28">
-                        <Path Fill="silver" StrokeThickness="1" Stroke="Black" Data="M 208,50 L 201,45 191,51 185,57 176,65 168,76 161,88 156,102 152,120 151,135 152,142 155,153 158,162 164,173 171,183 179,192 186,199 194,207 202,212 209,218 212,220 210,245 208,273 206,300 203,334 202,361 199,402 198,432 202,448 208,458 214,467 222,473 231,479 246,484 256,484 268,484 280,479 293,471 304,460 312,445 315,427 315,412 312,376 309,331 304,262 301,219 309,214 322,204 334,191 348,174 358,152 360,141 360,123 357,103 349,83 342,73 326,56 316,47 311,45 304,49 305,62 304,113 281,150 231,150 208,115 208,51  Z " Stretch="Uniform" Width="24" Height="29" Canvas.Left="1.75"/>
-                        <Rectangle Fill="Maroon" Height="9" Canvas.Left="11" Stroke="Black" StrokeThickness="0.4" Canvas.Top="14" Width="3" RenderTransformOrigin="0.5,0.5">
-                            <Rectangle.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform/>
-                                    <SkewTransform/>
-                                    <RotateTransform Angle="4.885"/>
-                                    <TranslateTransform/>
-                                </TransformGroup>
-                            </Rectangle.RenderTransform>
-                        </Rectangle>
-
+                    <Canvas Width="24" Height="24">
+                        <Path Stroke="White" StrokeThickness="2" StrokeStartLineCap="Round" StrokeLineJoin="Round" Data="M16.4745 5.40801L18.5917 7.52524M17.8358 3.54289L12.1086 9.27005C11.8131 9.56562 11.6116 9.94206 11.5296 10.3519L11 13L13.6481 12.4704C14.0579 12.3884 14.4344 12.1869 14.7299 11.8914L20.4571 6.16423C21.181 5.44037 21.181 4.26676 20.4571 3.5429C19.7332 2.81904 18.5596 2.81903 17.8358 3.54289Z"/>
+                        <Path Stroke="White" StrokeThickness="2" StrokeStartLineCap="Round" StrokeLineJoin="Round" Data="M19 15V18C19 19.1046 18.1046 20 17 20H6C4.89543 20 4 19.1046 4 18V7C4 5.89543 4.89543 5 6 5H9" />
                     </Canvas>
                 </Button>
                 <DataGrid RowHeaderWidth="0" Padding="2" x:Name="lv_steps" AutoGenerateColumns="false" Background="#FF2E2E2E" BorderBrush="#FFFFE800" Foreground="White" GridLinesVisibility="None" RowBackground="#FF212020" AlternatingRowBackground="#FF303030" CanUserReorderColumns="False" CanUserSortColumns="False" CanUserDeleteRows="False" CanUserAddRows="False" CanUserResizeRows="False" SelectionMode="Single" IsReadOnly="True" Margin="78,57,10,4">
@@ -328,13 +318,13 @@
                     </DataGrid.Resources>
                     <DataGrid.Columns>
 
-                        <DataGridTextColumn Header="Step" Binding="{Binding Step}" MinWidth="50"/>
+                        <DataGridTextColumn Header="Key" Binding="{Binding Step}" MinWidth="50"/>
                         <DataGridTextColumn Header="Pitch" Binding="{Binding Pitch}" MinWidth="50"/>
                         <DataGridTextColumn Header="Decay" Binding="{Binding Decay}" MinWidth="50"/>
                     </DataGrid.Columns>
 
                 </DataGrid>
-                <SynthGUI:DialControl x:Name="Dial_NFX_StepCount" HorizontalAlignment="Left" Height="62" Width="68" Margin="-21,92,0,-27" Text="STEP COUNT" Value="1" Maximum="3" Minimum="1" ToolTip="How many &quot;echoed&quot; notes you will hear" RenderTransformOrigin="0.5,0.5" ReadOnly="True">
+                <SynthGUI:DialControl x:Name="Dial_NFX_StepCount" HorizontalAlignment="Left" Height="62" Width="68" Margin="-21,92,0,-27" Text="KEY COUNT" Value="1" Maximum="6" Minimum="1" ToolTip="How many &quot;echoed&quot; notes you will hear" RenderTransformOrigin="0.5,0.5" ReadOnly="True">
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="0.5" ScaleY="0.5"/>
@@ -514,7 +504,7 @@
 
         <CheckBox x:Name="CB_Sequencer_Check" Content="" HorizontalAlignment="Left" Margin="381,309,0,0" VerticalAlignment="Top" Focusable="False" Checked="Riffcenter_toggleCheck" Unchecked="Riffcenter_toggleCheck" IsTabStop="False" Height="16" Width="21"/>
         <CheckBox x:Name="cb_DS_Enable" Content="" HorizontalAlignment="Left" Margin="375,214,0,0" VerticalAlignment="Top" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16" Width="21"/>
-        <CheckBox x:Name="cb_NFX_Enable" Content="" HorizontalAlignment="Left" Margin="757,214,0,0" VerticalAlignment="Top" Width="16" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16"/>
+        <CheckBox x:Name="cb_NFX_Enable" Content="" HorizontalAlignment="Left" Margin="790,214,0,0" VerticalAlignment="Top" Width="16" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16"/>
         <CheckBox x:Name="CB_EnforceInstruments" Content="" HorizontalAlignment="Left" Margin="96,214,0,0" VerticalAlignment="Top" Width="16" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16">
             <CheckBox.ToolTip>
                 <TextBlock>

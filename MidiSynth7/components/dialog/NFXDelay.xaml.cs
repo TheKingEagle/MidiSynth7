@@ -39,7 +39,7 @@ namespace MidiSynth7.components.dialog
 
         private NFXDelayProfile _backupProfile; //TODO: Implementation backup profile
 
-        public string DialogTitle { get => "Customize NoteFX Delay"; set { return; } }
+        public string DialogTitle { get => "Customize NoteFX Chain"; set { return; } }
 
         public bool HelpRequested { get; set; }
 

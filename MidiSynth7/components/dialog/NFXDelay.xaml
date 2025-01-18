@@ -15,7 +15,7 @@
             <RowDefinition Height="55*"/>
         </Grid.RowDefinitions>
 
-        <GroupBox Header="Saved Profiles" Margin="10,10,0,35" BorderBrush="#FF00CF26" HorizontalAlignment="Left" Width="147">
+        <GroupBox Header="Saved NoteFX Chains" Margin="10,10,0,35" BorderBrush="#FF00CF26" HorizontalAlignment="Left" Width="147">
             <GroupBox.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="#FF0C0C0C" Offset="0"/>
@@ -43,7 +43,7 @@
                     </LinearGradientBrush>
                 </Grid.Background>
 
-                <GroupBox Header="Profile Details" Height="107" Margin="10,10,5,0" VerticalAlignment="Top" BorderBrush="#FF00B3CF">
+                <GroupBox Header="NoteFX Chain Details" Height="107" Margin="10,10,5,0" VerticalAlignment="Top" BorderBrush="#FF00B3CF">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="32*"/>
@@ -58,13 +58,13 @@
                     </Grid>
                 </GroupBox>
 
-                <GroupBox x:Name="GB_DelaySettings" Header="Delay Setting" Height="165" Margin="5,10,10,0" VerticalAlignment="Top" BorderBrush="#FFCF5E00" Grid.Column="1">
+                <GroupBox x:Name="GB_DelaySettings" Header="Chain Overview" Height="165" Margin="5,10,10,0" VerticalAlignment="Top" BorderBrush="#FFCF5E00" Grid.Column="1">
                     <Grid>
-                        <controls:DialControl x:Name="Dial_NFX_StepCount" HorizontalAlignment="Left" Height="62" Width="68" Margin="10,10,0,10" Text="STEP COUNT" Value="1" Maximum="3" Minimum="1" ValueChanged="Dial_NFX_ValChanged" ToolTip="How many &quot;echoed&quot; notes you will hear"/>
-                        <controls:DialControl x:Name="Dial_NFX_Interval" Height="62" Width="68" Margin="140,10,0,10" Text="DELAY INTERVAL" Value="0" Maximum="2500" Minimum="0" HorizontalAlignment="Left" ValueChanged="Dial_NFX_ValChanged" ToolTip="The delay between each echo, in milliseconds. Range: 10 - 2500"/>
+                        <controls:DialControl x:Name="Dial_NFX_StepCount" HorizontalAlignment="Left" Height="62" Width="68" Margin="10,10,0,10" Text="KEY COUNT" Value="1" Maximum="6" Minimum="1" ValueChanged="Dial_NFX_ValChanged" ToolTip="How many additional notes will play in this NoteFX Chain. Range: 1-6"/>
+                        <controls:DialControl x:Name="Dial_NFX_Interval" Height="62" Width="68" Margin="140,10,0,10" Text="DELAY INTERVAL" Value="0" Maximum="2500" Minimum="0" HorizontalAlignment="Left" ValueChanged="Dial_NFX_ValChanged" ToolTip="The delay between each key, in milliseconds. Range: 0 - 2500"/>
                     </Grid>
                 </GroupBox>
-                <GroupBox Header="Echo Steps" Margin="10,122,5,10" BorderBrush="#FFFFE800">
+                <GroupBox Header="NoteFX keys" Margin="10,122,5,10" BorderBrush="#FFFFE800">
                     <Grid>
                         <DataGrid RowHeaderWidth="0" Padding="2" x:Name="lv_steps" AutoGenerateColumns="false" Background="#FF2E2E2E" BorderBrush="#FFFFE800" SelectionChanged="Lv_steps_SelectionChanged" Foreground="White" GridLinesVisibility="None" RowBackground="#FF212020" AlternatingRowBackground="#FF303030" CanUserReorderColumns="False" CanUserSortColumns="False" CanUserDeleteRows="False" CanUserAddRows="False" CanUserResizeRows="False" SelectionMode="Single" IsReadOnly="True" Margin="0,10,0,0">
                             <DataGrid.Resources>
@@ -84,9 +84,9 @@
                     </Grid>
                 </GroupBox>
 
-                <GroupBox x:Name="GB_StepSettings" Header="Step Setting" Margin="0,180,10,10" BorderBrush="#FFFFE800" Grid.Column="1" HorizontalAlignment="Right" Width="283">
+                <GroupBox x:Name="GB_StepSettings" Header="Key settings" Margin="0,180,10,10" BorderBrush="#FFFFE800" Grid.Column="1" HorizontalAlignment="Right" Width="283">
                     <Grid>
-                        <controls:DialControl x:Name="Dial_NFX_Pitch" Height="62" Width="68" Margin="10,10,0,0" Text="RELATIVE PITCH" Maximum="36" Minimum="-36" ValueChanged="Dial_NFX_STEP_ValChanged" VerticalAlignment="Top" HorizontalAlignment="Left" ToolTip="Pitch for the selected step (echo) in relation to the note originally played. Example: 0 will result in no change. -12 will be one octave lower."/>
+                        <controls:DialControl x:Name="Dial_NFX_Pitch" Height="62" Width="68" Margin="10,10,0,0" Text="RELATIVE PITCH" Maximum="64" Minimum="-64" ValueChanged="Dial_NFX_STEP_ValChanged" VerticalAlignment="Top" HorizontalAlignment="Left" ToolTip="Pitch for the selected step (echo) in relation to the note originally played. Example: 0 will result in no change. -12 will be one octave lower."/>
                         <controls:DialControl x:Name="Dial_NFX_Decay" Height="62" Width="68" Margin="140,10,0,0" Text="DECAY" Maximum="100" VerticalAlignment="Top" Value="100" ValueChanged="Dial_NFX_STEP_ValChanged" HorizontalAlignment="Left" ToolTip="Decay: The volume relative to the original note. Example: 0 will have no change to volume, while 50 will be 50% quieter than the original note."/>
                     </Grid>
                 </GroupBox>

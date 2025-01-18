@@ -796,16 +796,31 @@ namespace MidiSynth7.components.views
 
         private async Task PlayDelayedNFX(Bank bank, NumberedEntry patch, int ch, int note, int velocity, int delay, int count)
         {
+            /*
+                    The only possible channels that I can play from on the keyboard is 0, and 1.
+
+                    ch1. Default instrument
+                    ch2. Split instrument
+
+                    If I want 6 possible steps, my map will have to look like this.
+
+                    0. {02,04,06,08,10,12}
+                    1. {03,05,07,11,13,15}
+                       Channel 0 is reserved for default note, 
+                       Channel 1 is reserved for split note
+                       Channel 9 is reserved for percussion
+             
+             */
             if (MidiEngine == null) return;
-            if (count > 3 || count < 1)
+            if (count > 6 || count < 1)
             {
-                throw new ArgumentException("Count must be no more than 3, no less than 1.");
+                throw new ArgumentException("Count must be no more than 6, no less than 1.");
             }
 
             async Task t()
             {
-
-                int[,] channelMapper = new int[3, 4] { { 4, 5, 6, 7 }, { 8, 10, 11, 12 }, { 13, 14, 15, 4 } };
+                // int[CHANNEL INDEX, STEP INDEX];
+                int[,] channelMapper = new int[2, 6] { { 2, 4, 6, 8, 10, 12 }, {3,5,7,11,13,15} };
 
 
                 for (int i = 0; i < count; i++)
@@ -813,18 +828,18 @@ namespace MidiSynth7.components.views
                     await Task.Delay(delay);
                     if (Config.EnforceInstruments)
                     {
-                        MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, channelMapper[i, ch]);
+                        MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, channelMapper[ch, i]);
                     }
                     int velo = velocity - (int)(velocity * (float)((float)AppContext.ActiveNFXProfile.OffsetMap[i].decay / 100));
 
-                    MidiEngine.MidiNote_Play(channelMapper[i, ch], note + AppContext.ActiveNFXProfile.OffsetMap[i].pitch, velo, false);
+                    MidiEngine.MidiNote_Play(channelMapper[ch, i], note + AppContext.ActiveNFXProfile.OffsetMap[i].pitch, velo, false);
                     Dispatcher.Invoke(() =>
                     {
                         int zkb = note + AppContext.ActiveNFXProfile.OffsetMap[i].pitch - 12 - Transpose - (12 * CTRL_Octave.Value);
                         pianomain.ALTLightKey(zkb);
                     });
                     
-                    await Dispatcher.InvokeAsync(() => FlashChannelActivity(channelMapper[i, ch]));
+                    await Dispatcher.InvokeAsync(() => FlashChannelActivity(channelMapper[ch, i]));
 
                 }
             }
@@ -834,26 +849,26 @@ namespace MidiSynth7.components.views
         private async Task StopDelayedNFX(int ch, int note, int delay, int count)
         {
             if (MidiEngine == null) return;
-            if (count > 3 || count < 1)
+            if (count > 6 || count < 1)
             {
-                throw new ArgumentException("Count must be no more than 3, no less than 1.");
+                throw new ArgumentException("Count must be no more than 6, no less than 1.");
             }
             async Task t()
             {
 
-                int[,] channelMapper = new int[3, 4] { { 4, 5, 6, 7 }, { 8, 10, 11, 12 }, { 13, 14, 15, 4 } };
+                int[,] channelMapper = new int[2, 6] { { 2, 4, 6, 8, 10, 12 }, { 3, 5, 7, 11, 13, 15 } };
 
                 for (int i = 0; i < count; i++)
                 {
                     await Task.Delay(delay);
-                    MidiEngine.MidiNote_Stop(channelMapper[i, ch], note + AppContext.ActiveNFXProfile.OffsetMap[i].pitch, false);
+                    MidiEngine.MidiNote_Stop(channelMapper[ch, i], note + AppContext.ActiveNFXProfile.OffsetMap[i].pitch, false);
 
                     Dispatcher.Invoke(() =>
                     {
                         int zkb = note + AppContext.ActiveNFXProfile.OffsetMap[i].pitch - 12 - Transpose - (12 * CTRL_Octave.Value);
                         pianomain.UnLightKey(zkb);
                     });
-                    await Dispatcher.InvokeAsync(() => FlashChannelActivity(channelMapper[i, ch]));
+                    await Dispatcher.InvokeAsync(() => FlashChannelActivity(channelMapper[ch, i]));
                 }
             }
             await Task.Run(() => t());
