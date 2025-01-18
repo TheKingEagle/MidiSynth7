@@ -91,6 +91,11 @@ namespace MidiSynth7.components.dialog
             CB_MPTInstrument.Items.Add("No Instrument");
             foreach (var item in sequence.Instruments)
             {
+                //map
+                if(item.DeviceIndex > -1)
+                {
+                    _win.MidiEngine.OpenOutputDevice(item.DeviceIndex, item.DeviceIndex);
+                }
                 CB_MPTInstrument.Items.Add(item);
             }
             CB_MPTInstrument.SelectedIndex = prvInst;
@@ -213,6 +218,7 @@ namespace MidiSynth7.components.dialog
 
         private async void BN_MPTInsManager_Click(object sender, RoutedEventArgs e)
         {
+            Bn_StopPattern_Click(this, e);
             Dialog g = new Dialog();
             await g.ShowDialog(new MPTInstrumentManager(ActiveSequence, _win, _container), _win, _container,true);
         }

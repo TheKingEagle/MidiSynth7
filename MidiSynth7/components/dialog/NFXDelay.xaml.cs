@@ -15,7 +15,7 @@ namespace MidiSynth7.components.dialog
     /// </summary>
     public partial class NFXDelay : Page, IDialogView
     {
-        public NFXDelay( MainWindow win,  Grid grid)
+        public NFXDelay( MainWindow win,  Grid grid, NFXDelayProfile defaultProf = null)
         {
             InitializeComponent();
             ActiveWindow = win;
@@ -23,6 +23,10 @@ namespace MidiSynth7.components.dialog
             NFXProfiles = ActiveWindow.NFXProfiles;
             PopulateSavedNFXProfiles();
             LB_SavedProfiles.SelectedIndex = 0;
+            if(defaultProf != null)
+            {
+                LB_SavedProfiles.SelectedIndex = LB_SavedProfiles.Items.IndexOf(defaultProf);
+            }
         }
 
         private MainWindow ActiveWindow;

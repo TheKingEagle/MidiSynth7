@@ -61,7 +61,7 @@
                 <GroupBox x:Name="GB_DelaySettings" Header="Delay Setting" Height="165" Margin="5,10,10,0" VerticalAlignment="Top" BorderBrush="#FFCF5E00" Grid.Column="1">
                     <Grid>
                         <controls:DialControl x:Name="Dial_NFX_StepCount" HorizontalAlignment="Left" Height="62" Width="68" Margin="10,10,0,10" Text="STEP COUNT" Value="1" Maximum="3" Minimum="1" ValueChanged="Dial_NFX_ValChanged" ToolTip="How many &quot;echoed&quot; notes you will hear"/>
-                        <controls:DialControl x:Name="Dial_NFX_Interval" Height="62" Width="68" Margin="140,10,0,10" Text="DELAY INTERVAL" Value="10" Maximum="2500" Minimum="10" HorizontalAlignment="Left" ValueChanged="Dial_NFX_ValChanged" ToolTip="The delay between each echo, in milliseconds. Range: 10 - 2500"/>
+                        <controls:DialControl x:Name="Dial_NFX_Interval" Height="62" Width="68" Margin="140,10,0,10" Text="DELAY INTERVAL" Value="0" Maximum="2500" Minimum="0" HorizontalAlignment="Left" ValueChanged="Dial_NFX_ValChanged" ToolTip="The delay between each echo, in milliseconds. Range: 10 - 2500"/>
                     </Grid>
                 </GroupBox>
                 <GroupBox Header="Echo Steps" Margin="10,122,5,10" BorderBrush="#FFFFE800">
