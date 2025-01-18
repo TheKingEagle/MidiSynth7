@@ -71,7 +71,7 @@ namespace MidiSynth7
             {
                 Directory.CreateDirectory(App.APP_DATA_DIR + "sequences\\");
             }
-
+            Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
             PopulateSequences();
 
             appinfo_projectRevision = Assembly.GetExecutingAssembly().GetName().Version.Revision;
@@ -151,6 +151,11 @@ namespace MidiSynth7
             GR_OverlayContent.Visibility = Visibility.Collapsed;
             GR_OverlayContent.Opacity = 0;
             Loadview(AppConfig.DisplayMode);
+        }
+
+        private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            Dialog.Message(this,GR_OverlayContent,e.Exception.ToString(),"FUCK",Icons.Critical);
         }
 
         internal void PopulateSequences()
@@ -399,7 +404,7 @@ namespace MidiSynth7
                     _height = 658;
                     Title = $"RMSoftware MIDI Synthesizer v7.0 • Studio Edition • {(Environment.Is64BitProcess ? "x64" : "x86")} rev. {appinfo_projectRevision}";
                     currentView = null;
-                    currentView = new components.views.StudioView(this, ref AppConfig, ref MidiEngine);
+                    currentView = new components.views.StudioRevised(this, ref AppConfig, ref MidiEngine);
                     FR_SynthView.Content = currentView;
 
                     break;
@@ -802,7 +807,7 @@ namespace MidiSynth7
             Dialog g = new Dialog();
             
             g.SnapsToDevicePixels = true;
-            g.ShowDialog(new NFXDelay(this, GR_OverlayContent), this, GR_OverlayContent);
+            g.ShowDialog(new NFXDelay(this, GR_OverlayContent, ActiveNFXProfile), this, GR_OverlayContent);
         }
 
         
@@ -839,10 +844,11 @@ namespace MidiSynth7
                 ts.SelectedOctave = 3;
                 ts.Instruments = new List<TrackerInstrument>()
                 {
-                    new TrackerInstrument(0,-1,0,0,"Acoustic Grand"),
-                    new TrackerInstrument(1,-1,0,4,"Rhodes E. Piano"),
-                    new TrackerInstrument(2,-1,0,18,"Rock Organ"),
-                    new TrackerInstrument(3,-1,0,32,"Acoustic Bass"),
+                    new TrackerInstrument(0,-1,-1,0,0,"Acoustic Grand"),
+                    new TrackerInstrument(1,-1,-1,0,4,"Rhodes E. Piano"),
+                    new TrackerInstrument(2,-1,-1,0,18,"Rock Organ"),
+                    new TrackerInstrument(3,-1,-1,0,32,"Acoustic Bass"),
+                    new TrackerInstrument(4,-1,9,0,0,"Standard Kit"),
                 };
                 ts.SelectedInstrument = 1;
                 ts.SequenceName = "Untitled Sequence" + (Tracks.Count + 1);
