@@ -504,7 +504,7 @@
 
         <CheckBox x:Name="CB_Sequencer_Check" Content="" HorizontalAlignment="Left" Margin="381,309,0,0" VerticalAlignment="Top" Focusable="False" Checked="Riffcenter_toggleCheck" Unchecked="Riffcenter_toggleCheck" IsTabStop="False" Height="16" Width="21"/>
         <CheckBox x:Name="cb_DS_Enable" Content="" HorizontalAlignment="Left" Margin="375,214,0,0" VerticalAlignment="Top" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16" Width="21"/>
-        <CheckBox x:Name="cb_NFX_Enable" Content="" HorizontalAlignment="Left" Margin="790,214,0,0" VerticalAlignment="Top" Width="16" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16"/>
+        <CheckBox x:Name="cb_NFX_Enable" Content="" HorizontalAlignment="Left" Margin="798,214,0,0" VerticalAlignment="Top" Width="16" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16"/>
         <CheckBox x:Name="CB_EnforceInstruments" Content="" HorizontalAlignment="Left" Margin="96,214,0,0" VerticalAlignment="Top" Width="16" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16">
             <CheckBox.ToolTip>
                 <TextBlock>
