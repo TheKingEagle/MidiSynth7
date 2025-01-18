@@ -29,6 +29,12 @@ namespace MidiSynth7.entities.controls
           typeof(DialControl),
           new PropertyMetadata(0, new PropertyChangedCallback(DC_DPChanged)));
 
+        public static readonly DependencyProperty ReadOnlyProperty = DependencyProperty.Register(
+          "ReadOnly",
+          typeof(bool),
+          typeof(DialControl),
+          new PropertyMetadata(false, new PropertyChangedCallback(DC_DPChanged)));
+
         private DispatcherTimer t = new DispatcherTimer();
 
         private bool isDown = false;
@@ -78,6 +84,10 @@ namespace MidiSynth7.entities.controls
 
         private void el_dial_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            if (ReadOnly)
+            {
+                return;
+            }
             GetCursorPos(out cursorpos cp);
             isDown = true;
             t.Start();
@@ -87,6 +97,10 @@ namespace MidiSynth7.entities.controls
 
         private void el_dial_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            if (ReadOnly)
+            {
+                return;
+            }
             t.Stop();
             isDown = false;
             Mouse.OverrideCursor = Cursor;
@@ -94,6 +108,10 @@ namespace MidiSynth7.entities.controls
 
         private void el_dial_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
+            if (ReadOnly)
+            {
+                return;
+            }
             if (!tx_Value.IsHitTestVisible)
             {
                 tx_Value.IsHitTestVisible = true;
@@ -167,6 +185,12 @@ namespace MidiSynth7.entities.controls
             get => (int)GetValue(MinimumProperty);
             set => SetValue(MinimumProperty, value);
         }
+
+        public bool ReadOnly
+        {
+            get => (bool)GetValue(ReadOnlyProperty);
+            set => SetValue(ReadOnlyProperty, value);
+        }
         public int Value
         {
             get => (int)GetValue(ValueProperty);
@@ -208,6 +232,7 @@ namespace MidiSynth7.entities.controls
         /// <param name="value"></param>
         public void SetValueUnsuppressed(int value)
         {
+            
             if (value > Maximum)
             {
                 return;
@@ -226,6 +251,7 @@ namespace MidiSynth7.entities.controls
         /// <param name="value"></param>
         public void SetValueSuppressed(int value)
         {
+            
             if (value > Maximum)
             {
                 return;
