@@ -144,6 +144,9 @@
     <Compile Include="components\NFXDelayProfile.cs" />
     <Compile Include="components\SynthKey.cs" />
     <Compile Include="components\TrackerSequence.cs" />
+    <Compile Include="components\views\StudioRevised.xaml.cs">
+      <DependentUpon>StudioRevised.xaml</DependentUpon>
+    </Compile>
     <Compile Include="components\WindowHelper.cs" />
     <Page Include="asset\themes.xaml">
       <SubType>Designer</SubType>
@@ -174,6 +177,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="components\views\StandardView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="components\views\StudioRevised.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
