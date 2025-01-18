@@ -258,7 +258,7 @@
                 </ComboBox>
             </Grid>
         </GroupBox>
-        <GroupBox x:Name="gb_ds" Header="Drum Set" HorizontalAlignment="Left" Margin="307,213,0,0" VerticalAlignment="Top" Height="90" Width="388" BorderThickness="2" BorderBrush="#FF0047AE" Padding="0" IsEnabled="False">
+        <GroupBox x:Name="gb_ds" Header="Drum Set" HorizontalAlignment="Left" Margin="307,213,0,0" VerticalAlignment="Top" Height="90" Width="396" BorderThickness="2" BorderBrush="#FF0047AE" Padding="0" IsEnabled="False">
             <Grid>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -267,7 +267,7 @@
                     </LinearGradientBrush>
                 </Grid.Background>
                 <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Drum kit Selection: " VerticalAlignment="Top" FontSize="16"/>
-                <ComboBox x:Name="cb_dkitlist" HorizontalAlignment="Left" Margin="10,36,0,0" VerticalAlignment="Top" Width="355" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_dkit_SelectionChanged" SelectedIndex="0" Height="27" FontSize="16">
+                <ComboBox x:Name="cb_dkitlist" HorizontalAlignment="Center" Margin="0,36,0,0" VerticalAlignment="Top" Width="368" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_dkit_SelectionChanged" SelectedIndex="0" Height="27" FontSize="16">
                     <ComboBox.Background>
                         <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                             <GradientStop Color="#FFD8D8D8" Offset="1"/>
@@ -279,7 +279,7 @@
                 </ComboBox>
             </Grid>
         </GroupBox>
-        <GroupBox x:Name="gb_nfx" Header="NoteFX Chain" HorizontalAlignment="Left" Margin="700,213,0,0" VerticalAlignment="Top" Height="210" Width="267" BorderThickness="2" BorderBrush="#FF474747" Padding="0">
+        <GroupBox x:Name="gb_nfx" Header="NoteFX Chain" HorizontalAlignment="Left" Margin="708,213,0,0" VerticalAlignment="Top" Height="210" Width="259" BorderThickness="2" BorderBrush="#FF474747" Padding="0">
             <Grid>
 
                 <Grid.Background>
@@ -289,7 +289,7 @@
                         <GradientStop Color="#FF071734" Offset="0.394"/>
                     </LinearGradientBrush>
                 </Grid.Background>
-                <ComboBox x:Name="cb_NFX_Dropdown" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="198" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_nfx_ProfileSel_SelectionChanged" SelectedIndex="0" Height="36" FontSize="16">
+                <ComboBox x:Name="cb_NFX_Dropdown" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="190" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_nfx_ProfileSel_SelectionChanged" SelectedIndex="0" Height="36" FontSize="16">
                     <ComboBox.Background>
                         <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                             <GradientStop Color="#FFD8D8D8" Offset="1"/>
@@ -303,7 +303,7 @@
                     <ComboBoxItem Content="Profile 3"/>
                     <ComboBoxItem Content="Profile 4"/>
                 </ComboBox>
-                <Button x:Name="bn_CustomizeDelay" HorizontalAlignment="Left" Margin="213,10,0,0" VerticalAlignment="Top" Width="36" Background="#FF2C2C2C" Focusable="False" IsTabStop="False" Click="BN_CustomizeDelay_Click" Height="36">
+                <Button x:Name="bn_CustomizeDelay" HorizontalAlignment="Left" Margin="205,10,0,0" VerticalAlignment="Top" Width="36" Background="#FF2C2C2C" Focusable="False" IsTabStop="False" Click="BN_CustomizeDelay_Click" Height="36">
                     <Canvas Width="24" Height="24">
                         <Path Stroke="White" StrokeThickness="2" StrokeStartLineCap="Round" StrokeLineJoin="Round" Data="M16.4745 5.40801L18.5917 7.52524M17.8358 3.54289L12.1086 9.27005C11.8131 9.56562 11.6116 9.94206 11.5296 10.3519L11 13L13.6481 12.4704C14.0579 12.3884 14.4344 12.1869 14.7299 11.8914L20.4571 6.16423C21.181 5.44037 21.181 4.26676 20.4571 3.5429C19.7332 2.81904 18.5596 2.81903 17.8358 3.54289Z"/>
                         <Path Stroke="White" StrokeThickness="2" StrokeStartLineCap="Round" StrokeLineJoin="Round" Data="M19 15V18C19 19.1046 18.1046 20 17 20H6C4.89543 20 4 19.1046 4 18V7C4 5.89543 4.89543 5 6 5H9" />
