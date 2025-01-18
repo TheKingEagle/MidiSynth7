@@ -197,17 +197,7 @@ namespace MidiSynth7.components
 
         private static int GetMIDIChannelIndex(int column)
         {
-            int midiChannel = column;//channel 0-8
-            if (column >= 9)
-            {
-                midiChannel = column + 1;//skip channel 9 (percussion)
-            }
-            if (column + 1 > 15)
-            {
-                midiChannel = 9;//channels beyond 15 will be routed to channel 9 as percussion.
-            }
-
-            return midiChannel;
+            return column % 16;
         }
 
         
@@ -231,6 +221,13 @@ namespace MidiSynth7.components
 
                 if(ti != null)
                 {
+                    if(ti.ChannelIndex == -1)
+                    {
+                        item.midiChannel = GetMIDIChannelIndex(item.Column);
+                    } else
+                    {
+                        item.midiChannel = ti.ChannelIndex;
+                    }
                     engine.MidiNote_SetProgram(ti.Bank, ti.Instrument, item.midiChannel, output);
                     if(item.Pitch.HasValue)
                     {
@@ -774,14 +771,17 @@ namespace MidiSynth7.components
     {
         public byte Index { get; set; }
         public int DeviceIndex { get; set; }
+
+        public int ChannelIndex { get; set; }
         public int Bank { get; set; }
         public int Instrument { get; set; }
         public string DisplayName { get; set; }
 
-        public TrackerInstrument(byte index,int device,int bank, int instrument, string name)
+        public TrackerInstrument(byte index,int device, int channel,int bank, int instrument, string name)
         {
             Index = index;
             DeviceIndex = device;
+            ChannelIndex = channel;
             Bank = bank;
             Instrument = instrument;
             DisplayName = name;

@@ -155,21 +155,19 @@ namespace MidiSynth7.components
         }
         
         /// <summary>
-        /// Load in a device and assign it to aux. If the device is already loaded, it's aux index is returned.
-        /// If the aux id is in use, an exception is thrown.
+        /// This function really should go away because my idea of implementation is wrong lol
         /// </summary>
         /// <param name="aux">The assigned aux.</param>
         /// <param name="deviceIndex"></param>
         /// <returns></returns>
-        /// <exception cref="InvalidOperationException"></exception>
         public int OpenOutputDevice(int aux,int deviceIndex)
         {
-            if (aux == -1) throw new InvalidOperationException("-1 is reserved for the engine default.");
+            if (aux == -1) return -1;
 
             var f = OutDevices.Find(x => x.AuxIndex == aux);
             if(f.device != null)
             {
-                throw new InvalidOperationException("This index is already in use");
+                return OutDevices.FirstOrDefault(x => x.device.DeviceID == deviceIndex).AuxIndex;
             }
 
             OutputDevice device = OutDevices.FirstOrDefault(x => x.device.DeviceID == deviceIndex).device;
@@ -180,9 +178,9 @@ namespace MidiSynth7.components
             }
 
             device = new OutputDevice(deviceIndex);
-            int index = OutDevices.Count + 1;
-            OutDevices.Add((OutDevices.Count + 1, device));
-            return index;
+            
+            OutDevices.Add((aux, device));
+            return aux;
 
         }
 
@@ -337,6 +335,7 @@ namespace MidiSynth7.components
         /// <param name="ch"> 0 - 15.</param>
         public void MidiNote_SetProgram(int bank, int patch, int ch, int output=-1)
         {
+            var map = ExportOutDeviceMap();
             OutputDevice device = OutDevices.FirstOrDefault(x => x.AuxIndex == output).device;
             if (!InternalSF2)
             {
