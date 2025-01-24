@@ -111,19 +111,17 @@ namespace MidiSynth7.components.views
             #endregion
 
 
-            Cb_SequencerProfile.ItemsSource = AppContext.Tracks;
-            Cb_SequencerProfile.SelectedIndex = 0;
+            //Cb_SequencerProfile.ItemsSource = AppContext.Tracks;
+            //Cb_SequencerProfile.SelectedIndex = 0;
         }
 
         private void UpdateInstrumentSelection(SystemConfig config)
         {
             cb_mBank.Items.Clear();
-            cb_sBank.Items.Clear();
             cb_dkitlist.Items.Clear();
             foreach (Bank item in AppContext.ActiveInstrumentDefinition.Banks.Where(xb => xb.Index != 127))
             {
                 cb_mBank.Items.Add(item);
-                cb_sBank.Items.Add(item);
                 //OFX_I1BankSel.Items.Add(item);
                 //OFX_I2BankSel.Items.Add(item);
             }
@@ -154,20 +152,16 @@ namespace MidiSynth7.components.views
             //OFX_I1BankSel.SelectedIndex = 0;
             //OFX_I2BankSel.SelectedIndex = 0;
             cb_mBank.SelectedIndex = 0;
-            cb_sBank.SelectedIndex = 0;
             cb_dkitlist.SelectedIndex = 0;
             config.ChannelBanks[0] = (cb_mBank.Items.Count >= config.ChannelBanks[0]) ? config.ChannelBanks[0] : 0;
             config.ChannelInstruments[0] = (cb_mPatch.Items.Count >= config.ChannelInstruments[0]) ? config.ChannelInstruments[0] : 0;
-            config.ChannelBanks[4] = (cb_sBank.Items.Count >= config.ChannelBanks[4]) ? config.ChannelBanks[4] : 0;
-            config.ChannelInstruments[4] = (cb_sPatch.Items.Count >= config.ChannelInstruments[4]) ? config.ChannelInstruments[4] : 0;
+            
             config.ChannelInstruments[9] = (cb_dkitlist.Items.Count >= config.ChannelInstruments[9]) ? config.ChannelInstruments[9] : 0;
             //OFX_I1BankSel.SelectedIndex = mainCG.IT_Octave3BankIndex1;
             //OFX_I2BankSel.SelectedIndex = mainCG.IT_Octave3BankIndex2;
             cb_mBank.SelectedIndex = config.ChannelBanks[0];
-            cb_sBank.SelectedIndex = config.ChannelBanks[4];
 
             cb_mPatch.SelectedIndex = config.ChannelInstruments[0];
-            cb_sPatch.SelectedIndex = config.ChannelInstruments[4];
 
             cb_dkitlist.SelectedIndex = config.ChannelInstruments[9];
         }
@@ -291,7 +285,7 @@ namespace MidiSynth7.components.views
         private void BnRiff_Define_Click(object sender, RoutedEventArgs e)
         {
             CB_Sequencer_Check.IsChecked = false;
-            AppContext.ShowMPT();
+            
 
         }
 
@@ -303,13 +297,7 @@ namespace MidiSynth7.components.views
         {
             gb_riff.IsEnabled = true;
             bool check = CB_Sequencer_Check.IsChecked ?? false;
-            foreach (TrackerInstrument item in AppContext.ActiveSequence.Instruments)
-            {
-                if (item.DeviceIndex > -1)
-                {
-                    AppContext.MidiEngine.OpenOutputDevice(item.DeviceIndex, item.DeviceIndex);
-                }
-            }
+            
 
             int ticksPerDot = 6; // TODO: Ensure this value is set by the sequence
             int DotDuration = (int)((float)(2500 / (float)(Dial_RiffTempo.Value * 1000)) * (ticksPerDot * 1000));
@@ -334,20 +322,15 @@ namespace MidiSynth7.components.views
 
                             if (!check || token.IsCancellationRequested) { break; }
                             Dispatcher.InvokeAsync(() => LC_PatternNumber.SetLight(pattern));
-                            for (step = 0; step < 32; step++)
+                            for (step = 0; step < LC_PatternStep.Rows * LC_PatternStep.Columns; step++)
                             {
                                 Dispatcher.InvokeAsync(() => check = CB_Sequencer_Check.IsChecked.Value);
                                 if (!check || token.IsCancellationRequested) return;
                                 Dispatcher.InvokeAsync(() => LC_PatternStep.SetLight(step));
 
-                                if (AppContext.ActiveSequence == null)
-                                {
+                                
                                     MetronomeTick(step); // oh hey
-                                }
-                                else
-                                {
-                                    AppContext.ActiveSequence.Patterns[pattern].Rows[step].Play(AppContext.ActiveSequence, AppContext.MidiEngine);
-                                }
+                                
                                 // TODO: Further process the sequence parameters within it.
                                 Dispatcher.InvokeAsync(() => DotDuration = (int)((float)(2500 / (float)(Dial_RiffTempo.Value * 1000)) * (ticksPerDot * 1000)));
                                 System.Threading.Thread.Sleep(DotDuration); // Still not ideal, but better
@@ -375,26 +358,26 @@ namespace MidiSynth7.components.views
 
         private void MetronomeTick(int step)
         {
-            if (step > 0 && step != 16)
+            if (step > 0 && step != LC_PatternStep.Rows * LC_PatternStep.Columns)
             {
-                if (step % 4 == 0)//TODO replace with value of beatsPerRow in pattern editor
+                if (step % LC_PatternStep.Marker == 0)//TODO replace with value of beatsPerRow in pattern editor
                 {
                     AppContext.MidiEngine.MidiNote_Play(9, 42, 44, false);
                 }
-                if (step % 4 == 1)//TODO replace with value of beatsPerRow in pattern editor
+                if (step % LC_PatternStep.Marker == 1)//TODO replace with value of beatsPerRow in pattern editor
                 {
                     AppContext.MidiEngine.MidiNote_Stop(9, 42, false);
                 }
             }
-            if (step == 0 || step == 16)
+            if (step == 0 || step % LC_PatternStep.Columns == 0)
             {
-                if (step % 4 == 0)//TODO replace with value of beatsPerRow in pattern editor
+                if (step % LC_PatternStep.Marker == 0)//TODO replace with value of beatsPerRow in pattern editor
                 {
                     AppContext.MidiEngine.MidiNote_Play(9, 46, 44, false);
                 }
 
             }
-            if (step == 1 || step == 17)//TODO replace with value of beatsPerRow in pattern editor
+            if (step == 1 || step == (LC_PatternStep.Rows * LC_PatternStep.Columns) + 1)//TODO replace with value of beatsPerRow in pattern editor
             {
                 AppContext.MidiEngine.MidiNote_Stop(9, 46, false);
             }
@@ -430,32 +413,7 @@ namespace MidiSynth7.components.views
             cb_mPatch.SelectedIndex = 0;
         }
 
-        private void Cb_sPatch_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (cb_sBank.SelectedItem == null) { return; }
-            if (MidiEngine != null)
-            {
-                Bank bank = (Bank)cb_sBank.SelectedItem;
-                NumberedEntry patch = (NumberedEntry)cb_sPatch.SelectedItem;
-                MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 4);
-            }
-            Config.ChannelInstruments[4] = cb_sPatch.SelectedIndex;
-
-        }
-
-        private void Cb_sBank_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            cb_sPatch.Items.Clear();
-            if (cb_sBank.SelectedItem != null)
-            {
-                Bank entry = (Bank)cb_sBank.SelectedItem;
-                foreach (NumberedEntry item in entry.Instruments)
-                {
-                    cb_sPatch.Items.Add(item);
-                }
-            }
-            cb_sPatch.SelectedIndex = 0;
-        }
+        
 
         private void Cb_dkit_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -492,8 +450,6 @@ namespace MidiSynth7.components.views
 
             if (MidiEngine != null)
             {
-                Bank sbank = (Bank)cb_sBank.SelectedItem;
-                NumberedEntry spatch = (NumberedEntry)cb_sPatch.SelectedItem;
                 Bank bank = (Bank)cb_mBank.SelectedItem;
                 NumberedEntry patch = (NumberedEntry)cb_mPatch.SelectedItem;
 
@@ -518,20 +474,7 @@ namespace MidiSynth7.components.views
                     return;
                 }
                 
-                if (cb__InsS_Enable.IsChecked.Value)
-                {
-                    if (e.KeyID <= 16)
-                    {
-                        if (Config.EnforceInstruments)
-                        {
-                            MidiEngine.MidiNote_SetProgram(sbank.Index, spatch.Index, 3);
-                        }
-                        //MidiEngine.MidiNote_SetPan(3, CTRL_Balance.Value);
-                        MidiEngine.MidiNote_Play(3, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, CTRL_Volume.Value);
-                        return;
-                    }
-
-                }
+                
                 if (Config.EnforceInstruments)
                 {
                     MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 0);
@@ -547,8 +490,6 @@ namespace MidiSynth7.components.views
 
             if (MidiEngine != null)
             {
-                Bank sbank = (Bank)cb_sBank.SelectedItem;
-                NumberedEntry spatch = (NumberedEntry)cb_sPatch.SelectedItem;
                 Bank bank = (Bank)cb_mBank.SelectedItem;
                 NumberedEntry patch = (NumberedEntry)cb_mPatch.SelectedItem;
 
@@ -573,20 +514,7 @@ namespace MidiSynth7.components.views
                     return;
                 }
                
-                if (cb__InsS_Enable.IsChecked.Value)
-                {
-                    if (e.KeyID <= 16)
-                    {
-                        if (Config.EnforceInstruments)
-                        {
-                            MidiEngine.MidiNote_SetProgram(sbank.Index, spatch.Index, 3);
-                        }
-                        //MidiEngine.MidiNote_SetPan(3, CTRL_Balance.Value);
-                        MidiEngine.MidiNote_Play(3, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity);
-                        return;
-                    }
-
-                }
+               
                 if (channel == 0)
                 {
                     if (Config.EnforceInstruments)
@@ -604,8 +532,6 @@ namespace MidiSynth7.components.views
         {
             if (MidiEngine != null)
             {
-                Bank sbank = (Bank)cb_sBank.SelectedItem;
-                NumberedEntry spatch = (NumberedEntry)cb_sPatch.SelectedItem;
                 Bank bank = (Bank)cb_mBank.SelectedItem;
                 NumberedEntry patch = (NumberedEntry)cb_mPatch.SelectedItem;
 
@@ -627,17 +553,6 @@ namespace MidiSynth7.components.views
 
                     MidiEngine.MidiNote_Stop(9, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value);
                     return;
-                }
-                
-
-                if (cb__InsS_Enable.IsChecked.Value)
-                {
-                    if (e.KeyID <= 16)
-                    {
-                        MidiEngine.MidiNote_Stop(3, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value);
-                        return;
-                    }
-
                 }
                 MidiEngine.MidiNote_Stop(0, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value);
 
@@ -728,8 +643,8 @@ namespace MidiSynth7.components.views
                 case "InsDEF_Changed": InsDefUpdate(); break;
                 case "RefNFXDelay": NFXProfileUpdate(); break;
                 case "TrSeqUpdate":
-                    Cb_SequencerProfile.ItemsSource = AppContext.Tracks;
-                    Cb_SequencerProfile.SelectedIndex = 0;
+                    //Cb_SequencerProfile.ItemsSource = AppContext.Tracks;
+                    //Cb_SequencerProfile.SelectedIndex = 0;
                     ; break;
                 default:
                     Console.WriteLine("Unrecognized event string: {0}... lol", id);
@@ -820,7 +735,23 @@ namespace MidiSynth7.components.views
             async Task t()
             {
                 // int[CHANNEL INDEX, STEP INDEX];
-                int[,] channelMapper = new int[2, 6] { { 2, 4, 6, 8, 10, 12 }, {3,5,7,11,13,15} };
+                int[,] channelMapper = new int[15, 6] {
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 9, 9, 9, 9, 9, 9 },
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                };
 
 
                 for (int i = 0; i < count; i++)
@@ -856,7 +787,23 @@ namespace MidiSynth7.components.views
             async Task t()
             {
 
-                int[,] channelMapper = new int[2, 6] { { 2, 4, 6, 8, 10, 12 }, { 3, 5, 7, 11, 13, 15 } };
+                int[,] channelMapper = new int[15, 6] {
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 9, 9, 9, 9, 9, 9 },
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                };
 
                 for (int i = 0; i < count; i++)
                 {
@@ -915,7 +862,7 @@ namespace MidiSynth7.components.views
         {
             if (AppContext != null)
             {
-                AppContext.ActiveSequence = Cb_SequencerProfile.SelectedItem as TrackerSequence;
+                //AppContext.ActiveSequence = Cb_SequencerProfile.SelectedItem as TrackerSequence;
             }
         }
 
@@ -978,6 +925,13 @@ namespace MidiSynth7.components.views
         {
             pattern = e.LightIndex;
             step = -1;
+        }
+
+        private void Dial_MarkerValueChange(object sender, EventArgs e)
+        {
+            LC_PatternStep.Columns = Dial_Marker_NotesPerMeasure.Value;
+            LC_PatternStep.Rows = Dial_Marker_Measures.Value;
+            LC_PatternStep.Marker = Dial_Marker_Subdivision.Value;
         }
     }
 }

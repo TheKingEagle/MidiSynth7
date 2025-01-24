@@ -17,7 +17,7 @@ namespace MidiSynth7.entities.controls
         int _marker = 4;
         public int Rows { get { return _rows; } set { _rows = value; PopulateLights(); } }
         public int Columns { get { return _cols; } set { _cols = value; PopulateLights(); } }
-        public int Marker { get { return _marker; } set { if (value > _cols || value < 1) { throw new ArgumentException("Marker out of range of column count"); } _marker = value; PopulateLights(); } }
+        public int Marker { get { return _marker; } set { if (value > _cols || value < 1) { _marker = _cols; } _marker = value; PopulateLights(); } }
 
         public string Header { get { return GB_LCBox.Header.ToString(); } set { GB_LCBox.Header = value; } }
 

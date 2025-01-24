@@ -163,7 +163,7 @@
                 </SynthGUI:DialControl>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Instruments" HorizontalAlignment="Left" Margin="5,211,0,0" VerticalAlignment="Top" Height="212" Width="297" BorderThickness="2" BorderBrush="#FF035507" Padding="0" FontSize="14" >
+        <GroupBox Header="Instruments" HorizontalAlignment="Left" Margin="5,211,0,0" VerticalAlignment="Top" Height="96" Width="297" BorderThickness="2" BorderBrush="#FF035507" Padding="0" FontSize="14" >
             <Grid Margin="0,-2,0,0">
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -171,33 +171,6 @@
                         <GradientStop Color="#FF032300" Offset="1"/>
                     </LinearGradientBrush>
                 </Grid.Background>
-                <GroupBox x:Name="gb_split" Header="Split Instrument" Margin="7,79,7,7" BorderBrush="#FF135300" BorderThickness="2" IsEnabled="False">
-                    <Grid>
-                        <TextBlock HorizontalAlignment="Left" Margin="9,13,0,0" TextWrapping="Wrap" Text="Bank:" VerticalAlignment="Top"/>
-                        <ComboBox x:Name="cb_sBank" HorizontalAlignment="Left" Margin="57,13,0,0" VerticalAlignment="Top" Width="200" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_sBank_SelectionChanged">
-                            <ComboBox.Background>
-                                <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                                    <GradientStop Color="#FFD8D8D8" Offset="1"/>
-                                    <GradientStop Color="#FFB6B6B6" Offset="0.5"/>
-                                    <GradientStop Color="#FFC1C1C1" Offset="0.5"/>
-                                    <GradientStop Color="#FF5D5D5D"/>
-                                </LinearGradientBrush>
-                            </ComboBox.Background>
-                        </ComboBox>
-                        <TextBlock HorizontalAlignment="Left" Margin="9,40,0,0" TextWrapping="Wrap" Text="Patch:" VerticalAlignment="Top"/>
-                        <ComboBox x:Name="cb_sPatch" HorizontalAlignment="Left" Margin="57,39,0,0" VerticalAlignment="Top" Width="200" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_sPatch_SelectionChanged">
-                            <ComboBox.Background>
-                                <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                                    <GradientStop Color="#FFD8D8D8" Offset="1"/>
-                                    <GradientStop Color="#FFB6B6B6" Offset="0.5"/>
-                                    <GradientStop Color="#FFC1C1C1" Offset="0.5"/>
-                                    <GradientStop Color="#FF5D5D5D"/>
-                                </LinearGradientBrush>
-                            </ComboBox.Background>
-                        </ComboBox>
-                    </Grid>
-                </GroupBox>
-                <CheckBox x:Name="cb__InsS_Enable" Content="" HorizontalAlignment="Left" Margin="122,82,0,0" VerticalAlignment="Top" Focusable="False" Checked="ToggleChecked" Unchecked="ToggleChecked"/>
                 <TextBlock HorizontalAlignment="Left" Margin="17,13,0,0" TextWrapping="Wrap" Text="Bank:" VerticalAlignment="Top"/>
                 <ComboBox x:Name="cb_mBank" HorizontalAlignment="Left" Margin="67,13,0,0" VerticalAlignment="Top" Width="200" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_mBank_SelectionChanged">
                     <ComboBox.Background>
@@ -222,7 +195,7 @@
                 </ComboBox>
             </Grid>
         </GroupBox>
-        <GroupBox x:Name="gb_riff" Header="Sequencer" HorizontalAlignment="Left" Margin="307,308,0,0" VerticalAlignment="Top" Height="115" Width="396" BorderThickness="2" BorderBrush="#FF360076" Padding="0">
+        <GroupBox x:Name="gb_riff" Header="Sequencer" HorizontalAlignment="Left" Margin="307,212,0,0" VerticalAlignment="Top" Height="211" Width="396" BorderThickness="2" BorderBrush="#FF360076" Padding="0">
             <Grid>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -230,8 +203,8 @@
                         <GradientStop Color="#FF360076" Offset="1"/>
                     </LinearGradientBrush>
                 </Grid.Background>
-                <Button Content="Edit" Margin="169,4,172,0" VerticalAlignment="Top" Focusable="False" Click="BnRiff_Define_Click" FontSize="14" Background="#FF2C2C2C" Height="30"/>
-                <Grid x:Name="dial_control_tempo" Margin="304,7,3,7">
+
+                <Grid x:Name="dial_control_tempo" Margin="304,107,3,2">
                     <SynthGUI:DialControl x:Name="Dial_RiffTempo" HorizontalAlignment="Left" Height="175" Margin="0,0,-90,-125" VerticalAlignment="Top" Width="140" RenderTransformOrigin="0,0" Text="TEMPO" Minimum="10" Maximum="400" Value="120">
                         <SynthGUI:DialControl.RenderTransform>
                             <TransformGroup>
@@ -244,9 +217,11 @@
                     </SynthGUI:DialControl>
 
                 </Grid>
-                <SynthGUI:LightCell x:Name="LC_PatternNumber" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="221,-4,87,61" Header="Pattern" Width="80" EnableClick="True" LightIndexChanged="LC_PatternNumber_LIC"  />
-                <SynthGUI:LightCell x:Name="LC_PatternStep" Columns="16" Rows="2" Header="Position" Margin="5,35,0,0" EnableClick="True" LightIndexChanged="LC_PatternStep_LightIndexChanged" />
-                <ComboBox x:Name="Cb_SequencerProfile" HorizontalAlignment="Left" Margin="5,4,0,0" VerticalAlignment="Top" Width="159" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_SequencerProfile_SelectionChanged" SelectedIndex="0" Height="30" FontSize="16">
+                <Grid Background="Black" Margin="5,97,87,2">
+                    <SynthGUI:LightCell x:Name="LC_PatternStep" Columns="16" Rows="4" Header="Step"  EnableClick="True" LightIndexChanged="LC_PatternStep_LightIndexChanged"  />
+                </Grid>
+                <SynthGUI:LightCell x:Name="LC_PatternNumber" HorizontalAlignment="Left" VerticalAlignment="Top"  Margin="203,44,0,0" Header="Sequence" Width="98" EnableClick="True" LightIndexChanged="LC_PatternNumber_LIC" Height="56" Columns="5" Rows="2" Marker="1" Background="Black"  />
+                <ComboBox x:Name="Cb_SequencerProfile" HorizontalAlignment="Left" Margin="5,4,0,0" VerticalAlignment="Top" Width="261" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_SequencerProfile_SelectionChanged" SelectedIndex="0" Height="30" FontSize="16">
                     <ComboBox.Background>
                         <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                             <GradientStop Color="#FFD8D8D8" Offset="1"/>
@@ -256,9 +231,15 @@
                         </LinearGradientBrush>
                     </ComboBox.Background>
                 </ComboBox>
+                <Button x:Name="bn_CustomizeDelay_Copy" HorizontalAlignment="Left" Margin="271,4,0,0" VerticalAlignment="Top" Width="30" Background="#FF2C2C2C" Focusable="False" IsTabStop="False" Click="BN_CustomizeDelay_Click" Height="30">
+                    <Canvas Width="24" Height="24">
+                        <Path Stroke="White" StrokeThickness="2" StrokeStartLineCap="Round" StrokeLineJoin="Round" Data="M16.4745 5.40801L18.5917 7.52524M17.8358 3.54289L12.1086 9.27005C11.8131 9.56562 11.6116 9.94206 11.5296 10.3519L11 13L13.6481 12.4704C14.0579 12.3884 14.4344 12.1869 14.7299 11.8914L20.4571 6.16423C21.181 5.44037 21.181 4.26676 20.4571 3.5429C19.7332 2.81904 18.5596 2.81903 17.8358 3.54289Z"/>
+                        <Path Stroke="White" StrokeThickness="2" StrokeStartLineCap="Round" StrokeLineJoin="Round" Data="M19 15V18C19 19.1046 18.1046 20 17 20H6C4.89543 20 4 19.1046 4 18V7C4 5.89543 4.89543 5 6 5H9" />
+                    </Canvas>
+                </Button>
             </Grid>
         </GroupBox>
-        <GroupBox x:Name="gb_ds" Header="Drum Set" HorizontalAlignment="Left" Margin="307,213,0,0" VerticalAlignment="Top" Height="90" Width="396" BorderThickness="2" BorderBrush="#FF0047AE" Padding="0" IsEnabled="False">
+        <GroupBox x:Name="gb_ds" Header="Drum Set" HorizontalAlignment="Left" Margin="5,312,0,0" VerticalAlignment="Top" Height="111" Width="297" BorderThickness="2" BorderBrush="#FF0047AE" Padding="0" IsEnabled="False">
             <Grid>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -267,7 +248,7 @@
                     </LinearGradientBrush>
                 </Grid.Background>
                 <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Drum kit Selection: " VerticalAlignment="Top" FontSize="16"/>
-                <ComboBox x:Name="cb_dkitlist" HorizontalAlignment="Center" Margin="0,36,0,0" VerticalAlignment="Top" Width="368" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_dkit_SelectionChanged" SelectedIndex="0" Height="27" FontSize="16">
+                <ComboBox x:Name="cb_dkitlist" HorizontalAlignment="Center" Margin="0,36,0,0" VerticalAlignment="Top" Width="268" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_dkit_SelectionChanged" SelectedIndex="0" Height="27" FontSize="16">
                     <ComboBox.Background>
                         <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                             <GradientStop Color="#FFD8D8D8" Offset="1"/>
@@ -338,6 +319,36 @@
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="0.5" ScaleY="0.5"/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </SynthGUI:DialControl.RenderTransform>
+                </SynthGUI:DialControl>
+                <SynthGUI:DialControl x:Name="Dial_Marker_Subdivision" Height="62" Width="68" Margin="-396,34,0,31" Text="DIVISION" Value="4" Maximum="16" Minimum="1" HorizontalAlignment="Left" ToolTip="Beats per measure - The start of each measure is indicated in blue." RenderTransformOrigin="0,0" ValueChanged="Dial_MarkerValueChange">
+                    <SynthGUI:DialControl.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleX="0.52" ScaleY="0.52"/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </SynthGUI:DialControl.RenderTransform>
+                </SynthGUI:DialControl>
+                <SynthGUI:DialControl x:Name="Dial_Marker_NotesPerMeasure" Height="62" Width="68" Margin="-266,34,0,31" Text="NOTES/MERASURE" Value="16" Maximum="16" Minimum="1" HorizontalAlignment="Left" ToolTip="How many notes per measure? Range: 1 - 16" RenderTransformOrigin="0,0" ValueChanged="Dial_MarkerValueChange">
+                    <SynthGUI:DialControl.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleX="0.52" ScaleY="0.52"/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </SynthGUI:DialControl.RenderTransform>
+                </SynthGUI:DialControl>
+                <SynthGUI:DialControl x:Name="Dial_Marker_Measures" Height="62" Width="124" Margin="-331,34,0,31" Text="MEASURES" Value="4" Maximum="4" Minimum="1" HorizontalAlignment="Left" ToolTip="Rows - How many rows are in the pattern. 1 - 4" RenderTransformOrigin="0,0" ValueChanged="Dial_MarkerValueChange">
+                    <SynthGUI:DialControl.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleX="0.52" ScaleY="0.52"/>
                             <SkewTransform/>
                             <RotateTransform/>
                             <TranslateTransform/>
@@ -502,8 +513,8 @@
         </GroupBox>
         <SynthGUI:PianoControlFullRange x:Name="pianomain" HorizontalAlignment="Left" Margin="5,437,0,-1" VerticalAlignment="Top" pKeyDown="Pianomain_pKeyDown" pKeyUp="Pianomain_pKeyUp" Height="150"/>
 
-        <CheckBox x:Name="CB_Sequencer_Check" Content="" HorizontalAlignment="Left" Margin="381,309,0,0" VerticalAlignment="Top" Focusable="False" Checked="Riffcenter_toggleCheck" Unchecked="Riffcenter_toggleCheck" IsTabStop="False" Height="16" Width="21"/>
-        <CheckBox x:Name="cb_DS_Enable" Content="" HorizontalAlignment="Left" Margin="375,214,0,0" VerticalAlignment="Top" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16" Width="21"/>
+        <CheckBox x:Name="CB_Sequencer_Check" Content="" HorizontalAlignment="Left" Margin="380,212,0,0" VerticalAlignment="Top" Focusable="False" Checked="Riffcenter_toggleCheck" Unchecked="Riffcenter_toggleCheck" IsTabStop="False" Height="16" Width="21"/>
+        <CheckBox x:Name="cb_DS_Enable" Content="" HorizontalAlignment="Left" Margin="73,312,0,0" VerticalAlignment="Top" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16" Width="16"/>
         <CheckBox x:Name="cb_NFX_Enable" Content="" HorizontalAlignment="Left" Margin="798,214,0,0" VerticalAlignment="Top" Width="16" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16"/>
         <CheckBox x:Name="CB_EnforceInstruments" Content="" HorizontalAlignment="Left" Margin="96,214,0,0" VerticalAlignment="Top" Width="16" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16">
             <CheckBox.ToolTip>

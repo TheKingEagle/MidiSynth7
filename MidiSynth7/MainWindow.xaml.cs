@@ -58,9 +58,7 @@ namespace MidiSynth7
         public List<ChInvk> channelIndicators = new List<ChInvk>();
         public List<NFXDelayProfile> NFXProfiles = new List<NFXDelayProfile>();
 
-        public List<TrackerSequence> Tracks = new List<TrackerSequence>();
-
-        public TrackerSequence ActiveSequence { get; set; }
+        
 
         #endregion
 
@@ -160,30 +158,30 @@ namespace MidiSynth7
 
         internal void PopulateSequences()
         {
-            if(Tracks != null)
-            {
-                Tracks.Clear();
-            } 
-            else
-            {
-                Tracks = new List<TrackerSequence>();
-            }
-            foreach (string item in Directory.GetFiles(App.APP_DATA_DIR + "sequences\\", "*.mton"))
-            {
-                using (StreamReader sr = new StreamReader(item))
-                {
-                    TrackerSequence ts = JsonConvert.DeserializeObject<TrackerSequence>(sr.ReadToEnd());
-                    if (ts != null)
-                    {
-                        Tracks.Add(ts);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Failed to parse file: " + item);
-                    }
-                }
-            }
-            currentView?.HandleEvent(this, new EventArgs(), "TrSeqUpdate");
+            //if(Tracks != null)
+            //{
+            //    Tracks.Clear();
+            //} 
+            //else
+            //{
+            //    Tracks = new List<TrackerSequence>();
+            //}
+            //foreach (string item in Directory.GetFiles(App.APP_DATA_DIR + "sequences\\", "*.mton"))
+            //{
+            //    using (StreamReader sr = new StreamReader(item))
+            //    {
+            //        TrackerSequence ts = JsonConvert.DeserializeObject<TrackerSequence>(sr.ReadToEnd());
+            //        if (ts != null)
+            //        {
+            //            Tracks.Add(ts);
+            //        }
+            //        else
+            //        {
+            //            Console.WriteLine("Failed to parse file: " + item);
+            //        }
+            //    }
+            //}
+            //currentView?.HandleEvent(this, new EventArgs(), "TrSeqUpdate");
         }
 
         ~MainWindow()
@@ -386,17 +384,8 @@ namespace MidiSynth7
             CurrentViewDM = mode;
             switch (mode)
             {
+                case DisplayModes.Compact:
                 case DisplayModes.Standard:
-                    this.Width = 1106;
-                    this.Height = 596;
-                    _width = 1106;
-                    _height = 596;
-                    Title = $"RMSoftware MIDI Synthesizer v7.0 • Standard Edition • {(Environment.Is64BitProcess ? "x64" : "x86")} rev. {appinfo_projectRevision}";
-                    currentView = null;
-                    currentView = new components.views.StandardView(this, ref AppConfig, ref MidiEngine);
-                    FR_SynthView.Content = currentView;
-
-                    break;
                 case DisplayModes.Studio:
                     this.Width = 1524;
                     this.Height = 658;
@@ -407,9 +396,6 @@ namespace MidiSynth7
                     currentView = new components.views.StudioRevised(this, ref AppConfig, ref MidiEngine);
                     FR_SynthView.Content = currentView;
 
-                    break;
-                case DisplayModes.Compact:
-                    //todo: Compact mode
                     break;
                 default:
                     break;
@@ -812,58 +798,6 @@ namespace MidiSynth7
 
         
 
-        public async void ShowMPT()
-        {
-            PatternLoaded = false;
-            if (GR_OverlayContent.Visibility == Visibility.Visible)
-            {
-                return;
-            }
-            SequenceEditor editor = new SequenceEditor(this,GR_OverlayContent);
-            Dialog g = new Dialog();
-            g.DialogShown += G_Shown;
-            g.SnapsToDevicePixels = true;
-            await g.ShowDialog(editor, this, GR_OverlayContent);
-        }
-        
-        private void G_Shown(object sender, EventArgs e)
-        {
-            if (PatternLoaded) return;
-            var editor = sender as SequenceEditor;
-            if (ActiveSequence == null)
-            {
-                TrackerSequence ts = new TrackerSequence();
-
-                ts.Patterns = new List<TrackerPattern>()
-                {
-                    TrackerPattern.GetEmptyPattern(32, 20),
-                    TrackerPattern.GetEmptyPattern(32, 20),
-                    TrackerPattern.GetEmptyPattern(32, 20),
-                    TrackerPattern.GetEmptyPattern(32, 20),
-                };
-                ts.SelectedOctave = 3;
-                ts.Instruments = new List<TrackerInstrument>()
-                {
-                    new TrackerInstrument(0,-1,-1,0,0,"Acoustic Grand"),
-                    new TrackerInstrument(1,-1,-1,0,4,"Rhodes E. Piano"),
-                    new TrackerInstrument(2,-1,-1,0,18,"Rock Organ"),
-                    new TrackerInstrument(3,-1,-1,0,32,"Acoustic Bass"),
-                    new TrackerInstrument(4,-1,9,0,0,"Standard Kit"),
-                };
-                ts.SelectedInstrument = 1;
-                ts.SequenceName = "Untitled Sequence" + (Tracks.Count + 1);
-                ActiveSequence = ts;
-                editor.LoadSequence(ts);
-                editor.LoadPattern(0);
-
-            }
-            else
-            {
-                editor.LoadSequence(ActiveSequence);
-                editor.LoadPattern(0);
-            }
-            PatternLoaded = true;
-        }
         public class ChInvk
         {
             Ellipse index;

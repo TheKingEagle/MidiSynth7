@@ -126,24 +126,15 @@
     <Compile Include="components\dialog\Message.xaml.cs">
       <DependentUpon>Message.xaml</DependentUpon>
     </Compile>
-    <Compile Include="components\dialog\MPTInstrumentManager.xaml.cs">
-      <DependentUpon>MPTInstrumentManager.xaml</DependentUpon>
-    </Compile>
     <Compile Include="components\dialog\NFXDelay.xaml.cs">
       <DependentUpon>NFXDelay.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="components\dialog\SequenceEditor.xaml.cs">
-      <DependentUpon>SequenceEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="components\dialog\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="components\SeqParamPlayer.cs" />
-    <Compile Include="components\seqparams\Sxx.cs" />
     <Compile Include="components\SystemComponent.cs" />
     <Compile Include="components\NFXDelayProfile.cs" />
     <Compile Include="components\SynthKey.cs" />
-    <Compile Include="components\TrackerSequence.cs" />
     <Compile Include="components\views\StudioRevised.xaml.cs">
       <DependentUpon>StudioRevised.xaml</DependentUpon>
     </Compile>
@@ -160,15 +151,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="components\dialog\MPTInstrumentManager.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="components\dialog\NFXDelay.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="components\dialog\SequenceEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -176,15 +159,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="components\views\StandardView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="components\views\StudioRevised.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="components\views\StudioView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -212,14 +187,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="entities\RowChannelBit.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="entities\RowIndexBit.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="entities\TransposeNotification.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -241,12 +208,6 @@
     <Compile Include="components\NumberedEntry.cs" />
     <Compile Include="components\SynthView.cs" />
     <Compile Include="components\SystemConfig.cs" />
-    <Compile Include="components\views\StandardView.xaml.cs">
-      <DependentUpon>StandardView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="components\views\StudioView.xaml.cs">
-      <DependentUpon>StudioView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="entities\BlackKey.xaml.cs">
       <DependentUpon>BlackKey.xaml</DependentUpon>
     </Compile>
@@ -259,7 +220,6 @@
     <Compile Include="entities\controls\LightCell.xaml.cs">
       <DependentUpon>LightCell.xaml</DependentUpon>
     </Compile>
-    <Compile Include="entities\controls\VirtualizedMPTPattern.cs" />
     <Compile Include="entities\KeyTypes.cs" />
     <Compile Include="entities\controls\PianoControl.xaml.cs">
       <DependentUpon>PianoControl.xaml</DependentUpon>
@@ -268,12 +228,6 @@
       <DependentUpon>PianoControlFullRange.xaml</DependentUpon>
     </Compile>
     <Compile Include="entities\Pie.cs" />
-    <Compile Include="entities\RowChannelBit.xaml.cs">
-      <DependentUpon>RowChannelBit.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="entities\RowIndexBit.xaml.cs">
-      <DependentUpon>RowIndexBit.xaml</DependentUpon>
-    </Compile>
     <Compile Include="entities\TransposeNotification.xaml.cs">
       <DependentUpon>TransposeNotification.xaml</DependentUpon>
     </Compile>
