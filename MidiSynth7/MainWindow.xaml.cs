@@ -23,6 +23,8 @@ using Sanford.Multimedia.Midi;
 using MidiSynth7.entities.controls;
 using System.Collections.ObjectModel;
 using MidiSynth7.components.dialog;
+using MidiSynth7.components.sequencer;
+using Sequence = MidiSynth7.components.sequencer.Sequence;
 
 namespace MidiSynth7
 {
@@ -57,7 +59,7 @@ namespace MidiSynth7
         public List<Ellipse> channelElipses = new List<Ellipse>();
         public List<ChInvk> channelIndicators = new List<ChInvk>();
         public List<NFXDelayProfile> NFXProfiles = new List<NFXDelayProfile>();
-
+        public ObservableCollection<Sequence> Tracks = new ObservableCollection<Sequence>();
         
 
         #endregion
@@ -70,7 +72,7 @@ namespace MidiSynth7
                 Directory.CreateDirectory(App.APP_DATA_DIR + "sequences\\");
             }
             Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
-            PopulateSequences();
+            
 
             appinfo_projectRevision = Assembly.GetExecutingAssembly().GetName().Version.Revision;
             AppConfig = LoadConfig();
@@ -149,6 +151,7 @@ namespace MidiSynth7
             GR_OverlayContent.Visibility = Visibility.Collapsed;
             GR_OverlayContent.Opacity = 0;
             Loadview(AppConfig.DisplayMode);
+            PopulateSequences();
         }
 
         private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
@@ -158,30 +161,30 @@ namespace MidiSynth7
 
         internal void PopulateSequences()
         {
-            //if(Tracks != null)
-            //{
-            //    Tracks.Clear();
-            //} 
-            //else
-            //{
-            //    Tracks = new List<TrackerSequence>();
-            //}
-            //foreach (string item in Directory.GetFiles(App.APP_DATA_DIR + "sequences\\", "*.mton"))
-            //{
-            //    using (StreamReader sr = new StreamReader(item))
-            //    {
-            //        TrackerSequence ts = JsonConvert.DeserializeObject<TrackerSequence>(sr.ReadToEnd());
-            //        if (ts != null)
-            //        {
-            //            Tracks.Add(ts);
-            //        }
-            //        else
-            //        {
-            //            Console.WriteLine("Failed to parse file: " + item);
-            //        }
-            //    }
-            //}
-            //currentView?.HandleEvent(this, new EventArgs(), "TrSeqUpdate");
+            if (Tracks != null)
+            {
+                Tracks.Clear();
+            }
+            else
+            {
+                Tracks = new ObservableCollection<Sequence>();
+            }
+            foreach (string item in Directory.GetFiles(App.APP_DATA_DIR + "sequences\\", "*.mton"))
+            {
+                using (StreamReader sr = new StreamReader(item))
+                {
+                    Sequence ts = JsonConvert.DeserializeObject<Sequence>(sr.ReadToEnd());
+                    if (ts != null)
+                    {
+                        Tracks.Add(ts);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Failed to parse file: " + item);
+                    }
+                }
+            }
+            currentView?.HandleEvent(this, new EventArgs(), "TrSeqUpdate");
         }
 
         ~MainWindow()
@@ -776,6 +779,7 @@ namespace MidiSynth7
             if (e.Message.Command == ChannelCommand.NoteOff || (e.Message.Command == ChannelCommand.NoteOn && e.Message.Data2 == 0))
             {
                 MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
+                
                 Dispatcher.InvokeAsync(()=>currentView.HandleNoteOffEvent(this,new NoteEventArgs(e.Message)));
             }
         }

@@ -101,7 +101,7 @@
                         <GradientStop Color="#FF3E0000" Offset="1"/>
                     </LinearGradientBrush>
                 </Grid.Background>
-                <SynthGUI:DialControl x:Name="CTRL_Octave" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Octave" Value="3" ValueChanged="CTRL_ValueChanged" Height="125" Width="125" Grid.Column="1" RenderTransformOrigin="0.5,0.5" TextPromptStateChanged="Dials_TextPromptStateChanged" Maximum="6">
+                <SynthGUI:DialControl x:Name="CTRL_Octave" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Octave" Value="3" ValueChanged="CTRL_ValueChanged" Height="125" Width="125" Grid.Column="1" RenderTransformOrigin="0.5,0.5" TextPromptStateChanged="Dials_TextPromptStateChanged" Maximum="6" Cursor="Hand">
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="1.45" ScaleY="1.45"/>
@@ -111,7 +111,7 @@
                         </TransformGroup>
                     </SynthGUI:DialControl.RenderTransform>
                 </SynthGUI:DialControl>
-                <SynthGUI:DialControl x:Name="CTRL_Volume" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Volume" Value="127" Maximum="127" ValueChanged="CTRL_ValueChanged" Height="125" Width="125" RenderTransformOrigin="0.5,0.5" Grid.Column="3" TextPromptStateChanged="Dials_TextPromptStateChanged">
+                <SynthGUI:DialControl x:Name="CTRL_Volume" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Volume" Value="127" Maximum="127" ValueChanged="CTRL_ValueChanged" Height="125" Width="125" RenderTransformOrigin="0.5,0.5" Grid.Column="3" TextPromptStateChanged="Dials_TextPromptStateChanged" Cursor="Hand">
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="1.45" ScaleY="1.45"/>
@@ -121,7 +121,7 @@
                         </TransformGroup>
                     </SynthGUI:DialControl.RenderTransform>
                 </SynthGUI:DialControl>
-                <SynthGUI:DialControl x:Name="CTRL_Balance" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Balance (Pan)" Value="64" Maximum="127" ValueChanged="CTRL_ValueChanged" Height="125" Width="125" RenderTransformOrigin="0.5,0.5" Grid.Column="5" TextPromptStateChanged="Dials_TextPromptStateChanged">
+                <SynthGUI:DialControl x:Name="CTRL_Balance" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Balance (Pan)" Value="64" Maximum="127" ValueChanged="CTRL_ValueChanged" Height="125" Width="125" RenderTransformOrigin="0.5,0.5" Grid.Column="5" TextPromptStateChanged="Dials_TextPromptStateChanged" Cursor="Hand">
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="1.45" ScaleY="1.45"/>
@@ -131,7 +131,7 @@
                         </TransformGroup>
                     </SynthGUI:DialControl.RenderTransform>
                 </SynthGUI:DialControl>
-                <SynthGUI:DialControl x:Name="CTRL_Reverb" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Reverb" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged" RenderTransformOrigin="0.5,0.5" Padding="0" Height="125" Width="125" Grid.Column="7" TextPromptStateChanged="Dials_TextPromptStateChanged">
+                <SynthGUI:DialControl x:Name="CTRL_Reverb" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Reverb" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged" RenderTransformOrigin="0.5,0.5" Padding="0" Height="125" Width="125" Grid.Column="7" TextPromptStateChanged="Dials_TextPromptStateChanged" Cursor="Hand">
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="1.45" ScaleY="1.45"/>
@@ -141,7 +141,7 @@
                         </TransformGroup>
                     </SynthGUI:DialControl.RenderTransform>
                 </SynthGUI:DialControl>
-                <SynthGUI:DialControl x:Name="CTRL_Chorus" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Chorus" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged" RenderTransformOrigin="0.5,0.5" Grid.Column="9" Height="125" Width="125" TextPromptStateChanged="Dials_TextPromptStateChanged">
+                <SynthGUI:DialControl x:Name="CTRL_Chorus" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Chorus" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged" RenderTransformOrigin="0.5,0.5" Grid.Column="9" Height="125" Width="125" TextPromptStateChanged="Dials_TextPromptStateChanged" Cursor="Hand">
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="1.45" ScaleY="1.45"/>
@@ -151,7 +151,7 @@
                         </TransformGroup>
                     </SynthGUI:DialControl.RenderTransform>
                 </SynthGUI:DialControl>
-                <SynthGUI:DialControl x:Name="CTRL_Modulation" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Modulation" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged" Width="125" RenderTransformOrigin="0.5,0.5" Grid.Column="11" Height="125" TextPromptStateChanged="Dials_TextPromptStateChanged">
+                <SynthGUI:DialControl x:Name="CTRL_Modulation" HorizontalAlignment="Left" Margin="28,30,0,0" VerticalAlignment="Top" Text="Modulation" Value="0" Maximum="127" ValueChanged="CTRL_ValueChanged" Width="125" RenderTransformOrigin="0.5,0.5" Grid.Column="11" Height="125" TextPromptStateChanged="Dials_TextPromptStateChanged" Cursor="Hand">
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="1.45" ScaleY="1.45"/>
@@ -218,10 +218,10 @@
 
                 </Grid>
                 <Grid Background="Black" Margin="5,97,87,2">
-                    <SynthGUI:LightCell x:Name="LC_PatternStep" Columns="16" Rows="4" Header="Step"  EnableClick="True" LightIndexChanged="LC_PatternStep_LightIndexChanged"  />
+                    <SynthGUI:LightCell x:Name="LC_PatternStep" Columns="16" Rows="4" Header="Step [Channel: 1]"  EnableClick="True" LightIndexChanged="LC_PatternStep_LightIndexChanged"  />
                 </Grid>
-                <SynthGUI:LightCell x:Name="LC_PatternNumber" HorizontalAlignment="Left" VerticalAlignment="Top"  Margin="203,44,0,0" Header="Sequence" Width="98" EnableClick="True" LightIndexChanged="LC_PatternNumber_LIC" Height="56" Columns="5" Rows="2" Marker="1" Background="Black"  />
-                <ComboBox x:Name="Cb_SequencerProfile" HorizontalAlignment="Left" Margin="5,4,0,0" VerticalAlignment="Top" Width="261" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_SequencerProfile_SelectionChanged" SelectedIndex="0" Height="30" FontSize="16">
+                <SynthGUI:LightCell x:Name="LC_PatternNumber" HorizontalAlignment="Left" VerticalAlignment="Top"  Margin="203,44,0,0" Header="Pattern" Width="98" EnableClick="True" LightIndexChanged="LC_PatternNumber_LIC" Height="56" Columns="5" Rows="2" Marker="1" Background="Black"  />
+                <ComboBox x:Name="Cb_SequencerProfile" HorizontalAlignment="Left" Margin="5,4,0,0" VerticalAlignment="Top" Width="247" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_SequencerProfile_SelectionChanged" SelectedIndex="0" Height="28" FontSize="16">
                     <ComboBox.Background>
                         <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                             <GradientStop Color="#FFD8D8D8" Offset="1"/>
@@ -231,12 +231,34 @@
                         </LinearGradientBrush>
                     </ComboBox.Background>
                 </ComboBox>
-                <Button x:Name="bn_CustomizeDelay_Copy" HorizontalAlignment="Left" Margin="271,4,0,0" VerticalAlignment="Top" Width="30" Background="#FF2C2C2C" Focusable="False" IsTabStop="False" Click="BN_CustomizeDelay_Click" Height="30">
+                <Button x:Name="bn_SQProfRename" HorizontalAlignment="Left" Margin="257,4,0,0" VerticalAlignment="Top" Width="27" Background="#FF2C2C2C" Focusable="False" IsTabStop="False" Click="bn_SQProfRename_Click" Height="28" ToolTip="Rename Sequence">
                     <Canvas Width="24" Height="24">
-                        <Path Stroke="White" StrokeThickness="2" StrokeStartLineCap="Round" StrokeLineJoin="Round" Data="M16.4745 5.40801L18.5917 7.52524M17.8358 3.54289L12.1086 9.27005C11.8131 9.56562 11.6116 9.94206 11.5296 10.3519L11 13L13.6481 12.4704C14.0579 12.3884 14.4344 12.1869 14.7299 11.8914L20.4571 6.16423C21.181 5.44037 21.181 4.26676 20.4571 3.5429C19.7332 2.81904 18.5596 2.81903 17.8358 3.54289Z"/>
-                        <Path Stroke="White" StrokeThickness="2" StrokeStartLineCap="Round" StrokeLineJoin="Round" Data="M19 15V18C19 19.1046 18.1046 20 17 20H6C4.89543 20 4 19.1046 4 18V7C4 5.89543 4.89543 5 6 5H9" />
+                        <Path Stroke="#FF94C7FF" StrokeThickness="2" StrokeStartLineCap="Round" StrokeLineJoin="Round" Data="M16.4745 5.40801L18.5917 7.52524M17.8358 3.54289L12.1086 9.27005C11.8131 9.56562 11.6116 9.94206 11.5296 10.3519L11 13L13.6481 12.4704C14.0579 12.3884 14.4344 12.1869 14.7299 11.8914L20.4571 6.16423C21.181 5.44037 21.181 4.26676 20.4571 3.5429C19.7332 2.81904 18.5596 2.81903 17.8358 3.54289Z"/>
+                        <Path Stroke="#FF94C7FF" StrokeThickness="2" StrokeStartLineCap="Round" StrokeLineJoin="Round" Data="M19 15V18C19 19.1046 18.1046 20 17 20H6C4.89543 20 4 19.1046 4 18V7C4 5.89543 4.89543 5 6 5H9" />
                     </Canvas>
                 </Button>
+                <Button x:Name="bn_SQNewProfile" HorizontalAlignment="Left" Margin="289,4,0,0" VerticalAlignment="Top" Width="28" Background="#FF2C2C2C" Focusable="False" IsTabStop="False" Click="BN_SQNewProfile_Click" Height="28" ToolTip="Create New Sequence">
+                    <Canvas Width="24" Height="24">
+                        <Path Fill="#FFFEFF94" StrokeThickness="1" Stroke="#FFFeFF94" StrokeStartLineCap="Round" StrokeLineJoin="Round" Data="M9.5 1.1l3.4 3.5.1.4v2h-1V6H8V2H3v11h4v1H2.5l-.5-.5v-12l.5-.5h6.7l.3.1zM9 2v3h2.9L9 2zm4 14h-1v-3H9v-1h3V9h1v3h3v1h-3v3z" Height="21" Stretch="Fill" Width="20" Canvas.Left="3" Canvas.Top="2" />
+                    </Canvas>
+                </Button>
+                <Button x:Name="bn_SQSaveProf" HorizontalAlignment="Left" Margin="322,4,0,0" VerticalAlignment="Top" Width="28" Background="#FF2C2C2C" Focusable="False" IsTabStop="False" Click="bn_SQSaveProf_Click" Height="28" ToolTip="Save Sequence">
+                    <Canvas Width="24" Height="24">
+                        <Path Fill="#FFB5FFBD" StrokeThickness="0" StrokeStartLineCap="Round" StrokeLineJoin="Round" Data="M20.71,9.29l-6-6a1,1,0,0,0-.32-.21A1.09,1.09,0,0,0,14,3H6A3,3,0,0,0,3,6V18a3,3,0,0,0,3,3H18a3,3,0,0,0,3-3V10A1,1,0,0,0,20.71,9.29ZM9,5h4V7H9Zm6,14H9V16a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1Zm4-1a1,1,0,0,1-1,1H17V16a3,3,0,0,0-3-3H10a3,3,0,0,0-3,3v3H6a1,1,0,0,1-1-1V6A1,1,0,0,1,6,5H7V8A1,1,0,0,0,8,9h6a1,1,0,0,0,1-1V6.41l4,4Z" />
+                    </Canvas>
+                </Button>
+                <Button x:Name="bn_SqDeleteProf" HorizontalAlignment="Left" Margin="355,4,0,0" VerticalAlignment="Top" Width="28" Background="#FF2C2C2C" Focusable="False" IsTabStop="False" Click="bn_SqDeleteProf_Click" Height="28" ToolTip="Delete Sequence">
+                    <Canvas Width="24" Height="24">
+                        <Path Fill="#FFFF8383" StrokeThickness="0" StrokeStartLineCap="Round" StrokeLineJoin="Round" Data="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1z" />
+                    </Canvas>
+                </Button>
+                <Ellipse x:Name="Mk_AutoAdvance" HorizontalAlignment="Left" Height="16" Margin="306,44,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="0" MouseUp="Mk_AutoAdvance_MouseUp" Stroke="{StaticResource CH_IND_STROKE}" Cursor="Hand"/>
+                <TextBlock x:Name="Mk_AutoAdvance_Lb" HorizontalAlignment="Left" Margin="324,44,0,0" TextWrapping="Wrap" Text="Auto Adv." VerticalAlignment="Top" Width="61" MouseUp="Mk_AutoAdvance_MouseUp" Cursor="Hand"/>
+                <Ellipse x:Name="Mk_RecordMode" HorizontalAlignment="Left" Height="16" Margin="306,65,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="0" MouseUp="Mk_RecordMode_MouseUp" Stroke="{StaticResource CH_IND_STROKE}" Cursor="Hand"/>
+                <TextBlock x:Name="Mk_RecordMode_Lb" HorizontalAlignment="Left" Margin="324,65,0,0" TextWrapping="Wrap" Text="Recording" VerticalAlignment="Top" Width="61" MouseUp="Mk_RecordMode_MouseUp" Cursor="Hand"/>
+                <Ellipse x:Name="Mk_DoTranspose" HorizontalAlignment="Left" Height="16" Margin="306,86,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="0" MouseUp="Mk_DoTranspose_Lb_MouseUp" Stroke="{StaticResource CH_IND_STROKE}" Cursor="Hand"/>
+                <TextBlock x:Name="Mk_DoTranspose_Lb" HorizontalAlignment="Left" Margin="324,86,0,0" TextWrapping="Wrap" Text="T-pose Key" VerticalAlignment="Top" Width="61" MouseUp="Mk_DoTranspose_Lb_MouseUp" Cursor="Hand"/>
+                
             </Grid>
         </GroupBox>
         <GroupBox x:Name="gb_ds" Header="Drum Set" HorizontalAlignment="Left" Margin="5,312,0,0" VerticalAlignment="Top" Height="111" Width="297" BorderThickness="2" BorderBrush="#FF0047AE" Padding="0" IsEnabled="False">
@@ -286,8 +308,8 @@
                 </ComboBox>
                 <Button x:Name="bn_CustomizeDelay" HorizontalAlignment="Left" Margin="205,10,0,0" VerticalAlignment="Top" Width="36" Background="#FF2C2C2C" Focusable="False" IsTabStop="False" Click="BN_CustomizeDelay_Click" Height="36">
                     <Canvas Width="24" Height="24">
-                        <Path Stroke="White" StrokeThickness="2" StrokeStartLineCap="Round" StrokeLineJoin="Round" Data="M16.4745 5.40801L18.5917 7.52524M17.8358 3.54289L12.1086 9.27005C11.8131 9.56562 11.6116 9.94206 11.5296 10.3519L11 13L13.6481 12.4704C14.0579 12.3884 14.4344 12.1869 14.7299 11.8914L20.4571 6.16423C21.181 5.44037 21.181 4.26676 20.4571 3.5429C19.7332 2.81904 18.5596 2.81903 17.8358 3.54289Z"/>
-                        <Path Stroke="White" StrokeThickness="2" StrokeStartLineCap="Round" StrokeLineJoin="Round" Data="M19 15V18C19 19.1046 18.1046 20 17 20H6C4.89543 20 4 19.1046 4 18V7C4 5.89543 4.89543 5 6 5H9" />
+                        <Path Stroke="#FF94C7FF" StrokeThickness="2" StrokeStartLineCap="Round" StrokeLineJoin="Round" Data="M16.4745 5.40801L18.5917 7.52524M17.8358 3.54289L12.1086 9.27005C11.8131 9.56562 11.6116 9.94206 11.5296 10.3519L11 13L13.6481 12.4704C14.0579 12.3884 14.4344 12.1869 14.7299 11.8914L20.4571 6.16423C21.181 5.44037 21.181 4.26676 20.4571 3.5429C19.7332 2.81904 18.5596 2.81903 17.8358 3.54289Z"/>
+                        <Path Stroke="#FF94C7FF" StrokeThickness="2" StrokeStartLineCap="Round" StrokeLineJoin="Round" Data="M19 15V18C19 19.1046 18.1046 20 17 20H6C4.89543 20 4 19.1046 4 18V7C4 5.89543 4.89543 5 6 5H9" />
                     </Canvas>
                 </Button>
                 <DataGrid RowHeaderWidth="0" Padding="2" x:Name="lv_steps" AutoGenerateColumns="false" Background="#FF2E2E2E" BorderBrush="#FFFFE800" Foreground="White" GridLinesVisibility="None" RowBackground="#FF212020" AlternatingRowBackground="#FF303030" CanUserReorderColumns="False" CanUserSortColumns="False" CanUserDeleteRows="False" CanUserAddRows="False" CanUserResizeRows="False" SelectionMode="Single" IsReadOnly="True" Margin="78,57,10,4">
@@ -325,7 +347,7 @@
                         </TransformGroup>
                     </SynthGUI:DialControl.RenderTransform>
                 </SynthGUI:DialControl>
-                <SynthGUI:DialControl x:Name="Dial_Marker_Subdivision" Height="62" Width="68" Margin="-396,34,0,31" Text="DIVISION" Value="4" Maximum="16" Minimum="1" HorizontalAlignment="Left" ToolTip="Beats per measure - The start of each measure is indicated in blue." RenderTransformOrigin="0,0" ValueChanged="Dial_MarkerValueChange">
+                <SynthGUI:DialControl x:Name="Dial_Marker_Subdivision" Height="62" Width="68" Margin="-395,34,0,31" Text="DIVISION" Value="4" Maximum="16" Minimum="1" HorizontalAlignment="Left" ToolTip="Beats per measure - The start of each measure is indicated in blue." RenderTransformOrigin="0,0" ValueChanged="Dial_MarkerValueChange" Cursor="Hand">
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="0.52" ScaleY="0.52"/>
@@ -335,7 +357,7 @@
                         </TransformGroup>
                     </SynthGUI:DialControl.RenderTransform>
                 </SynthGUI:DialControl>
-                <SynthGUI:DialControl x:Name="Dial_Marker_NotesPerMeasure" Height="62" Width="68" Margin="-266,34,0,31" Text="NOTES/MERASURE" Value="16" Maximum="16" Minimum="1" HorizontalAlignment="Left" ToolTip="How many notes per measure? Range: 1 - 16" RenderTransformOrigin="0,0" ValueChanged="Dial_MarkerValueChange">
+                <SynthGUI:DialControl x:Name="Dial_Marker_NotesPerMeasure" Height="62" Width="68" Margin="-265,34,0,31" Text="NOTES/MERASURE" Value="16" Maximum="16" Minimum="1" HorizontalAlignment="Left" ToolTip="How many notes per measure? Range: 1 - 16" RenderTransformOrigin="0,0" ValueChanged="Dial_MarkerValueChange" Cursor="Hand">
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="0.52" ScaleY="0.52"/>
@@ -345,7 +367,7 @@
                         </TransformGroup>
                     </SynthGUI:DialControl.RenderTransform>
                 </SynthGUI:DialControl>
-                <SynthGUI:DialControl x:Name="Dial_Marker_Measures" Height="62" Width="124" Margin="-331,34,0,31" Text="MEASURES" Value="4" Maximum="4" Minimum="1" HorizontalAlignment="Left" ToolTip="Rows - How many rows are in the pattern. 1 - 4" RenderTransformOrigin="0,0" ValueChanged="Dial_MarkerValueChange">
+                <SynthGUI:DialControl x:Name="Dial_Marker_Measures" Height="62" Width="124" Margin="-330,34,0,31" Text="MEASURES" Value="4" Maximum="4" Minimum="1" HorizontalAlignment="Left" ToolTip="Rows - How many rows are in the pattern. 1 - 4" RenderTransformOrigin="0,0" ValueChanged="Dial_MarkerValueChange" Cursor="Hand">
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="0.52" ScaleY="0.52"/>

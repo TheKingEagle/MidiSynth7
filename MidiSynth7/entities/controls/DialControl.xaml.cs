@@ -72,7 +72,7 @@ namespace MidiSynth7.entities.controls
             if (!isDown)
             {
                 t.Stop();
-                Mouse.OverrideCursor = Cursor;
+                Mouse.OverrideCursor = null;
             }
             if (!isDown)
             {
@@ -103,7 +103,7 @@ namespace MidiSynth7.entities.controls
             }
             t.Stop();
             isDown = false;
-            Mouse.OverrideCursor = Cursor;
+            Mouse.OverrideCursor = null;
         }
 
         private void el_dial_MouseRightButtonUp(object sender, MouseButtonEventArgs e)

@@ -23,6 +23,8 @@ namespace MidiSynth7.entities.controls
 
         public bool EnableClick { get; set; } = false;
 
+        public int LightIndex { get; private set; }
+
         public event EventHandler<LightCellEventArgs> LightIndexChanged;
         public LightCell()
         {
@@ -70,7 +72,7 @@ namespace MidiSynth7.entities.controls
                 return;
             }
                 ((Ellipse)WP_LightsContainer.Children[index]).Fill = FindResource("CH_IND_ON") as Brush;
-
+            LightIndex = index;
             if (!SupressEvent)
             {
                 LightIndexChanged?.Invoke(this, new LightCellEventArgs(index));
