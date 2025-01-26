@@ -2,16 +2,13 @@
 using MidiSynth7.components.dialog;
 using MidiSynth7.components.sequencer;
 using MidiSynth7.entities.controls;
-using NAudio.SoundFont;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Channels;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
