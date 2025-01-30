@@ -6,6 +6,8 @@
              xmlns:local="clr-namespace:MidiSynth7.entities" x:Class="MidiSynth7.entities.controls.DialControl" 
              mc:Ignorable="d" 
              d:DesignHeight="125" d:DesignWidth="125" BorderThickness="2" MinWidth="125" MinHeight="125" MaxWidth="125" MaxHeight="125" ScrollViewer.VerticalScrollBarVisibility="Disabled" IsEnabledChanged="UserControl_IsEnabledChanged">
+
+
     <UserControl.BorderBrush>
         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
             <GradientStop Color="#FF3A527C" Offset="1"/>

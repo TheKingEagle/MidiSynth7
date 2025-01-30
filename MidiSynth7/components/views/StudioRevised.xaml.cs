@@ -2,8 +2,10 @@
 using MidiSynth7.components.dialog;
 using MidiSynth7.components.sequencer;
 using MidiSynth7.entities.controls;
+using Sanford.Multimedia.Midi;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +14,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
+using Sequence = MidiSynth7.components.sequencer.Sequence;
 
 namespace MidiSynth7.components.views
 {
@@ -24,13 +28,14 @@ namespace MidiSynth7.components.views
         MidiEngine MidiEngine;
         MainWindow AppContext;
         private int Transpose;
+        private int SeqTranspose;
         private bool mfile_playing = false;
         private List<Ellipse> channelElipses = new List<Ellipse>();
         private List<MainWindow.ChInvk> channelIndicators = new List<MainWindow.ChInvk>();
         int pattern = 0;
         int step = 0;
         int activeCh = -1;
-
+        private List<int> ActiveNotes = new List<int>();
         bool _SequencerRecording = false;
         bool SequencerRecording
         {
@@ -38,13 +43,17 @@ namespace MidiSynth7.components.views
             set
             {
                 _SequencerRecording = value;
-                Mk_RecordMode.Fill = value ? (Brush)TryFindResource("CH_IND_MUTED") : (Brush)TryFindResource("CH_IND_OFF");
+                Mk_Sequence_RecordMode.Fill = value ? (Brush)TryFindResource("CH_IND_MUTED") : (Brush)TryFindResource("CH_IND_OFF");
+                LC_Sequence_PatternStep.FlashMode = value;
+                LC_Sequence_PatternNumber.SetLight(0);
+                LC_Sequence_PatternStep.SetLight(0);
                 if (value)
                 {
                     SequencerAutoAdvance = false;
                     SequencerTranspose = false;
                     CB_Sequencer_Check.IsChecked = false;
-                    LC_PatternNumber.SetLight(0);
+                    LC_Sequence_PatternNumber.SetLight(0);
+                    LC_Sequence_PatternStep.SetLight(0);
                 }
             }
         }
@@ -56,7 +65,7 @@ namespace MidiSynth7.components.views
             {
                 if (value) { SequencerRecording = false;}
                 _SequencerAutoAdvance = value;
-                Mk_AutoAdvance.Fill = value ? (Brush)TryFindResource("CH_IND_ON") : (Brush)TryFindResource("CH_IND_OFF");
+                Mk_Sequence_AutoAdvance.Fill = value ? (Brush)TryFindResource("CH_IND_ON") : (Brush)TryFindResource("CH_IND_OFF");
 
             }
         }
@@ -69,7 +78,7 @@ namespace MidiSynth7.components.views
                 if (value) { SequencerRecording = false; }
 
                 _SequencerTranspose = value;
-                Mk_DoTranspose.Fill = value ? (Brush)TryFindResource("CH_IND_ON") : (Brush)TryFindResource("CH_IND_OFF");
+                Mk_Sequence_DoTranspose.Fill = value ? (Brush)TryFindResource("CH_IND_ON") : (Brush)TryFindResource("CH_IND_OFF");
 
             }
         }
@@ -334,6 +343,7 @@ namespace MidiSynth7.components.views
 
         // Class-level field for CancellationTokenSource
         private CancellationTokenSource cancellationTokenSource;
+        private Dictionary<int, int> TransposedNotes = new Dictionary<int, int>(); // Maps original note -> transposed note
 
         private async void Riffcenter_toggleCheck(object sender, RoutedEventArgs e)
         {
@@ -342,7 +352,7 @@ namespace MidiSynth7.components.views
            
 
             int ticksPerDot = 6; // TODO: Ensure this value is set by the sequence
-            int DotDuration = (int)((float)(2500 / (float)(Dial_RiffTempo.Value * 1000)) * (ticksPerDot * 1000));
+            int DotDuration = (int)((float)(2500 / (float)(Dial_Sequence_Tempo.Value * 1000)) * (ticksPerDot * 1000));
             Console.WriteLine("DotDuration:" + DotDuration);
 
             // Cancel any previous task if it was running
@@ -360,23 +370,106 @@ namespace MidiSynth7.components.views
                 {
                     try
                     {
+                        int? root = null;
+                        if (SequencerTranspose)
+                        {
+                            root = SequenceProcessor.GetRootKey(AppContext.ActiveSequence);
+                        }
                         while (!token.IsCancellationRequested)
                         {
-
                             if (!check || token.IsCancellationRequested) { break; }
-                            Dispatcher.InvokeAsync(() => LC_PatternNumber.SetLight(pattern));
-                            for (step = 0; step < LC_PatternStep.Rows * LC_PatternStep.Columns; step++)
+
+                            Dispatcher.InvokeAsync(() => LC_Sequence_PatternNumber.SetLight(pattern));
+                            for (step = 0; step < (LC_Sequence_PatternStep.Rows * LC_Sequence_PatternStep.Columns) + 1; step++)
                             {
+                                if (step == (LC_Sequence_PatternStep.Rows * LC_Sequence_PatternStep.Columns))
+                                {
+                                    if (SequencerAutoAdvance)
+                                    {
+                                        pattern++;
+                                        if (pattern > 9) pattern = 0;
+                                        Dispatcher.InvokeAsync(() => LC_Sequence_PatternNumber.SetLight(pattern));
+                                    }
+                                    step = 0;
+                                }
                                 Dispatcher.InvokeAsync(() => check = CB_Sequencer_Check.IsChecked.Value);
                                 if (!check || token.IsCancellationRequested) return;
-                                Dispatcher.InvokeAsync(() => LC_PatternStep.SetLight(step));
+                                Dispatcher.InvokeAsync(() => LC_Sequence_PatternStep.SetLight(step));
 
-                                
-                                    MetronomeTick(step); // oh hey
-                                
-                                // TODO: Further process the sequence parameters within it.
-                                Dispatcher.InvokeAsync(() => DotDuration = (int)((float)(2500 / (float)(Dial_RiffTempo.Value * 1000)) * (ticksPerDot * 1000)));
-                                System.Threading.Thread.Sleep(DotDuration); // Still not ideal, but better
+                                if (AppContext.ActiveSequence == null)
+                                {
+                                    MetronomeTick(step);
+                                }
+                                else
+                                {
+                                    foreach (ChannelMessage item in AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages)
+                                    {
+                                        if (SequencerTranspose && root.HasValue)
+                                        {
+                                            // Get lowest active note for transposition
+                                            if (ActiveNotes.Count > 0)
+                                            {
+                                                int lowestNote = ActiveNotes.Min();
+                                                SeqTranspose = (lowestNote - root.Value) % 12; // Wrap within one octave
+                                            }
+
+                                            if (item.Command == ChannelCommand.NoteOn)
+                                            {
+                                                int transposedNote = item.Data1 + SeqTranspose;
+
+                                                // Store the transposed note for correct Note Off later
+                                                if (!TransposedNotes.ContainsKey(item.Data1))
+                                                {
+                                                    TransposedNotes[item.Data1] = transposedNote;
+                                                }
+
+                                                if (item.MidiChannel != 9 && item.MidiChannel != 15)
+                                                {
+                                                    MidiEngine.MidiEngine_SendRawChannelMessage(
+                                                        new ChannelMessage(item.Command, item.MidiChannel, transposedNote, item.Data2));
+                                                }
+                                                else
+                                                {
+                                                    MidiEngine.MidiEngine_SendRawChannelMessage(item);
+                                                }
+                                            }
+                                            else if (item.Command == ChannelCommand.NoteOff)
+                                            {
+                                                // Retrieve the transposed note to correctly turn it off
+                                                int transposedNote = TransposedNotes.ContainsKey(item.Data1)
+                                                    ? TransposedNotes[item.Data1]
+                                                    : item.Data1;
+
+                                                if (item.MidiChannel != 9 && item.MidiChannel != 15)
+                                                {
+                                                    MidiEngine.MidiEngine_SendRawChannelMessage(
+                                                        new ChannelMessage(item.Command, item.MidiChannel, transposedNote, item.Data2));
+
+                                                    // Remove the note from the tracking dictionary after it's turned off
+                                                    TransposedNotes.Remove(item.Data1);
+                                                }
+                                                else
+                                                {
+                                                    MidiEngine.MidiEngine_SendRawChannelMessage(item);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                // Send all other messages unchanged
+                                                MidiEngine.MidiEngine_SendRawChannelMessage(item);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            // If transposition is off, just send the raw message
+                                            MidiEngine.MidiEngine_SendRawChannelMessage(item);
+                                        }
+                                    }
+                                }
+
+                                // Process sequence timing
+                                Dispatcher.InvokeAsync(() => DotDuration = (int)((float)(2500 / (float)(Dial_Sequence_Tempo.Value * 1000)) * (ticksPerDot * 1000)));
+                                System.Threading.Thread.Sleep(DotDuration);
                             }
                         }
                     }
@@ -392,8 +485,8 @@ namespace MidiSynth7.components.views
                 // Cancel the running task
                 cancellationTokenSource?.Cancel();
 
-                LC_PatternNumber.SetLight(-1);
-                LC_PatternStep.SetLight(-1);
+                LC_Sequence_PatternNumber.SetLight(-1);
+                LC_Sequence_PatternStep.SetLight(-1);
                 MIO_bn_stop_Click(this, new RoutedEventArgs());
             }
         }
@@ -401,26 +494,26 @@ namespace MidiSynth7.components.views
 
         private void MetronomeTick(int step)
         {
-            if (step > 0 && step != LC_PatternStep.Rows * LC_PatternStep.Columns)
+            if (step > 0 && step != LC_Sequence_PatternStep.Rows * LC_Sequence_PatternStep.Columns)
             {
-                if (step % LC_PatternStep.Marker == 0)//TODO replace with value of beatsPerRow in pattern editor
+                if (step % LC_Sequence_PatternStep.Marker == 0)//TODO replace with value of beatsPerRow in pattern editor
                 {
                     AppContext.MidiEngine.MidiNote_Play(9, 42, 44, false);
                 }
-                if (step % LC_PatternStep.Marker == 1)//TODO replace with value of beatsPerRow in pattern editor
+                if (step % LC_Sequence_PatternStep.Marker == 1)//TODO replace with value of beatsPerRow in pattern editor
                 {
                     AppContext.MidiEngine.MidiNote_Stop(9, 42, false);
                 }
             }
-            if (step == 0 || step % LC_PatternStep.Columns == 0)
+            if (step == 0 || step % LC_Sequence_PatternStep.Columns == 0)
             {
-                if (step % LC_PatternStep.Marker == 0)//TODO replace with value of beatsPerRow in pattern editor
+                if (step % LC_Sequence_PatternStep.Marker == 0)//TODO replace with value of beatsPerRow in pattern editor
                 {
                     AppContext.MidiEngine.MidiNote_Play(9, 46, 44, false);
                 }
 
             }
-            if (step == 1 || step == (LC_PatternStep.Rows * LC_PatternStep.Columns) + 1)//TODO replace with value of beatsPerRow in pattern editor
+            if (step == 1 || step == (LC_Sequence_PatternStep.Rows * LC_Sequence_PatternStep.Columns) + 1)//TODO replace with value of beatsPerRow in pattern editor
             {
                 AppContext.MidiEngine.MidiNote_Stop(9, 46, false);
             }
@@ -524,6 +617,7 @@ namespace MidiSynth7.components.views
                 }
                 //MidiEngine.MidiNote_SetPan(0, CTRL_Balance.Value);
                 MidiEngine.MidiNote_Play(0, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, CTRL_Volume.Value);
+                ActiveNotes.Add(Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value);
 
             }
         }
@@ -536,7 +630,36 @@ namespace MidiSynth7.components.views
                 Bank bank = (Bank)cb_mBank.SelectedItem;
                 NumberedEntry patch = (NumberedEntry)cb_mPatch.SelectedItem;
 
-                
+                if (SequencerRecording)
+                {
+                    //check active channel. 
+
+                    int ch = activeCh == -1 ? 0 : activeCh;
+
+                    
+                    int pattern = LC_Sequence_PatternNumber.LightIndex;
+                    int step = LC_Sequence_PatternStep.LightIndex;
+
+                    var msgCol = AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages;
+                    
+                    //check if existing channel has note.
+                    var msg = msgCol.Where(x => x.MidiChannel == ch).Where(x=>x.Command == ChannelCommand.NoteOn).FirstOrDefault(x => x.Data1 == Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value);
+                    if(msg == null)
+                    {
+                        AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Add(new ChannelMessage(ChannelCommand.Controller, ch, (int)ControllerType.BankSelect, bank.Index));
+                        AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Add(new ChannelMessage(ChannelCommand.ProgramChange, ch, patch.Index));
+                        AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Add(new ChannelMessage(ChannelCommand.NoteOn,ch, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value,velocity));
+                        pianomain.CustomLightKey(e.KeyID, new LinearGradientBrush(Colors.Purple, Colors.MediumPurple, new Point(0,0), new Point(1, 1)));
+                    }
+                    else
+                    {
+                        AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Clear();
+                        AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Add(new ChannelMessage(ChannelCommand.Controller, ch, (int)ControllerType.BankSelect, bank.Index));
+                        AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Add(new ChannelMessage(ChannelCommand.ProgramChange, ch, patch.Index));
+                        AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Add(new ChannelMessage(ChannelCommand.NoteOn, ch, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value,velocity));
+                        pianomain.CustomLightKey(e.KeyID, new LinearGradientBrush(Colors.Purple, Colors.MediumPurple, new Point(0, 0), new Point(1, 1)));
+                    }
+                }
                 if (CB_Sequencer_Check.IsChecked.Value)
                 {
                     //return;
@@ -559,6 +682,7 @@ namespace MidiSynth7.components.views
                     //MidiEngine.MidiNote_SetPan(0, CTRL_Balance.Value);
                 }
                 MidiEngine.MidiNote_Play(channel, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity);
+                ActiveNotes.Add(Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value);
 
             }
         }
@@ -589,7 +713,7 @@ namespace MidiSynth7.components.views
                     return;
                 }
                 MidiEngine.MidiNote_Stop(0, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value,false);
-
+                ActiveNotes.Remove(Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value);
             }
         }
 
@@ -611,8 +735,9 @@ namespace MidiSynth7.components.views
         public async void HandleNoteOnEvent(object sender, NoteEventArgs e)
         {
             await FlashChannelActivity(e.ChannelMssge.MidiChannel);
+            if (SequencerRecording) { return; }
             await Dispatcher.InvokeAsync(() => pianomain.UnLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value));
-
+            
             if (e.ChannelMssge.Data2 > 0)
             {
                 if (e.ChannelMssge.MidiChannel == 0)
@@ -651,7 +776,27 @@ namespace MidiSynth7.components.views
 
         public async void HandleNoteOffEvent(object sender, NoteEventArgs e)
         {
-            
+            if (SequencerRecording)
+            {
+                //check active channel. 
+
+                int ch = activeCh == -1 ? 0 : activeCh;
+
+
+                int pattern = LC_Sequence_PatternNumber.LightIndex;
+                int step = LC_Sequence_PatternStep.LightIndex;
+
+                var msgCol = AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages;
+
+                //check if existing channel has note.
+                var msg = msgCol.Where(x => x.MidiChannel == ch).Where(x => x.Command == ChannelCommand.NoteOn).FirstOrDefault(x => x.Data1 == e.ChannelMssge.Data1);
+                if (msg == null) //Only send a note off if there is no note on matching in the current step.
+                {
+                    AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Add(new ChannelMessage(ChannelCommand.NoteOff, ch, e.ChannelMssge.Data1));
+                    //pianomain.CustomLightKey(e.KeyID, new LinearGradientBrush(Colors.Purple, Colors.MediumPurple, new Point(0, 0), new Point(1, 1)));
+                }
+            }
+
             await FlashChannelActivity(cb_DS_Enable.IsChecked.Value ? 9 : e.ChannelMssge.MidiChannel);
             pianomain.UnLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
 
@@ -687,7 +832,7 @@ namespace MidiSynth7.components.views
                 case "RefNFXDelay": NFXProfileUpdate(); break;
                 case "TrSeqUpdate":
                     Cb_SequencerProfile.ItemsSource = AppContext.Tracks;
-                    
+                    UI_CheckActiveSequence();
                     ; break;
                 default:
                     Console.WriteLine("Unrecognized event string: {0}... lol", id);
@@ -715,6 +860,48 @@ namespace MidiSynth7.components.views
         {
             if (HaltKeyboardInput) return;
             pianomain.UserControl_KeyUp(sender, e);
+
+            if (SequencerRecording)
+            {
+                if(e.Key == Key.Delete)
+                {
+                    int ch = activeCh < 0 ? 0 : activeCh;
+                    int pattern = LC_Sequence_PatternNumber.LightIndex;
+                    int step = LC_Sequence_PatternStep.LightIndex;
+                    AppContext.ActiveSequence.Patterns[pattern].Steps[step]
+                        .MidiMessages.RemoveAll(x=>x.MidiChannel == ch);
+                    for (int i = 0; i < 88; i++)
+                    {
+                        pianomain.UnLightKey(i);
+                    }
+                }
+
+                if (e.Key == Key.Escape)
+                {
+                    int pattern = LC_Sequence_PatternNumber.LightIndex;
+                    int step = LC_Sequence_PatternStep.LightIndex;
+                    AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Clear();
+                    for (int i = 0; i < 88; i++)
+                    {
+                        pianomain.UnLightKey(i);
+                    }
+                }
+
+                if (e.Key == Key.End) // clear any existing notes for said channel, and send AllNotesOff on said channel.
+                {
+                    int ch = activeCh < 0 ? 0 : activeCh;
+                    int pattern = LC_Sequence_PatternNumber.LightIndex;
+                    int step = LC_Sequence_PatternStep.LightIndex;
+                    AppContext.ActiveSequence.Patterns[pattern].Steps[step]
+                        .MidiMessages.RemoveAll(x => x.MidiChannel == ch);
+                    AppContext.ActiveSequence.Patterns[pattern].Steps[step]
+                        .MidiMessages.Add(new ChannelMessage(ChannelCommand.Controller,ch,(int)ControllerType.AllNotesOff));
+                    for (int i = 0; i < 88; i++)
+                    {
+                        pianomain.UnLightKey(i);
+                    }
+                }
+            }
 
             #region Studio keyboard shortcuts
             
@@ -905,13 +1092,65 @@ namespace MidiSynth7.components.views
         {
             if (AppContext != null)
             {
-                //AppContext.ActiveSequence = Cb_SequencerProfile.SelectedItem as TrackerSequence;
+                AppContext.ActiveSequence = Cb_SequencerProfile.SelectedItem as Sequence;
             }
+
+            UI_CheckActiveSequence();
+
+        }
+
+        private void UI_CheckActiveSequence()
+        {
+            bool res = AppContext.ActiveSequence != null;
+            Mk_Sequence_RecordMode.IsEnabled = res;
+            Mk_Sequence_DoTranspose.IsEnabled = res;
+            Mk_Sequence_AutoAdvance.IsEnabled = res;
+            Mk_Sequence_RecordMode_Lb.IsEnabled = res;
+            Mk_Sequence_DoTranspose_Lb.IsEnabled = res;
+            Mk_Sequence_AutoAdvance_Lb.IsEnabled = res;
+            LC_Sequence_PatternStep.IsEnabled = res;
+            LC_Sequence_PatternNumber.IsEnabled = res;
+            Dial_Sequence_Tempo.IsEnabled = res;
+            Dial_Sequence_Subdivision.IsEnabled = res;
+            Dial_Sequence_NotesPerMeasure.IsEnabled = res;
+            Dial_Sequence_Measures.IsEnabled = res;
+
+            //set values
+            Dial_Sequence_Measures.SetValueSuppressed(AppContext.ActiveSequence.Measures);
+            Dial_Sequence_NotesPerMeasure.SetValueSuppressed(AppContext.ActiveSequence.NotesPerMeasure);
+            Dial_Sequence_Subdivision.SetValueSuppressed(AppContext.ActiveSequence.Divisions);
+            Dial_Sequence_Tempo.SetValueSuppressed(AppContext.ActiveSequence.Tempo);
+            
+            //Reflect Values
+            LC_Sequence_PatternStep.Columns = Dial_Sequence_NotesPerMeasure.Value;
+            LC_Sequence_PatternStep.Rows = Dial_Sequence_Measures.Value;
+            LC_Sequence_PatternStep.Marker = Dial_Sequence_Subdivision.Value;
         }
 
         private void LC_PatternStep_LightIndexChanged(object sender, LightCellEventArgs e)
         {
             step = e.LightIndex;
+            if (SequencerRecording)
+            {
+                for (int i = 0; i < 88; i++)
+                {
+                    pianomain.UnLightKey(i);
+                }
+                //send all messages in the step.
+                foreach (ChannelMessage item in AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages)
+                {
+                    MidiEngine.MidiEngine_SendRawChannelMessage(item);
+
+                }
+
+                foreach (ChannelMessage item in AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Where(x=>x.Command == ChannelCommand.NoteOn && x.MidiChannel == (activeCh < 0 ? 0:activeCh)))
+                {
+                    //light key.
+                    pianomain.CustomLightKey(item.Data1, new LinearGradientBrush(Colors.Purple, Colors.MediumPurple, new Point(0, 0), new Point(1, 1)));
+
+
+                }
+            }
         }
 
         private void ChInd_MouseUp(object sender, MouseButtonEventArgs e)
@@ -950,7 +1189,7 @@ namespace MidiSynth7.components.views
                     {
                         ch.Stroke = (Brush)FindResource("CH_IND_MARKER");
                         GB_Controllers.Header = $"Controllers [Channel: {activeCh + 1}]";
-                        LC_PatternStep.Header = $"Step [Channel: {activeCh + 1}]";
+                        LC_Sequence_PatternStep.Header = $"Step [Channel: {activeCh + 1}]";
                     }
                     else
                     {
@@ -959,7 +1198,7 @@ namespace MidiSynth7.components.views
                     if (activeCh == -1)
                     {
                         GB_Controllers.Header = $"Controllers [Channel: All]";
-                        LC_PatternStep.Header = $"Step [Channel: 1]";
+                        LC_Sequence_PatternStep.Header = $"Step [Channel: 1]";
                     }
                 }
 
@@ -974,16 +1213,20 @@ namespace MidiSynth7.components.views
 
         private void Dial_MarkerValueChange(object sender, EventArgs e)
         {
-            LC_PatternStep.Columns = Dial_Marker_NotesPerMeasure.Value;
-            LC_PatternStep.Rows = Dial_Marker_Measures.Value;
-            LC_PatternStep.Marker = Dial_Marker_Subdivision.Value;
+            LC_Sequence_PatternStep.Columns = Dial_Sequence_NotesPerMeasure.Value;
+            LC_Sequence_PatternStep.Rows = Dial_Sequence_Measures.Value;
+            LC_Sequence_PatternStep.Marker = Dial_Sequence_Subdivision.Value;
+
+            AppContext.ActiveSequence.Divisions = Dial_Sequence_Subdivision.Value;
+            AppContext.ActiveSequence.Measures = Dial_Sequence_Measures.Value;
+            AppContext.ActiveSequence.NotesPerMeasure = Dial_Sequence_NotesPerMeasure.Value;
         }
 
         private void Mk_RecordMode_MouseUp(object sender, MouseButtonEventArgs e)
         {
             SequencerRecording = !SequencerRecording;//toggle
 
-            Mk_RecordMode.Fill = SequencerRecording ? (Brush)TryFindResource("CH_IND_MUTED") : (Brush)TryFindResource("CH_IND_OFF");
+            Mk_Sequence_RecordMode.Fill = SequencerRecording ? (Brush)TryFindResource("CH_IND_MUTED") : (Brush)TryFindResource("CH_IND_OFF");
             
         }
 
@@ -991,7 +1234,7 @@ namespace MidiSynth7.components.views
         {
             SequencerAutoAdvance = !SequencerAutoAdvance;//toggle
 
-            Mk_AutoAdvance.Fill = SequencerAutoAdvance ? (Brush)TryFindResource("CH_IND_ON") : (Brush)TryFindResource("CH_IND_OFF");
+            Mk_Sequence_AutoAdvance.Fill = SequencerAutoAdvance ? (Brush)TryFindResource("CH_IND_ON") : (Brush)TryFindResource("CH_IND_OFF");
         }
 
         private void bn_SQProfRename_Click(object sender, RoutedEventArgs e)
@@ -1003,11 +1246,11 @@ namespace MidiSynth7.components.views
         {
             Sequence s = new Sequence
             {
-                Divisions = Dial_Marker_Subdivision.Value,
-                Measures = Dial_Marker_Measures.Value,
-                NotesPerMeasure = Dial_Marker_NotesPerMeasure.Value,
+                Divisions = Dial_Sequence_Subdivision.Value,
+                Measures = Dial_Sequence_Measures.Value,
+                NotesPerMeasure = Dial_Sequence_NotesPerMeasure.Value,
                 SequenceName = $"Untitled Sequence {AppContext.Tracks.Count + 1}",
-                Tempo = Dial_RiffTempo.Value,
+                Tempo = Dial_Sequence_Tempo.Value,
                 Patterns = new List<SequencePattern>()
             };
             for (int i = 0; i < 10; i++)
@@ -1022,7 +1265,7 @@ namespace MidiSynth7.components.views
         {
             SequencerTranspose = !SequencerTranspose;//toggle
 
-            Mk_DoTranspose.Fill = SequencerTranspose ? (Brush)TryFindResource("CH_IND_ON") : (Brush)TryFindResource("CH_IND_OFF");
+            Mk_Sequence_DoTranspose.Fill = SequencerTranspose ? (Brush)TryFindResource("CH_IND_ON") : (Brush)TryFindResource("CH_IND_OFF");
         }
 
         private void bn_SqDeleteProf_Click(object sender, RoutedEventArgs e)
@@ -1032,7 +1275,7 @@ namespace MidiSynth7.components.views
 
         private void bn_SQSaveProf_Click(object sender, RoutedEventArgs e)
         {
-
+            AppContext.SaveSequences();
         }
     }
 }

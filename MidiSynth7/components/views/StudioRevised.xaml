@@ -205,7 +205,7 @@
                 </Grid.Background>
 
                 <Grid x:Name="dial_control_tempo" Margin="304,107,3,2">
-                    <SynthGUI:DialControl x:Name="Dial_RiffTempo" HorizontalAlignment="Left" Height="175" Margin="0,0,-90,-125" VerticalAlignment="Top" Width="140" RenderTransformOrigin="0,0" Text="TEMPO" Minimum="10" Maximum="400" Value="120">
+                    <SynthGUI:DialControl x:Name="Dial_Sequence_Tempo" HorizontalAlignment="Left" Height="175" Margin="0,0,-90,-125" VerticalAlignment="Top" Width="140" RenderTransformOrigin="0,0" Text="TEMPO" Minimum="10" Maximum="400" Value="120">
                         <SynthGUI:DialControl.RenderTransform>
                             <TransformGroup>
                                 <ScaleTransform ScaleX="0.65" ScaleY="0.65"/>
@@ -218,9 +218,9 @@
 
                 </Grid>
                 <Grid Background="Black" Margin="5,97,87,2">
-                    <SynthGUI:LightCell x:Name="LC_PatternStep" Columns="16" Rows="4" Header="Step [Channel: 1]"  EnableClick="True" LightIndexChanged="LC_PatternStep_LightIndexChanged"  />
+                    <SynthGUI:LightCell x:Name="LC_Sequence_PatternStep" Columns="16" Rows="4" Header="Step [Channel: 1]"  EnableClick="True" LightIndexChanged="LC_PatternStep_LightIndexChanged"  />
                 </Grid>
-                <SynthGUI:LightCell x:Name="LC_PatternNumber" HorizontalAlignment="Left" VerticalAlignment="Top"  Margin="203,44,0,0" Header="Pattern" Width="98" EnableClick="True" LightIndexChanged="LC_PatternNumber_LIC" Height="56" Columns="5" Rows="2" Marker="1" Background="Black"  />
+                <SynthGUI:LightCell x:Name="LC_Sequence_PatternNumber" HorizontalAlignment="Left" VerticalAlignment="Top"  Margin="203,44,0,0" Header="Pattern" Width="98" EnableClick="True" LightIndexChanged="LC_PatternNumber_LIC" Height="56" Columns="5" Rows="2" Marker="1" Background="Black"  />
                 <ComboBox x:Name="Cb_SequencerProfile" HorizontalAlignment="Left" Margin="5,4,0,0" VerticalAlignment="Top" Width="247" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_SequencerProfile_SelectionChanged" SelectedIndex="0" Height="28" FontSize="16">
                     <ComboBox.Background>
                         <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
@@ -252,12 +252,12 @@
                         <Path Fill="#FFFF8383" StrokeThickness="0" StrokeStartLineCap="Round" StrokeLineJoin="Round" Data="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1z" />
                     </Canvas>
                 </Button>
-                <Ellipse x:Name="Mk_AutoAdvance" HorizontalAlignment="Left" Height="16" Margin="306,44,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="0" MouseUp="Mk_AutoAdvance_MouseUp" Stroke="{StaticResource CH_IND_STROKE}" Cursor="Hand"/>
-                <TextBlock x:Name="Mk_AutoAdvance_Lb" HorizontalAlignment="Left" Margin="324,44,0,0" TextWrapping="Wrap" Text="Auto Adv." VerticalAlignment="Top" Width="61" MouseUp="Mk_AutoAdvance_MouseUp" Cursor="Hand"/>
-                <Ellipse x:Name="Mk_RecordMode" HorizontalAlignment="Left" Height="16" Margin="306,65,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="0" MouseUp="Mk_RecordMode_MouseUp" Stroke="{StaticResource CH_IND_STROKE}" Cursor="Hand"/>
-                <TextBlock x:Name="Mk_RecordMode_Lb" HorizontalAlignment="Left" Margin="324,65,0,0" TextWrapping="Wrap" Text="Recording" VerticalAlignment="Top" Width="61" MouseUp="Mk_RecordMode_MouseUp" Cursor="Hand"/>
-                <Ellipse x:Name="Mk_DoTranspose" HorizontalAlignment="Left" Height="16" Margin="306,86,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="0" MouseUp="Mk_DoTranspose_Lb_MouseUp" Stroke="{StaticResource CH_IND_STROKE}" Cursor="Hand"/>
-                <TextBlock x:Name="Mk_DoTranspose_Lb" HorizontalAlignment="Left" Margin="324,86,0,0" TextWrapping="Wrap" Text="T-pose Key" VerticalAlignment="Top" Width="61" MouseUp="Mk_DoTranspose_Lb_MouseUp" Cursor="Hand"/>
+                <Ellipse x:Name="Mk_Sequence_AutoAdvance" HorizontalAlignment="Left" Height="16" Margin="306,44,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="0" MouseUp="Mk_AutoAdvance_MouseUp" Stroke="{StaticResource CH_IND_STROKE}" Cursor="Hand"/>
+                <TextBlock x:Name="Mk_Sequence_AutoAdvance_Lb" HorizontalAlignment="Left" Margin="324,44,0,0" TextWrapping="Wrap" Text="Auto Adv." VerticalAlignment="Top" Width="61" MouseUp="Mk_AutoAdvance_MouseUp" Cursor="Hand"/>
+                <Ellipse x:Name="Mk_Sequence_RecordMode" HorizontalAlignment="Left" Height="16" Margin="306,65,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="0" MouseUp="Mk_RecordMode_MouseUp" Stroke="{StaticResource CH_IND_STROKE}" Cursor="Hand"/>
+                <TextBlock x:Name="Mk_Sequence_RecordMode_Lb" HorizontalAlignment="Left" Margin="324,65,0,0" TextWrapping="Wrap" Text="Recording" VerticalAlignment="Top" Width="61" MouseUp="Mk_RecordMode_MouseUp" Cursor="Hand"/>
+                <Ellipse x:Name="Mk_Sequence_DoTranspose" HorizontalAlignment="Left" Height="16" Margin="306,86,0,0" StrokeThickness="2" VerticalAlignment="Top" Width="16" Fill="{DynamicResource CH_IND_OFF}" Tag="0" MouseUp="Mk_DoTranspose_Lb_MouseUp" Stroke="{StaticResource CH_IND_STROKE}" Cursor="Hand"/>
+                <TextBlock x:Name="Mk_Sequence_DoTranspose_Lb" HorizontalAlignment="Left" Margin="324,86,0,0" TextWrapping="Wrap" Text="T-pose Key" VerticalAlignment="Top" Width="61" MouseUp="Mk_DoTranspose_Lb_MouseUp" Cursor="Hand"/>
                 
             </Grid>
         </GroupBox>
@@ -347,7 +347,7 @@
                         </TransformGroup>
                     </SynthGUI:DialControl.RenderTransform>
                 </SynthGUI:DialControl>
-                <SynthGUI:DialControl x:Name="Dial_Marker_Subdivision" Height="62" Width="68" Margin="-395,34,0,31" Text="DIVISION" Value="4" Maximum="16" Minimum="1" HorizontalAlignment="Left" ToolTip="Beats per measure - The start of each measure is indicated in blue." RenderTransformOrigin="0,0" ValueChanged="Dial_MarkerValueChange" Cursor="Hand">
+                <SynthGUI:DialControl x:Name="Dial_Sequence_Subdivision" Height="62" Width="68" Margin="-395,34,0,31" Text="DIVISION" Value="4" Maximum="16" Minimum="1" HorizontalAlignment="Left" ToolTip="Beats per measure - The start of each measure is indicated in blue." RenderTransformOrigin="0,0" ValueChanged="Dial_MarkerValueChange" Cursor="Hand">
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="0.52" ScaleY="0.52"/>
@@ -357,7 +357,7 @@
                         </TransformGroup>
                     </SynthGUI:DialControl.RenderTransform>
                 </SynthGUI:DialControl>
-                <SynthGUI:DialControl x:Name="Dial_Marker_NotesPerMeasure" Height="62" Width="68" Margin="-265,34,0,31" Text="NOTES/MERASURE" Value="16" Maximum="16" Minimum="1" HorizontalAlignment="Left" ToolTip="How many notes per measure? Range: 1 - 16" RenderTransformOrigin="0,0" ValueChanged="Dial_MarkerValueChange" Cursor="Hand">
+                <SynthGUI:DialControl x:Name="Dial_Sequence_NotesPerMeasure" Height="62" Width="68" Margin="-265,34,0,31" Text="NOTES/MERASURE" Value="16" Maximum="16" Minimum="1" HorizontalAlignment="Left" ToolTip="How many notes per measure? Range: 1 - 16" RenderTransformOrigin="0,0" ValueChanged="Dial_MarkerValueChange" Cursor="Hand">
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="0.52" ScaleY="0.52"/>
@@ -367,7 +367,7 @@
                         </TransformGroup>
                     </SynthGUI:DialControl.RenderTransform>
                 </SynthGUI:DialControl>
-                <SynthGUI:DialControl x:Name="Dial_Marker_Measures" Height="62" Width="124" Margin="-330,34,0,31" Text="MEASURES" Value="4" Maximum="4" Minimum="1" HorizontalAlignment="Left" ToolTip="Rows - How many rows are in the pattern. 1 - 4" RenderTransformOrigin="0,0" ValueChanged="Dial_MarkerValueChange" Cursor="Hand">
+                <SynthGUI:DialControl x:Name="Dial_Sequence_Measures" Height="62" Width="124" Margin="-330,34,0,31" Text="MEASURES" Value="4" Maximum="4" Minimum="1" HorizontalAlignment="Left" ToolTip="Rows - How many rows are in the pattern. 1 - 4" RenderTransformOrigin="0,0" ValueChanged="Dial_MarkerValueChange" Cursor="Hand">
                     <SynthGUI:DialControl.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="0.52" ScaleY="0.52"/>
@@ -535,7 +535,20 @@
         </GroupBox>
         <SynthGUI:PianoControlFullRange x:Name="pianomain" HorizontalAlignment="Left" Margin="5,437,0,-1" VerticalAlignment="Top" pKeyDown="Pianomain_pKeyDown" pKeyUp="Pianomain_pKeyUp" Height="150"/>
 
-        <CheckBox x:Name="CB_Sequencer_Check" Content="" HorizontalAlignment="Left" Margin="380,212,0,0" VerticalAlignment="Top" Focusable="False" Checked="Riffcenter_toggleCheck" Unchecked="Riffcenter_toggleCheck" IsTabStop="False" Height="16" Width="21"/>
+        <CheckBox x:Name="CB_Sequencer_Check" Content="" HorizontalAlignment="Left" Margin="380,212,0,0" VerticalAlignment="Top" Focusable="False" Checked="Riffcenter_toggleCheck" Unchecked="Riffcenter_toggleCheck" IsTabStop="False" Height="16" Width="21">
+            <CheckBox.ToolTip>
+                <TextBlock>
+                    <Run FontWeight="Bold">Enable Sequencer</Run><LineBreak/><LineBreak/>
+                    <Run>If checked, the program will play the selected sequence on loop.</Run><LineBreak/>
+                    <Run>You can interact with the steps and patterns to choose which parts to play.</Run><LineBreak/>
+                    <Run>RECORDING INSTRUCTION:</Run><LineBreak/>
+                    <Run>• Select the step and channel, use external midi keyboard, or click keys on the keyboard.</Run><LineBreak/>
+                    <Run>• Press DEL to clear all notes on the selected channel for that step.</Run><LineBreak/>
+                    <Run>• Press ESC to clear all notes on ALL channels for that step.</Run><LineBreak/>
+                    <Run>• Press END to clear all notes on the selected channel for that step AND release all playing notes gracefully.</Run><LineBreak/>
+                </TextBlock>
+            </CheckBox.ToolTip>
+        </CheckBox>
         <CheckBox x:Name="cb_DS_Enable" Content="" HorizontalAlignment="Left" Margin="73,312,0,0" VerticalAlignment="Top" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16" Width="16"/>
         <CheckBox x:Name="cb_NFX_Enable" Content="" HorizontalAlignment="Left" Margin="798,214,0,0" VerticalAlignment="Top" Width="16" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16"/>
         <CheckBox x:Name="CB_EnforceInstruments" Content="" HorizontalAlignment="Left" Margin="96,214,0,0" VerticalAlignment="Top" Width="16" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Height="16">

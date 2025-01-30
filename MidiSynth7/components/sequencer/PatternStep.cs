@@ -8,6 +8,6 @@ namespace MidiSynth7.components.sequencer
 {
     public class PatternStep
     {
-        public List<ChannelMessage> MidiMessages { get; set; }
+        public List<ChannelMessage> MidiMessages { get; set; } = new List<ChannelMessage>();
     }
 }

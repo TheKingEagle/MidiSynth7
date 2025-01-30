@@ -60,6 +60,8 @@ namespace MidiSynth7
         public List<ChInvk> channelIndicators = new List<ChInvk>();
         public List<NFXDelayProfile> NFXProfiles = new List<NFXDelayProfile>();
         public ObservableCollection<Sequence> Tracks = new ObservableCollection<Sequence>();
+
+        public Sequence ActiveSequence { get; set; }
         
 
         #endregion
@@ -67,10 +69,6 @@ namespace MidiSynth7
         public MainWindow()
         {
             InitializeComponent();
-            if (!Directory.Exists(App.APP_DATA_DIR + "sequences\\"))
-            {
-                Directory.CreateDirectory(App.APP_DATA_DIR + "sequences\\");
-            }
             Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
             
 
@@ -169,22 +167,45 @@ namespace MidiSynth7
             {
                 Tracks = new ObservableCollection<Sequence>();
             }
-            foreach (string item in Directory.GetFiles(App.APP_DATA_DIR + "sequences\\", "*.mton"))
+            if(!File.Exists(App.APP_DATA_DIR + "sequences.mton"))
             {
-                using (StreamReader sr = new StreamReader(item))
+                var fs = File.Create(App.APP_DATA_DIR + "sequences.mton");
+                fs.Flush();
+                fs.Close();
+                fs.Dispose();
+            }
+            using (StreamReader sr = new StreamReader(App.APP_DATA_DIR + "sequences.mton"))
+            {
+                var settings = new JsonSerializerSettings
                 {
-                    Sequence ts = JsonConvert.DeserializeObject<Sequence>(sr.ReadToEnd());
-                    if (ts != null)
+                    Converters = new List<JsonConverter> { new ChannelMessageConverter() }
+                };
+                List<Sequence> ts = JsonConvert.DeserializeObject<List<Sequence>>(sr.ReadToEnd(),settings);
+                if (ts != null)
+                {
+                    foreach (var item in ts)
                     {
-                        Tracks.Add(ts);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Failed to parse file: " + item);
+                        Tracks.Add(item);
                     }
                 }
+                else
+                {
+                    Console.WriteLine("Failed to parse file: sequences.mton");
+                }
             }
+            
             currentView?.HandleEvent(this, new EventArgs(), "TrSeqUpdate");
+        }
+
+        internal void SaveSequences()
+        {
+            using (StreamWriter sw = new StreamWriter(App.APP_DATA_DIR + "sequences.mton"))
+            {
+                List<Sequence> t = Tracks.ToList();
+
+                string json = JsonConvert.SerializeObject(t);
+                sw.Write(json);
+            }
         }
 
         ~MainWindow()

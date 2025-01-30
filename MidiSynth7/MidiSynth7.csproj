@@ -119,6 +119,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="components\ChannelMessageConverter.cs" />
     <Compile Include="components\DialogView.cs" />
     <Compile Include="components\dialog\InstrumentDefinitions.xaml.cs">
       <DependentUpon>InstrumentDefinitions.xaml</DependentUpon>
@@ -135,6 +136,7 @@
     <Compile Include="components\sequencer\PatternStep.cs" />
     <Compile Include="components\sequencer\Sequence.cs" />
     <Compile Include="components\sequencer\SequencePattern.cs" />
+    <Compile Include="components\sequencer\SequenceProcessor.cs" />
     <Compile Include="components\SystemComponent.cs" />
     <Compile Include="components\NFXDelayProfile.cs" />
     <Compile Include="components\SynthKey.cs" />

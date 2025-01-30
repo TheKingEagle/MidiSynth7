@@ -117,7 +117,6 @@ namespace MidiSynth7.components
             try
             {
                 OutDevices.Clear();
-                Generatepresets();
                 _device = new OutputDevice(DeviceIndex);
                 OutDevices.Add((-1, _device));
                 OnMidiInit(new EventArgs());
@@ -810,23 +809,6 @@ namespace MidiSynth7.components
             this.RSComments = comments;
         }
 
-        private void Generatepresets()
-        {
-            presets.Clear();
-            presets.Add(new Sequence(PresetDirectory + "\\preset1.mid"));
-            presets.Add(new Sequence(PresetDirectory + "\\preset2.mid"));
-            presets.Add(new Sequence(PresetDirectory + "\\preset3.mid"));
-            presets.Add(new Sequence(PresetDirectory + "\\preset4.mid"));
-            presets.Add(new Sequence(PresetDirectory + "\\preset5.mid"));
-            presets.Add(new Sequence(PresetDirectory + "\\preset6.mid"));
-            presets.Add(new Sequence(PresetDirectory + "\\preset7.mid"));
-            presets.Add(new Sequence(PresetDirectory + "\\preset8.mid"));
-            presets.Add(new Sequence(PresetDirectory + "\\preset9.mid"));
-            presets.Add(new Sequence(PresetDirectory + "\\preset10.mid"));
-            presets.Add(new Sequence(PresetDirectory + "\\preset11.mid"));
-            presets.Add(new Sequence(PresetDirectory + "\\preset12.mid"));
-            presets.Add(new Sequence(PresetDirectory + "\\preset1.mid"));
-        }
 
         private void GenerateSequence()
         {

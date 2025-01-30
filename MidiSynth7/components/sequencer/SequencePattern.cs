@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sanford.Multimedia.Midi;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,8 +14,16 @@ namespace MidiSynth7.components.sequencer
         public static List<PatternStep> GetEmptySequencePattern()
         {
             PatternStep[] s = new PatternStep[64];
+            for (int i = 0; i < 64; i++)
+            {
+                s[i] = new PatternStep();
+            }
             return s.ToList();
         }
 
     }
+
+
+
+
 }
