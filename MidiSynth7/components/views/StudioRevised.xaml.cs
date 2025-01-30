@@ -5,7 +5,6 @@ using MidiSynth7.entities.controls;
 using Sanford.Multimedia.Midi;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,7 +13,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 using Sequence = MidiSynth7.components.sequencer.Sequence;
 
 namespace MidiSynth7.components.views
