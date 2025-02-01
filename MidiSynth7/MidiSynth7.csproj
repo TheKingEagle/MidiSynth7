@@ -124,6 +124,9 @@
     <Compile Include="components\dialog\InstrumentDefinitions.xaml.cs">
       <DependentUpon>InstrumentDefinitions.xaml</DependentUpon>
     </Compile>
+    <Compile Include="components\dialog\StringPrompt.xaml.cs">
+      <DependentUpon>StringPrompt.xaml</DependentUpon>
+    </Compile>
     <Compile Include="components\dialog\Message.xaml.cs">
       <DependentUpon>Message.xaml</DependentUpon>
     </Compile>
@@ -151,6 +154,10 @@
     <Page Include="components\dialog\InstrumentDefinitions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="components\dialog\StringPrompt.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="components\dialog\Message.xaml">
       <SubType>Designer</SubType>

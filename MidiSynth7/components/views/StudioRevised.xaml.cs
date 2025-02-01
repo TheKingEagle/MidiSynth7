@@ -1237,7 +1237,27 @@ namespace MidiSynth7.components.views
 
         private void bn_SQProfRename_Click(object sender, RoutedEventArgs e)
         {
+            StringPrompt s = new StringPrompt(AppContext, AppContext.GR_OverlayContent, "Rename Sequence", "Choose a new unique name for this sequence.", AppContext.ActiveSequence.SequenceName);
+            Dialog v = new Dialog();
+            s.DialogClosed += SequenceRenameDialogClosed;
+            v.ShowDialog(s, AppContext, AppContext.GR_OverlayContent, true);
+        }
 
+        private void SequenceRenameDialogClosed(object sender, DialogEventArgs e)
+        {
+            string res = ((StringPrompt)sender).PromptResponse;
+            var track = AppContext.Tracks.FirstOrDefault(x => x.SequenceName == res);
+            if (track != null)
+            {
+                Dialog.Message(AppContext, AppContext.GR_OverlayContent, "This name is already in use.", "Rename Fail", Icons.Critical);
+                return;
+            }
+            else
+            {
+                AppContext.ActiveSequence.SequenceName = res;
+                AppContext.SaveSequences();
+                //AppContext.PopulateSequences();
+            }
         }
 
         private void BN_SQNewProfile_Click(object sender, RoutedEventArgs e)

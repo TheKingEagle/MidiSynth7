@@ -186,6 +186,27 @@ namespace MidiSynth7.entities.controls
             
         }
 
+
+        public static async Task<(string promptResponse,bool? diagresult)> StringPrompt(MainWindow win, Grid container, string text, string caption, string DefaultPrompt="", byte overlayOpacity = 0, bool enableCancel = false)
+        {
+            System.Media.SystemSounds.Beep.Play();
+            if (!container.Children.Contains(ModalOverlay))
+            {
+
+                Dialog d = new Dialog();
+                ModalOverlay.Background = new SolidColorBrush(Color.FromArgb(overlayOpacity, 0, 0, 0));
+                StringPrompt v = new StringPrompt(win, container, caption, text, DefaultPrompt, enableCancel);
+                v.DialogClosed += V_DialogClosed;
+                var res = await d.ShowDialog(v, win, container, true, 128);
+                
+                return (v.PromptResponse,res);
+            }
+
+            return ("",null);
+
+
+
+        }
         private static void V_DialogClosed(object sender, DialogEventArgs e)
         {
             DialogResult = e.Result;
