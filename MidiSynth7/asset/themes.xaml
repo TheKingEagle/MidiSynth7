@@ -112,7 +112,7 @@
                   Padding="6,0,6,0"
                   Grid.Row="0"
                   Grid.RowSpan="2"
-                  Grid.Column="1">
+                  Grid.Column="1" IsHitTestVisible="True" Panel.ZIndex="2">
                             <ContentPresenter ContentSource="Header" 
                               RecognizesAccessKey="True" />
                         </Border>
@@ -121,7 +121,7 @@
                             Grid.Column="1"
                             Grid.ColumnSpan="2"
                             Margin="{TemplateBinding Padding}"/>
-                        <Border CornerRadius="0"
+                        <Border CornerRadius="0" IsHitTestVisible="False"
                   Grid.Row="1"
                   Grid.RowSpan="3"
                   Grid.ColumnSpan="4"
@@ -562,39 +562,27 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">
-                    <BulletDecorator Background="Transparent">
-                        <BulletDecorator.Bullet>
-                            <Border x:Name="Border"  
-                              Width="13" 
-                              Height="13" 
-                              CornerRadius="0" 
-                              Background="#3f3f3f"
-                              BorderBrush="#999999"
-                              BorderThickness="1">
-                                <Path 
-                                                    Width="7" Height="7" 
-                                                    x:Name="CheckMark"
-                                                    SnapsToDevicePixels="False" 
-                                                    Stroke="#979797"
-                                                    StrokeThickness="2"
-                                                    Data="M 0 0 L 7 7 M 0 7 L 7 0" />
-                            </Border>
-                        </BulletDecorator.Bullet>
-                        <ContentPresenter Margin="8,0,0,0"
+                    <Grid IsHitTestVisible="True">
+                        <BulletDecorator Background="Transparent" >
+                            <BulletDecorator.Bullet>
+                                <Ellipse x:Name="ChkBox" StrokeThickness="2" Width="16" Height="16" Fill="{DynamicResource CH_IND_ON}" Stroke="{StaticResource CH_IND_STROKE}"/>
+                            </BulletDecorator.Bullet>
+                            <ContentPresenter IsHitTestVisible="True" Margin="6,-2,0,0"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Left"
                             RecognizesAccessKey="True"/>
-                    </BulletDecorator>
+                        </BulletDecorator>
+                    </Grid>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsChecked" Value="false">
-                            <Setter TargetName="CheckMark" Property="Visibility" Value="Collapsed"/>
+                        <Trigger Property="IsChecked" Value="False">
+                            <Setter TargetName="ChkBox" Property="Fill" Value="{DynamicResource CH_IND_OFF}"/>
                         </Trigger>
                         <Trigger Property="IsChecked" Value="{x:Null}">
-                            <Setter TargetName="CheckMark" Property="Data" Value="M 0 7 L 7 0" />
+                            <Setter TargetName="ChkBox" Property="Fill" Value="{DynamicResource CH_IND_MUTED}"/>
+
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="true">
-                            <Setter TargetName="Border" Property="Background" Value="#454545" />
-                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource ApplicationAccentBrush}" />
+                            <Setter TargetName="ChkBox" Property="Stroke" Value="{DynamicResource CH_IND_MARKER}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Foreground" Value="#c1c1c1"/>
