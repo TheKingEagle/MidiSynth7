@@ -281,8 +281,6 @@ namespace MidiSynth7.components.views
 
         private void ToggleChecked(object sender, RoutedEventArgs e)
         {
-            //TODO: Enable/disable groupboxes based on check state
-            gb_ds.IsEnabled = cb_DS_Enable.IsChecked.Value;
             if (Config != null) Config.EnforceInstruments = CB_EnforceInstruments?.IsChecked ?? true;
         }
 
