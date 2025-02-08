@@ -405,6 +405,7 @@ namespace MidiSynth7.components.views
                                 {
                                     foreach (ChannelMessage item in AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages)
                                     {
+                                        Dispatcher.InvokeAsync(() => FlashChannelActivity(item.MidiChannel));
                                         if (SequencerTranspose && root.HasValue)
                                         {
                                             // Get lowest active note for transposition
@@ -833,6 +834,7 @@ namespace MidiSynth7.components.views
                 case "RefNFXDelay": NFXProfileUpdate(); break;
                 case "TrSeqUpdate":
                     Cb_SequencerProfile.ItemsSource = AppContext.Tracks;
+                    Cb_SequencerProfile.DisplayMemberPath = "SequenceName";
                     UI_CheckActiveSequence();
                     ; break;
                 default:
@@ -1260,9 +1262,11 @@ namespace MidiSynth7.components.views
             {
                 AppContext.ActiveSequence.SequenceName = res;
                 AppContext.SaveSequences();
-                var t = AppContext.ActiveSequence;
-                AppContext.PopulateSequences();
-                Cb_SequencerProfile.SelectedIndex = Cb_SequencerProfile.Items.IndexOf(t);
+                //refresh
+                var selectedItem = Cb_SequencerProfile.SelectedItem;
+                Cb_SequencerProfile.Items.Refresh();
+                Cb_SequencerProfile.SelectedItem = null;
+                Cb_SequencerProfile.SelectedItem = selectedItem;
             }
         }
 

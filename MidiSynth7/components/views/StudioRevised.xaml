@@ -272,7 +272,7 @@
                 </SynthGUI:DialControl>
 
                 <SynthGUI:LightCell x:Name="LC_Sequence_PatternNumber" HorizontalAlignment="Left" VerticalAlignment="Top"  Margin="203,44,0,0" Header="Pattern" Width="98" EnableClick="True" LightIndexChanged="LC_PatternNumber_LIC" Height="56" Columns="5" Rows="2" Marker="1" Background="Black"  />
-                <ComboBox x:Name="Cb_SequencerProfile" HorizontalAlignment="Left" Margin="5,0,0,159" VerticalAlignment="Bottom" Width="247" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_SequencerProfile_SelectionChanged" SelectedIndex="0" Height="28" FontSize="16">
+                <ComboBox x:Name="Cb_SequencerProfile" IsTextSearchEnabled="False" HorizontalAlignment="Left" Margin="5,0,0,159" VerticalAlignment="Bottom" Width="247" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_SequencerProfile_SelectionChanged" SelectedIndex="0" Height="28" FontSize="16">
                     <ComboBox.Background>
                         <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                             <GradientStop Color="#FFD8D8D8" Offset="1"/>
