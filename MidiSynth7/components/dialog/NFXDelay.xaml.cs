@@ -112,14 +112,14 @@ namespace MidiSynth7.components.dialog
         {
             if (lv_steps.SelectedItem == null)
             {
-                GB_StepSettings.Header = "Step Setting";
+                GB_StepSettings.Header = "Key Setting";
                 return;
             }
             var f = new { Step = 0, Pitch = 12, Decay = 20 };
             var item = Cast(f, lv_steps.SelectedItem);
             Dial_NFX_Decay.SetValueSuppressed(item.Decay);
             Dial_NFX_Pitch.SetValueSuppressed(item.Pitch);
-            GB_StepSettings.Header = "Step Setting (Editing step #" + item.Step + ")";
+            GB_StepSettings.Header = "Key Setting (Editing key #" + item.Step + ")";
         }
 
         //Compiler trickery at its worst

@@ -75,7 +75,7 @@
                             </DataGrid.Resources>
                             <DataGrid.Columns>
 
-                                <DataGridTextColumn Header="Step" Binding="{Binding Step}" MinWidth="50"/>
+                                <DataGridTextColumn Header="Key" Binding="{Binding Step}" MinWidth="50"/>
                                 <DataGridTextColumn Header="Pitch" Binding="{Binding Pitch}" MinWidth="50"/>
                                 <DataGridTextColumn Header="Decay" Binding="{Binding Decay}" MinWidth="50"/>
                             </DataGrid.Columns>
