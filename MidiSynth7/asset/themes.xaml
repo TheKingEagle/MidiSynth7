@@ -565,7 +565,7 @@
                     <Grid IsHitTestVisible="True">
                         <BulletDecorator Background="Transparent" >
                             <BulletDecorator.Bullet>
-                                <Ellipse x:Name="ChkBox" StrokeThickness="2" Width="16" Height="16" Fill="{DynamicResource CH_IND_ON}" Stroke="{StaticResource CH_IND_STROKE}"/>
+                                <Rectangle x:Name="ChkBox" StrokeThickness="2" Width="16" Height="16" Fill="{DynamicResource CH_IND_ON}" Stroke="{StaticResource CH_IND_STROKE}"/>
                             </BulletDecorator.Bullet>
                             <ContentPresenter IsHitTestVisible="True" Margin="6,-2,0,0"
                             VerticalAlignment="Center"
