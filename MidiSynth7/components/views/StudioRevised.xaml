@@ -35,7 +35,7 @@
                         </LinearGradientBrush>
                     </ComboBox.Background>
                 </ComboBox>
-                <Button x:Name="MIO_bn_stop" Content="STOP" HorizontalAlignment="Left" Margin="4,73,0,0" VerticalAlignment="Top" Width="112" Height="22" Background="#FF380000" BorderBrush="Red" Focusable="False" Click="MIO_bn_stop_Click" Grid.Column="1"/>
+                <Button x:Name="MIO_bn_stop" ToolTip="Stop any stuck notes. Hold SHIFT while clicking this to stop the running sequence." Content="PANIC" HorizontalAlignment="Left" Margin="4,73,0,0" VerticalAlignment="Top" Width="112" Height="22" Background="#FF380000" BorderBrush="Red" Focusable="False" Click="MIO_bn_stop_Click" Grid.Column="1"/>
                 <Button x:Name="MIO_bn_outputlog" Content="Output Log" HorizontalAlignment="Left" Margin="4,100,0,0" VerticalAlignment="Top" Width="112" Height="22" Background="#FF002C02" Focusable="False" Grid.Column="1"/>
                 <Button x:Name="MIO_bn_pluginsui" Content="Plugins" HorizontalAlignment="Left" Margin="4,127,0,0" VerticalAlignment="Top" Width="112" Height="21" Background="#FF00042C" Focusable="False" Foreground="#FF2C2C2C" IsEnabled="False" Grid.Column="1">
                     <Button.Effect>
@@ -322,7 +322,7 @@
 
             </Grid>
         </GroupBox>
-        <GroupBox x:Name="gb_ds" HorizontalAlignment="Left" Margin="5,312,0,0" VerticalAlignment="Top" Height="111" Width="297" BorderThickness="2" BorderBrush="#FF0047AE" Padding="0" IsEnabled="False">
+        <GroupBox x:Name="gb_ds" HorizontalAlignment="Left" Margin="5,312,0,0" VerticalAlignment="Top" Height="111" Width="297" BorderThickness="2" BorderBrush="#FF0047AE" Padding="0">
             <GroupBox.Header>
                 <CheckBox x:Name="cb_DS_Enable" Content="Drum Machine" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Background="{x:Null}" Foreground="White"/>
 
@@ -419,7 +419,7 @@
             </Grid>
         </GroupBox>
 
-        <GroupBox Header="MIDI Composer" HorizontalAlignment="Left" Margin="972,212,0,0" VerticalAlignment="Top" Height="211" Width="434" BorderThickness="2" BorderBrush="#FF0097FF" Padding="0">
+        <GroupBox Header="MIDI Composer [Deprecated]" HorizontalAlignment="Left" Margin="972,212,0,0" VerticalAlignment="Top" Height="211" Width="434" BorderThickness="2" BorderBrush="#FF0097FF" Padding="0">
             <Grid Margin="0,-4,0,0">
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">

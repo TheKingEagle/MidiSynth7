@@ -275,7 +275,12 @@ namespace MidiSynth7.components.views
 
         private async void MIO_bn_stop_Click(object sender, RoutedEventArgs e)
         {
+            if(Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                CB_Sequencer_Check.IsChecked = false;
+            }
             MidiEngine?.MidiEngine_Panic();
+            ActiveNotes.Clear();
             await invokeUnLightRange(0, pianomain.KeyCount + 21);
         }
 
@@ -1097,6 +1102,7 @@ namespace MidiSynth7.components.views
 
         private void UI_CheckActiveSequence()
         {
+            if(AppContext.ActiveSequence == null) { return; }
             bool res = AppContext.ActiveSequence != null;
             Mk_Sequence_RecordMode.IsEnabled = res;
             Mk_Sequence_DoTranspose.IsEnabled = res;
@@ -1254,7 +1260,9 @@ namespace MidiSynth7.components.views
             {
                 AppContext.ActiveSequence.SequenceName = res;
                 AppContext.SaveSequences();
-                //AppContext.PopulateSequences();
+                var t = AppContext.ActiveSequence;
+                AppContext.PopulateSequences();
+                Cb_SequencerProfile.SelectedIndex = Cb_SequencerProfile.Items.IndexOf(t);
             }
         }
 
