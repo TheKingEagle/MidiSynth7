@@ -36,7 +36,7 @@ namespace MidiSynth7.components.sequencer
 
             // Find the first Note On message
             var noteOnMessage = messages
-                .FirstOrDefault(m => m.Command == ChannelCommand.NoteOn && m.Data2 > 0); // Data2 > 0 ensures it's not a Note Off
+                .FirstOrDefault(m => m.Command == ChannelCommand.NoteOn && m.Data2 > 0 && m.MidiChannel != 9); // Data2 > 0 ensures it's not a Note Off
 
             return noteOnMessage?.Data1; // Data1 represents the note number (MIDI key)
         }

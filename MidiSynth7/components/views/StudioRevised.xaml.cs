@@ -344,7 +344,8 @@ namespace MidiSynth7.components.views
 
         // Class-level field for CancellationTokenSource
         private CancellationTokenSource cancellationTokenSource;
-        private Dictionary<int, int> TransposedNotes = new Dictionary<int, int>(); // Maps original note -> transposed note
+        // Dictionary to track transposed notes per channel (Channel -> {Original Note -> Transposed Note})
+        private Dictionary<int, Dictionary<int, int>> TransposedNotes = new Dictionary<int, Dictionary<int, int>>();
 
         private async void Riffcenter_toggleCheck(object sender, RoutedEventArgs e)
         {
@@ -376,11 +377,13 @@ namespace MidiSynth7.components.views
                         {
                             root = SequenceProcessor.GetRootKey(AppContext.ActiveSequence);
                         }
+
                         while (!token.IsCancellationRequested)
                         {
                             if (!check || token.IsCancellationRequested) { break; }
 
                             Dispatcher.InvokeAsync(() => LC_Sequence_PatternNumber.SetLight(pattern));
+
                             for (step = 0; step < (LC_Sequence_PatternStep.Rows * LC_Sequence_PatternStep.Columns) + 1; step++)
                             {
                                 if (step == (LC_Sequence_PatternStep.Rows * LC_Sequence_PatternStep.Columns))
@@ -393,6 +396,7 @@ namespace MidiSynth7.components.views
                                     }
                                     step = 0;
                                 }
+
                                 Dispatcher.InvokeAsync(() => check = CB_Sequencer_Check.IsChecked.Value);
                                 if (!check || token.IsCancellationRequested) return;
                                 Dispatcher.InvokeAsync(() => LC_Sequence_PatternStep.SetLight(step));
@@ -405,27 +409,29 @@ namespace MidiSynth7.components.views
                                 {
                                     foreach (ChannelMessage item in AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages)
                                     {
-                                        Dispatcher.InvokeAsync(() => FlashChannelActivity(item.MidiChannel));
                                         if (SequencerTranspose && root.HasValue)
                                         {
-                                            // Get lowest active note for transposition
+                                            // Ensure the channel has a tracking dictionary
+                                            if (!TransposedNotes.ContainsKey(item.MidiChannel))
+                                            {
+                                                TransposedNotes[item.MidiChannel] = new Dictionary<int, int>();
+                                            }
+
+                                            // Determine transpose amount based on lowest active note
                                             if (ActiveNotes.Count > 0)
                                             {
                                                 int lowestNote = ActiveNotes.Min();
                                                 SeqTranspose = (lowestNote - root.Value) % 12; // Wrap within one octave
                                             }
 
-                                            if (item.Command == ChannelCommand.NoteOn)
+                                            if (item.Command == ChannelCommand.NoteOn && item.Data2 > 0)
                                             {
                                                 int transposedNote = item.Data1 + SeqTranspose;
 
-                                                // Store the transposed note for correct Note Off later
-                                                if (!TransposedNotes.ContainsKey(item.Data1))
-                                                {
-                                                    TransposedNotes[item.Data1] = transposedNote;
-                                                }
+                                                // Store the transposed note in per-channel dictionary
+                                                TransposedNotes[item.MidiChannel][item.Data1] = transposedNote;
 
-                                                if (item.MidiChannel != 9 && item.MidiChannel != 15)
+                                                if (item.MidiChannel != 9 && item.MidiChannel != 15) // Skip percussion channels
                                                 {
                                                     MidiEngine.MidiEngine_SendRawChannelMessage(
                                                         new ChannelMessage(item.Command, item.MidiChannel, transposedNote, item.Data2));
@@ -437,22 +443,21 @@ namespace MidiSynth7.components.views
                                             }
                                             else if (item.Command == ChannelCommand.NoteOff)
                                             {
-                                                // Retrieve the transposed note to correctly turn it off
-                                                int transposedNote = TransposedNotes.ContainsKey(item.Data1)
-                                                    ? TransposedNotes[item.Data1]
-                                                    : item.Data1;
-
-                                                if (item.MidiChannel != 9 && item.MidiChannel != 15)
+                                                // Retrieve the transposed note for Note Off
+                                                if (TransposedNotes[item.MidiChannel].TryGetValue(item.Data1, out int transposedNote))
                                                 {
-                                                    MidiEngine.MidiEngine_SendRawChannelMessage(
-                                                        new ChannelMessage(item.Command, item.MidiChannel, transposedNote, item.Data2));
+                                                    if (item.MidiChannel != 9 && item.MidiChannel != 15)
+                                                    {
+                                                        MidiEngine.MidiEngine_SendRawChannelMessage(
+                                                            new ChannelMessage(item.Command, item.MidiChannel, transposedNote, item.Data2));
+                                                    }
+                                                    else
+                                                    {
+                                                        MidiEngine.MidiEngine_SendRawChannelMessage(item);
+                                                    }
 
-                                                    // Remove the note from the tracking dictionary after it's turned off
-                                                    TransposedNotes.Remove(item.Data1);
-                                                }
-                                                else
-                                                {
-                                                    MidiEngine.MidiEngine_SendRawChannelMessage(item);
+                                                    // Remove the note from tracking after sending Note Off
+                                                    TransposedNotes[item.MidiChannel].Remove(item.Data1);
                                                 }
                                             }
                                             else
@@ -463,9 +468,11 @@ namespace MidiSynth7.components.views
                                         }
                                         else
                                         {
-                                            // If transposition is off, just send the raw message
+                                            // If transposition is off, send the raw message
                                             MidiEngine.MidiEngine_SendRawChannelMessage(item);
                                         }
+
+                                        Dispatcher.InvokeAsync(() => FlashChannelActivity(item.MidiChannel));
                                     }
                                 }
 
@@ -631,6 +638,7 @@ namespace MidiSynth7.components.views
             {
                 Bank bank = (Bank)cb_mBank.SelectedItem;
                 NumberedEntry patch = (NumberedEntry)cb_mPatch.SelectedItem;
+                NumberedEntry dkit = (NumberedEntry)cb_dkitlist.SelectedItem;
 
                 if (SequencerRecording)
                 {
@@ -648,16 +656,17 @@ namespace MidiSynth7.components.views
                     var msg = msgCol.Where(x => x.MidiChannel == ch).Where(x=>x.Command == ChannelCommand.NoteOn).FirstOrDefault(x => x.Data1 == Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value);
                     if(msg == null)
                     {
-                        AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Add(new ChannelMessage(ChannelCommand.Controller, ch, (int)ControllerType.BankSelect, bank.Index));
-                        AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Add(new ChannelMessage(ChannelCommand.ProgramChange, ch, patch.Index));
+
+                        AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Add(new ChannelMessage(ChannelCommand.Controller, ch, (int)ControllerType.BankSelect, ch != 9 ? bank.Index : 127));
+                        AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Add(new ChannelMessage(ChannelCommand.ProgramChange, ch, ch!=9 ? patch.Index : dkit.Index));
                         AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Add(new ChannelMessage(ChannelCommand.NoteOn,ch, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value,velocity));
                         pianomain.CustomLightKey(e.KeyID, new LinearGradientBrush(Colors.Purple, Colors.MediumPurple, new Point(0,0), new Point(1, 1)));
                     }
                     else
                     {
-                        AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Clear();
-                        AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Add(new ChannelMessage(ChannelCommand.Controller, ch, (int)ControllerType.BankSelect, bank.Index));
-                        AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Add(new ChannelMessage(ChannelCommand.ProgramChange, ch, patch.Index));
+                        AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.RemoveAll(x => x.MidiChannel == ch);
+                        AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Add(new ChannelMessage(ChannelCommand.Controller, ch, (int)ControllerType.BankSelect, ch != 9 ? bank.Index : 127));
+                        AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Add(new ChannelMessage(ChannelCommand.ProgramChange, ch, ch != 9 ? patch.Index : dkit.Index));
                         AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Add(new ChannelMessage(ChannelCommand.NoteOn, ch, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value,velocity));
                         pianomain.CustomLightKey(e.KeyID, new LinearGradientBrush(Colors.Purple, Colors.MediumPurple, new Point(0, 0), new Point(1, 1)));
                     }
@@ -668,7 +677,6 @@ namespace MidiSynth7.components.views
                 }
                 if (cb_DS_Enable.IsChecked.Value)
                 {
-                    NumberedEntry dkit = (NumberedEntry)cb_dkitlist.SelectedItem;
                     MidiEngine.MidiNote_SetProgram(127, dkit.Index, 9);
                     MidiEngine.MidiNote_Play(9, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity);
                     return;
@@ -709,11 +717,33 @@ namespace MidiSynth7.components.views
                 {
                     //return;
                 }
+                if (SequencerRecording)
+                {
+                    //check active channel. 
+
+                    int ch = activeCh == -1 ? 0 : activeCh;
+
+
+                    int pattern = LC_Sequence_PatternNumber.LightIndex;
+                    int step = LC_Sequence_PatternStep.LightIndex;
+
+                    var msgCol = AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages;
+
+                    //check if existing channel has note.
+                    var msg = msgCol.Where(x => x.MidiChannel == ch).Where(x => x.Command == ChannelCommand.NoteOn).FirstOrDefault(x => x.Data1 == Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value);
+                    if (msg == null) //Only send a note off if there is no note on matching in the current step.
+                    {
+                        AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Add(new ChannelMessage(ChannelCommand.NoteOff, ch, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value));
+                        //pianomain.CustomLightKey(e.KeyID, new LinearGradientBrush(Colors.Purple, Colors.MediumPurple, new Point(0, 0), new Point(1, 1)));
+                    }
+                }
                 if (cb_DS_Enable.IsChecked.Value)
                 {
                     MidiEngine.MidiNote_Stop(9, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value,false);
                     return;
                 }
+
+                
                 MidiEngine.MidiNote_Stop(0, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value,false);
                 ActiveNotes.Remove(Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value);
             }
@@ -778,26 +808,7 @@ namespace MidiSynth7.components.views
 
         public async void HandleNoteOffEvent(object sender, NoteEventArgs e)
         {
-            if (SequencerRecording)
-            {
-                //check active channel. 
-
-                int ch = activeCh == -1 ? 0 : activeCh;
-
-
-                int pattern = LC_Sequence_PatternNumber.LightIndex;
-                int step = LC_Sequence_PatternStep.LightIndex;
-
-                var msgCol = AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages;
-
-                //check if existing channel has note.
-                var msg = msgCol.Where(x => x.MidiChannel == ch).Where(x => x.Command == ChannelCommand.NoteOn).FirstOrDefault(x => x.Data1 == e.ChannelMssge.Data1);
-                if (msg == null) //Only send a note off if there is no note on matching in the current step.
-                {
-                    AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Add(new ChannelMessage(ChannelCommand.NoteOff, ch, e.ChannelMssge.Data1));
-                    //pianomain.CustomLightKey(e.KeyID, new LinearGradientBrush(Colors.Purple, Colors.MediumPurple, new Point(0, 0), new Point(1, 1)));
-                }
-            }
+            
 
             await FlashChannelActivity(cb_DS_Enable.IsChecked.Value ? 9 : e.ChannelMssge.MidiChannel);
             pianomain.UnLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
