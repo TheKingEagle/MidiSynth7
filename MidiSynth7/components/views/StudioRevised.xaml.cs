@@ -32,7 +32,7 @@ namespace MidiSynth7.components.views
         private List<MainWindow.ChInvk> channelIndicators = new List<MainWindow.ChInvk>();
         int pattern = 0;
         int step = 0;
-        int activeCh = -1;
+        int activeCh = 0;
         private List<int> ActiveNotes = new List<int>();
         bool _SequencerRecording = false;
         bool SequencerRecording
@@ -159,7 +159,7 @@ namespace MidiSynth7.components.views
             }
             #endregion
 
-
+            ChInd_MouseUp(this, new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left));
             //Cb_SequencerProfile.ItemsSource = AppContext.Tracks;
             //Cb_SequencerProfile.SelectedIndex = 0;
         }
@@ -286,7 +286,41 @@ namespace MidiSynth7.components.views
 
         private void ToggleChecked(object sender, RoutedEventArgs e)
         {
-            if (Config != null) Config.EnforceInstruments = CB_EnforceInstruments?.IsChecked ?? true;
+            if (!IsInitialized) {  return; }
+            if (Config != null)
+                Config.EnforceInstruments = CB_EnforceInstruments?.IsChecked ?? true;
+            
+            // Unsubscribe to prevent recursive calls
+            CB_InstrumentSelectEnable.Checked -= ToggleChecked;
+            CB_InstrumentSelectEnable.Unchecked -= ToggleChecked;
+            cb_DS_Enable.Checked -= ToggleChecked;
+            cb_DS_Enable.Unchecked -= ToggleChecked;
+
+            // Ensure mutual exclusivity
+            if (sender == CB_InstrumentSelectEnable && CB_InstrumentSelectEnable.IsChecked == true)
+            {
+                cb_DS_Enable.IsChecked = false;
+                activeCh = 0;
+            }
+            else if (sender == cb_DS_Enable && cb_DS_Enable.IsChecked == true)
+            {
+                CB_InstrumentSelectEnable.IsChecked = false;
+                activeCh = 9;
+            }
+            // If both checkboxes are unchecked, re-check the one that was just unchecked
+            if (CB_InstrumentSelectEnable.IsChecked == false && cb_DS_Enable.IsChecked == false)
+            {
+                ((CheckBox)sender).IsChecked = true;
+            }
+            // Trigger your event after setting the active channel
+            ChInd_MouseUp(this, new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left));
+            
+            // Re-subscribe event handlers
+            CB_InstrumentSelectEnable.Checked += ToggleChecked;
+            CB_InstrumentSelectEnable.Unchecked += ToggleChecked;
+            cb_DS_Enable.Checked += ToggleChecked;
+            cb_DS_Enable.Unchecked += ToggleChecked;
+
         }
 
         private void MIO_bn_SetSF2_Click(object sender, RoutedEventArgs e)
@@ -1176,14 +1210,7 @@ namespace MidiSynth7.components.views
             {
                 if (invoked.Tag != null && int.TryParse(invoked.Tag.ToString(), out int channelId))
                 {
-                    if (activeCh == channelId)
-                    {
-                        activeCh = -1;
-                    }
-                    else
-                    {
-                        activeCh = channelId;
-                    }
+                    activeCh = channelId;
                 }
             }
             cb_DS_Enable.IsChecked = activeCh == 9;
