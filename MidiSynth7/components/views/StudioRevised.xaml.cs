@@ -302,11 +302,15 @@ namespace MidiSynth7.components.views
                 CB_InstrumentSelectEnable.IsChecked = false;
                 activeCh = 9;
             }
-            // If both checkboxes are unchecked, re-check the one that was just unchecked
-            if (CB_InstrumentSelectEnable.IsChecked == false && cb_DS_Enable.IsChecked == false)
+            if(sender == cb_DS_Enable || sender == CB_InstrumentSelectEnable)
             {
-                ((CheckBox)sender).IsChecked = true;
+                // If both checkboxes are unchecked, re-check the one that was just unchecked
+                if (CB_InstrumentSelectEnable.IsChecked == false && cb_DS_Enable.IsChecked == false)
+                {
+                    ((CheckBox)sender).IsChecked = true;
+                }
             }
+            
             // Trigger your event after setting the active channel
             ChInd_MouseUp(this, new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left));
             
