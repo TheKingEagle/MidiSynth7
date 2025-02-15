@@ -362,7 +362,7 @@
                         <GradientStop Color="#FF1D1D1D" Offset="1"/>
                     </LinearGradientBrush>
                 </Grid.Background>
-                <ComboBox x:Name="cb_dkitlist" Margin="6,0,6,0" VerticalAlignment="Center" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectionChanged="Cb_dkit_SelectionChanged" SelectedIndex="0" Height="27" FontSize="16">
+                <ComboBox x:Name="cb_dkitlist" Margin="6,0,6,0" VerticalAlignment="Center" BorderBrush="#FF0800A8" Foreground="White" BorderThickness="2" Focusable="False" SelectedIndex="0" Height="27" FontSize="16">
                     <ComboBox.Background>
                         <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                             <GradientStop Color="#FFD8D8D8" Offset="1"/>

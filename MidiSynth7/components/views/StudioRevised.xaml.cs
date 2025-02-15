@@ -22,12 +22,30 @@ namespace MidiSynth7.components.views
     /// </summary>
     public partial class StudioRevised : Page, ISynthView
     {
+        #region Fields
         private SystemConfig Config;
         private MidiEngine MidiEngine;
         private MainWindow AppContext;
         private CancellationTokenSource cancellationTokenSource;
         private List<int> ActiveNotes = new List<int>();
         private Dictionary<int, Dictionary<int, int>> TransposedNotes = new Dictionary<int, Dictionary<int, int>>();
+        private readonly int[,] NFX_ChannelMapper = new int[15, 6] {
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 9, 9, 9, 9, 9, 9 },
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                    { 1, 2, 3, 4, 5, 6},
+                };
         private int Transpose;
         private int SeqTranspose;
         private int pattern = 0;
@@ -39,7 +57,9 @@ namespace MidiSynth7.components.views
         private bool _SequencerTranspose = false;
         private bool _AllowSequenceProgramChange = false;
         private bool SupressBankUpdate = false;
+        #endregion
 
+        #region Properties
         public bool SequencerRecording
         {
             get => _SequencerRecording;
@@ -84,7 +104,8 @@ namespace MidiSynth7.components.views
             }
         }
         public bool HaltKeyboardInput { get; private set; }
-        
+        #endregion
+
         public StudioRevised(MainWindow context, ref SystemConfig config, ref MidiEngine engine)
         {
             InitializeComponent();
@@ -166,6 +187,39 @@ namespace MidiSynth7.components.views
 
         }
 
+        #region Bank/Instrument
+
+        private void Cb_mPatch_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cb_mBank.SelectedItem == null) { return; }
+            if (cb_mPatch.SelectedItem == null) { return; }
+            if (MidiEngine != null)
+            {
+                Bank bank = (Bank)cb_mBank.SelectedItem;
+                NumberedEntry patch = (NumberedEntry)cb_mPatch.SelectedItem;
+                MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, activeCh);
+            }
+            Config.ChannelInstruments[activeCh] = cb_mPatch.SelectedIndex;
+        }
+
+        private void Cb_mBank_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            cb_mPatch.Items.Clear();
+            if (cb_mBank.SelectedItem != null)
+            {
+                Bank entry = (Bank)cb_mBank.SelectedItem;
+                foreach (NumberedEntry item in entry.Instruments)
+                {
+                    cb_mPatch.Items.Add(item);
+                }
+            }
+            Config.ChannelBanks[activeCh] = cb_mBank.SelectedIndex;
+            if (!SupressBankUpdate)
+            {
+                cb_mPatch.SelectedIndex = 0;
+            }
+        }
+
         private void UpdateInstrumentSelection(SystemConfig config)
         {
             cb_mBank.Items.Clear();
@@ -202,14 +256,74 @@ namespace MidiSynth7.components.views
             cb_dkitlist.SelectedIndex = 0;
             config.ChannelBanks[0] = (cb_mBank.Items.Count >= config.ChannelBanks[0]) ? config.ChannelBanks[0] : 0;
             config.ChannelInstruments[0] = (cb_mPatch.Items.Count >= config.ChannelInstruments[0]) ? config.ChannelInstruments[0] : 0;
-            
+
             config.ChannelInstruments[9] = (cb_dkitlist.Items.Count >= config.ChannelInstruments[9]) ? config.ChannelInstruments[9] : 0;
-           
+
             cb_mBank.SelectedIndex = config.ChannelBanks[0];
 
             cb_mPatch.SelectedIndex = config.ChannelInstruments[0];
 
             cb_dkitlist.SelectedIndex = config.ChannelInstruments[9];
+        }
+        #endregion
+        
+        #region Channels
+        private void ChInd_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+
+            Ellipse invoked = sender as Ellipse;
+            if (invoked != null)
+            {
+                if (invoked.Tag != null && int.TryParse(invoked.Tag.ToString(), out int channelId))
+                {
+                    activeCh = channelId;
+                }
+            }
+            cb_DS_Enable.IsChecked = activeCh == 9;
+            CB_InstrumentSelectEnable.IsChecked = activeCh != 9;
+            SetCHIndMarker();
+            CTRL_Balance.SetValueSuppressed(Config.ChannelPans[activeCh < 0 ? 16 : activeCh]);
+            CTRL_Chorus.SetValueSuppressed(Config.ChannelChoruses[activeCh < 0 ? 16 : activeCh]);
+            CTRL_Volume.SetValueSuppressed(Config.ChannelVolumes[activeCh < 0 ? 16 : activeCh]);
+            CTRL_Reverb.SetValueSuppressed(Config.ChannelReverbs[activeCh < 0 ? 16 : activeCh]);
+
+            if (activeCh != 9)
+            {
+                SupressBankUpdate = true;
+                cb_mBank.SelectedIndex = Config.ChannelBanks[activeCh < 0 ? 16 : activeCh];
+                SupressBankUpdate = false;
+                cb_mPatch.SelectedIndex = Config.ChannelInstruments[activeCh < 0 ? 16 : activeCh];
+            }
+
+        }
+
+        private void SetCHIndMarker()
+        {
+            foreach (var ch in AppContext.channelElipses)
+            {
+                if (int.TryParse(ch.Tag.ToString(), out int channelID))
+                {
+                    if (channelID == activeCh)
+                    {
+                        ch.Stroke = (Brush)FindResource("CH_IND_MARKER");
+                        GB_Controllers.Header = $"Controllers [Channel: {activeCh + 1}]";
+                        LC_Sequence_PatternStep.Header = $"Step [Channel: {activeCh + 1}]";
+                        CB_InstrumentSelectEnable.Content = $"Instruments [Channel: {activeCh + 1}]";
+                    }
+                    else
+                    {
+                        ch.Stroke = (Brush)FindResource("CH_IND_STROKE");
+                    }
+                    //This should no longer be possible.
+                    //if (activeCh == -1)
+                    //{
+                    //    GB_Controllers.Header = "Controllers [Channel: 1]";
+                    //    LC_Sequence_PatternStep.Header = "Step [Channel: 1]";
+                    //    CB_InstrumentSelectEnable.Content = "Instruments [Channel: 1]";
+                    //}
+                }
+
+            }
         }
 
         private async Task FlashChannelActivity(int index)
@@ -221,7 +335,46 @@ namespace MidiSynth7.components.views
             };
             await Dispatcher.BeginInvoke(invoker);
         }
+        #endregion
+        
+        #region Composer [Probably going away soon]
 
+        private void cp_bnPlay_Click(object sender, RoutedEventArgs e)
+        {
+            if (!mfile_playing)
+            {
+                MidiEngine.MidiFile_Play();
+                mfile_playing = true;
+            }
+        }
+
+        private void cp_bnStop_Click(object sender, RoutedEventArgs e)
+        {
+            if (mfile_playing)
+            {
+                MidiEngine.MidiFile_Stop();
+                mfile_playing = false;
+            }
+        }
+
+        private void cp_bnBrowse_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog of = new OpenFileDialog();
+            of.Filter = "MIDI Files (*.mid)|*.mid";
+            of.Title = "Select MIDI File for Playback";
+            if (of.ShowDialog().Value)
+            {
+                if (MidiEngine != null)
+                {
+                    MidiEngine.MidiFile_Add(of.FileName);
+
+                }
+            }
+        }
+
+        #endregion
+
+        #region Device & Controllers
         private void UpdateMIDIControls(int channel = -1)
         {
 
@@ -287,13 +440,12 @@ namespace MidiSynth7.components.views
             if (Config != null)
                 Config.EnforceInstruments = CB_EnforceInstruments?.IsChecked ?? true;
             _AllowSequenceProgramChange = !(CB_OverrideSequencerProgramChange?.IsChecked ?? false);
-            // Unsubscribe to prevent recursive calls
+            
             CB_InstrumentSelectEnable.Checked -= ToggleChecked;
             CB_InstrumentSelectEnable.Unchecked -= ToggleChecked;
             cb_DS_Enable.Checked -= ToggleChecked;
             cb_DS_Enable.Unchecked -= ToggleChecked;
 
-            // Ensure mutual exclusivity
             if (sender == CB_InstrumentSelectEnable && CB_InstrumentSelectEnable.IsChecked == true)
             {
                 cb_DS_Enable.IsChecked = false;
@@ -313,10 +465,8 @@ namespace MidiSynth7.components.views
                 }
             }
             
-            // Trigger your event after setting the active channel
             ChInd_MouseUp(this, new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left));
-            
-            // Re-subscribe event handlers
+
             CB_InstrumentSelectEnable.Checked += ToggleChecked;
             CB_InstrumentSelectEnable.Unchecked += ToggleChecked;
             cb_DS_Enable.Checked += ToggleChecked;
@@ -327,64 +477,6 @@ namespace MidiSynth7.components.views
         private void MIO_bn_SetSF2_Click(object sender, RoutedEventArgs e)
         {
 
-        }
-
-        private void ChInd_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-
-            Ellipse invoked = sender as Ellipse;
-            if (invoked != null)
-            {
-                if (invoked.Tag != null && int.TryParse(invoked.Tag.ToString(), out int channelId))
-                {
-                    activeCh = channelId;
-                }
-            }
-            cb_DS_Enable.IsChecked = activeCh == 9;
-            CB_InstrumentSelectEnable.IsChecked = activeCh != 9;
-            SetCHIndMarker();
-            CTRL_Balance.SetValueSuppressed(Config.ChannelPans[activeCh < 0 ? 16 : activeCh]);
-            CTRL_Chorus.SetValueSuppressed(Config.ChannelChoruses[activeCh < 0 ? 16 : activeCh]);
-            CTRL_Volume.SetValueSuppressed(Config.ChannelVolumes[activeCh < 0 ? 16 : activeCh]);
-            CTRL_Reverb.SetValueSuppressed(Config.ChannelReverbs[activeCh < 0 ? 16 : activeCh]);
-            //set instrument and bank indexes
-            if(activeCh != 9)
-            {
-                SupressBankUpdate = true;
-                cb_mBank.SelectedIndex = Config.ChannelBanks[activeCh < 0 ? 16 : activeCh];
-                SupressBankUpdate = false;
-                cb_mPatch.SelectedIndex = Config.ChannelInstruments[activeCh < 0 ? 16 : activeCh];
-            }
-            
-        }
-
-        private void SetCHIndMarker()
-        {
-            foreach (var ch in AppContext.channelElipses)
-            {
-                if (int.TryParse(ch.Tag.ToString(), out int channelID))
-                {
-                    if (channelID == activeCh)
-                    {
-                        ch.Stroke = (Brush)FindResource("CH_IND_MARKER");
-                        GB_Controllers.Header = $"Controllers [Channel: {activeCh + 1}]";
-                        LC_Sequence_PatternStep.Header = $"Step [Channel: {activeCh + 1}]";
-                        CB_InstrumentSelectEnable.Content = $"Instruments [Channel: {activeCh + 1}]";
-                    }
-                    else
-                    {
-                        ch.Stroke = (Brush)FindResource("CH_IND_STROKE");
-                    }
-                    //This should no longer be possible.
-                    //if (activeCh == -1)
-                    //{
-                    //    GB_Controllers.Header = "Controllers [Channel: 1]";
-                    //    LC_Sequence_PatternStep.Header = "Step [Channel: 1]";
-                    //    CB_InstrumentSelectEnable.Content = "Instruments [Channel: 1]";
-                    //}
-                }
-
-            }
         }
 
         private void CTRL_ValueChanged(object sender, EventArgs e)
@@ -403,85 +495,105 @@ namespace MidiSynth7.components.views
             }
         }
 
-        #region Composer
+        #endregion
 
-        private void cp_bnPlay_Click(object sender, RoutedEventArgs e)
+        #region NoteFX Functions
+
+        private async Task PlayDelayedNFX(Bank bank, NumberedEntry patch, int ch, int note, int velocity, int delay, int count)
         {
-            if (!mfile_playing)
+            if (MidiEngine == null) return;
+            if (count > 6 || count < 1)
             {
-                MidiEngine.MidiFile_Play();
-                mfile_playing = true;
+                throw new ArgumentException("Count must be no more than 6, no less than 1.");
             }
-        }
 
-        private void cp_bnStop_Click(object sender, RoutedEventArgs e)
-        {
-            if (mfile_playing)
+            async Task t()
             {
-                MidiEngine.MidiFile_Stop();
-                mfile_playing = false;
-            }
-        }
-
-        private void cp_bnBrowse_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog of = new OpenFileDialog();
-            of.Filter = "MIDI Files (*.mid)|*.mid";
-            of.Title = "Select MIDI File for Playback";
-            if (of.ShowDialog().Value)
-            {
-                if (MidiEngine != null)
+                for (int i = 0; i < count; i++)
                 {
-                    MidiEngine.MidiFile_Add(of.FileName);
+                    await Task.Delay(delay);
+                    if (Config.EnforceInstruments)
+                    {
+                        MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, NFX_ChannelMapper[ch, i]);
+                    }
+                    int velo = velocity - (int)(velocity * (float)((float)AppContext.ActiveNFXProfile.OffsetMap[i].decay / 100));
+
+                    MidiEngine.MidiNote_Play(NFX_ChannelMapper[ch, i], note + AppContext.ActiveNFXProfile.OffsetMap[i].pitch, velo, false);
+                    Dispatcher.Invoke(() =>
+                    {
+                        int zkb = note + AppContext.ActiveNFXProfile.OffsetMap[i].pitch - 12 - Transpose - (12 * CTRL_Octave.Value);
+                        pianomain.ALTLightKey(zkb);
+                    });
+                    
+                    await Dispatcher.InvokeAsync(() => FlashChannelActivity(NFX_ChannelMapper[ch, i]));
 
                 }
+            }
+            await Task.Run(() => t());
+        }
+
+        private async Task StopDelayedNFX(int ch, int note, int delay, int count)
+        {
+            if (MidiEngine == null) return;
+            if (count > 6 || count < 1)
+            {
+                throw new ArgumentException("Count must be no more than 6, no less than 1.");
+            }
+            async Task t()
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    await Task.Delay(delay);
+                    MidiEngine.MidiNote_Stop(NFX_ChannelMapper[ch, i], note + AppContext.ActiveNFXProfile.OffsetMap[i].pitch, false);
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        int zkb = note + AppContext.ActiveNFXProfile.OffsetMap[i].pitch - 12 - Transpose - (12 * CTRL_Octave.Value);
+                        pianomain.UnLightKey(zkb);
+                    });
+                    await Dispatcher.InvokeAsync(() => FlashChannelActivity(NFX_ChannelMapper[ch, i]));
+                }
+            }
+            await Task.Run(() => t());
+        }
+
+        private void BN_CustomizeDelay_Click(object sender, RoutedEventArgs e)
+        {
+            //use active profile!
+            AppContext.ShowNFX();
+        }
+
+        private void Dials_TextPromptStateChanged(object sender, EventArgs e)
+        {
+            HaltKeyboardInput = ((DialControl)sender).InputCaptured;
+        }
+
+        private void Cb_nfx_ProfileSel_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (AppContext == null) return;
+            if (cb_NFX_Dropdown.SelectedItem == null) return;
+            var item = cb_NFX_Dropdown.SelectedItem;
+
+            AppContext.ActiveNFXProfile = (NFXDelayProfile)item;
+            if (AppContext.ActiveNFXProfile == null)
+            {
+                AppContext.ActiveNFXProfile = AppContext.NFXProfiles[0];
+            }
+
+            //update all onscreen datas
+
+            Dial_NFX_Interval.SetValueSuppressed(AppContext.ActiveNFXProfile.Delay);
+            Dial_NFX_StepCount.SetValueSuppressed(AppContext.ActiveNFXProfile.OffsetMap.Count);
+
+            lv_steps.Items.Clear();
+            for (int i = 0; i < AppContext.ActiveNFXProfile.OffsetMap.Count; i++)
+            {
+                lv_steps.Items.Add(new { Step = i + 1, Pitch = AppContext.ActiveNFXProfile.OffsetMap[i].pitch, Decay = AppContext.ActiveNFXProfile.OffsetMap[i].decay });
             }
         }
 
         #endregion
-
-        #region Bank/Instrument selection UI events
-
-        private void Cb_mPatch_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (cb_mBank.SelectedItem == null) { return; }
-            if (cb_mPatch.SelectedItem == null) { return; }
-            if (MidiEngine != null)
-            {
-                Bank bank = (Bank)cb_mBank.SelectedItem;
-                NumberedEntry patch = (NumberedEntry)cb_mPatch.SelectedItem;
-                MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, activeCh);
-            }
-            Config.ChannelInstruments[activeCh] = cb_mPatch.SelectedIndex;
-        }
-
-        private void Cb_mBank_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            cb_mPatch.Items.Clear();
-            if (cb_mBank.SelectedItem != null)
-            {
-                Bank entry = (Bank)cb_mBank.SelectedItem;
-                foreach (NumberedEntry item in entry.Instruments)
-                {
-                    cb_mPatch.Items.Add(item);
-                }
-            }
-            Config.ChannelBanks[activeCh] = cb_mBank.SelectedIndex;
-            if (!SupressBankUpdate)
-            {
-                cb_mPatch.SelectedIndex = 0;
-            }
-        }
-
         
-
-        private void Cb_dkit_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
-        #endregion
-
         #region Piano keys
 
         private void Pianomain_pKeyDown(object sender, PKeyEventArgs e)
@@ -602,346 +714,7 @@ namespace MidiSynth7.components.views
 
         #endregion
 
-        #region SynthView Interface
-        public async void HandleNoteOnEvent(object sender, NoteEventArgs e)
-        {
-            await FlashChannelActivity(e.IsFromInputDevice ? activeCh : e.ChannelMssge.MidiChannel);
-            if (SequencerRecording) { return; }
-            await Dispatcher.InvokeAsync(() => pianomain.UnLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value));
-            
-            if (e.ChannelMssge.Data2 > 0)
-            {
-                if (e.ChannelMssge.MidiChannel == 0)
-                {
-                    pianomain.LightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
-                }
-                if (e.ChannelMssge.MidiChannel != 0 && e.ChannelMssge.MidiChannel != 9)
-                {
-                    pianomain.ALTLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
-                }
-                if (e.ChannelMssge.MidiChannel == 9)
-                {
-                    pianomain.CustomLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value, (LinearGradientBrush)this.TryFindResource("PercussionKeyLightBrush"));
-                }
-            }
-
-            else
-            {
-                pianomain.UnLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
-            }
-            if (cb_NFX_Enable.IsChecked.Value)
-            {
-                if (cb_DS_Enable.IsChecked.Value)
-                {
-                    Dispatcher.InvokeAsync(() => PlayDelayedNFX((Bank)cb_mBank.SelectedItem, (NumberedEntry)cb_dkitlist.SelectedItem, cb_DS_Enable.IsChecked.Value ? 9 : e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, e.ChannelMssge.Data2, AppContext.ActiveNFXProfile.Delay, AppContext.ActiveNFXProfile.OffsetMap.Count));
-
-                }
-                else
-                {
-                    Dispatcher.InvokeAsync(() => PlayDelayedNFX((Bank)cb_mBank.SelectedItem, (NumberedEntry)cb_mPatch.SelectedItem, e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, e.ChannelMssge.Data2, AppContext.ActiveNFXProfile.Delay, AppContext.ActiveNFXProfile.OffsetMap.Count));
-
-                }
-
-            }
-        }
-
-        public async void HandleNoteOffEvent(object sender, NoteEventArgs e)
-        {
-
-
-            await FlashChannelActivity(e.IsFromInputDevice ? activeCh : e.ChannelMssge.MidiChannel);
-            pianomain.UnLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
-
-            if (cb_NFX_Enable.IsChecked.Value)
-            {
-#pragma warning disable CS4014 // 😏
-                Dispatcher.InvokeAsync(() => StopDelayedNFX(cb_DS_Enable.IsChecked.Value ? 9 : e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, AppContext.ActiveNFXProfile.Delay, AppContext.ActiveNFXProfile.OffsetMap.Count));
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-
-            }
-            await Dispatcher.InvokeAsync(() => Pianomain_pKeyUp(sender, new PKeyEventArgs(e.ChannelMssge.Data1,0)));
-        }
-
-        public void HandleEvent(object sender, EventArgs e, string id = "generic")
-        {
-            void InsDefUpdate()
-            {
-                AppContext.ActiveInstrumentDefinition = AppContext.Definitions.FirstOrDefault(x => x.AssociatedDeviceIndex == ((NumberedEntry)cb_Devices.SelectedItem).Index) ?? AppContext.Definitions[0];//associated or default
-                UpdateInstrumentSelection(AppContext.AppConfig);
-            }
-            Console.WriteLine("EventID: {0}", id);
-            switch (id)
-            {
-                case "RefMIDIEngine": AppContext.GenerateMIDIEngine(this, ((NumberedEntry)cb_Devices.SelectedItem).Index); break;
-                case "RefMainWin": AppContext = (MainWindow)sender; break;
-                case "MTaskWorker": MidiEngine = AppContext.MidiEngine; break;
-                case "RefAppConfig": Config = AppContext.AppConfig; break;
-                case "SynthSustainCTRL_ON": Mio_SustainPdl.Fill = (Brush)FindResource("CH_IND_ON"); break;
-                case "SynthSustainCTRL_OFF": Mio_SustainPdl.Fill = (Brush)FindResource("CH_IND_OFF"); break;
-                case "MidiEngine_FileLoadComplete": cp_Info.Text = MidiEngine.Copyright; break;
-                case "MidiEngine_SequenceBuilder_Completed": break;
-                case "InsDEF_Changed": InsDefUpdate(); break;
-                case "RefNFXDelay": NFXProfileUpdate(); break;
-                case "TrSeqUpdate":
-                    Cb_SequencerProfile.ItemsSource = AppContext.Tracks;
-                    Cb_SequencerProfile.DisplayMemberPath = "SequenceName";
-                    UI_CheckActiveSequence();
-                    ; break;
-                default:
-                    Console.WriteLine("Unrecognized event string: {0}... lol", id);
-                    break;
-            }
-        }
-
-        private void NFXProfileUpdate()
-        {
-            cb_NFX_Dropdown.Items.Clear();
-            foreach (NFXDelayProfile item in AppContext.NFXProfiles)
-            {
-                cb_NFX_Dropdown.Items.Add(item);
-            }
-            cb_NFX_Dropdown.SelectedIndex = 0;
-        }
-
-        public void HandleKeyDown(object sender, KeyEventArgs e)
-        {
-            if (HaltKeyboardInput) return;
-            pianomain.UserControl_KeyDown(sender, e);
-        }
-
-        public void HandleKeyUp(object sender, KeyEventArgs e)
-        {
-            if (HaltKeyboardInput) return;
-            pianomain.UserControl_KeyUp(sender, e);
-
-            if (SequencerRecording)
-            {
-                if(e.Key == Key.Delete)
-                {
-                    int ch = activeCh < 0 ? 0 : activeCh;
-                    int pattern = LC_Sequence_PatternNumber.LightIndex;
-                    int step = LC_Sequence_PatternStep.LightIndex;
-                    AppContext.ActiveSequence.Patterns[pattern].Steps[step]
-                        .MidiMessages.RemoveAll(x=>x.MidiChannel == ch);
-                    for (int i = 0; i < 88; i++)
-                    {
-                        pianomain.UnLightKey(i);
-                    }
-                }
-
-                if (e.Key == Key.Escape)
-                {
-                    int pattern = LC_Sequence_PatternNumber.LightIndex;
-                    int step = LC_Sequence_PatternStep.LightIndex;
-                    AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Clear();
-                    for (int i = 0; i < 88; i++)
-                    {
-                        pianomain.UnLightKey(i);
-                    }
-                }
-
-                if (e.Key == Key.End) // clear any existing notes for said channel, and send AllNotesOff on said channel.
-                {
-                    int ch = activeCh < 0 ? 0 : activeCh;
-                    int pattern = LC_Sequence_PatternNumber.LightIndex;
-                    int step = LC_Sequence_PatternStep.LightIndex;
-                    AppContext.ActiveSequence.Patterns[pattern].Steps[step]
-                        .MidiMessages.RemoveAll(x => x.MidiChannel == ch);
-                    AppContext.ActiveSequence.Patterns[pattern].Steps[step]
-                        .MidiMessages.Add(new ChannelMessage(ChannelCommand.Controller,ch,(int)ControllerType.AllNotesOff));
-                    for (int i = 0; i < 88; i++)
-                    {
-                        pianomain.UnLightKey(i);
-                    }
-                }
-            }
-
-            #region Studio keyboard shortcuts
-            
-            if (e.Key == Key.D && Keyboard.Modifiers.HasFlag(ModifierKeys.Control | ModifierKeys.Alt | ModifierKeys.Shift))
-            {
-                cb_DS_Enable.IsChecked = !cb_DS_Enable.IsChecked.Value;
-            }
-            #endregion
-
-            if (e.Key == Key.Up && Config.PitchOffsets[1] < 12)
-            {
-                Config.PitchOffsets[1]++;
-                pianomain.SetNoteText(Config.PitchOffsets[1]);
-            }
-
-            if (e.Key == Key.Down && Config.PitchOffsets[1] > -12)
-            {
-                Config.PitchOffsets[1]--;
-                pianomain.SetNoteText(Config.PitchOffsets[1]);
-            }
-
-            if (e.Key == Key.Left)
-            {
-                Config.PitchOffsets[1] = 0;
-                pianomain.SetNoteText(Config.PitchOffsets[1]);
-            }
-
-            Transpose = Config.PitchOffsets[1];
-
-        }
-
-        public async void HandleNoteOn_VS_Event(object sender, PKeyEventArgs e, int velocity, int channel = 0) => await Dispatcher.InvokeAsync(() => Pianomain_pKeyDown_VelocitySense(sender, e, velocity, activeCh));
-
-        #endregion
-
-        #region NoteFX Functions
-
-        private async Task PlayDelayedNFX(Bank bank, NumberedEntry patch, int ch, int note, int velocity, int delay, int count)
-        {
-            /*
-                    The only possible channels that I can play from on the keyboard is 0, and 1.
-
-                    ch1. Default instrument
-                    ch2. Split instrument
-
-                    If I want 6 possible steps, my map will have to look like this.
-
-                    0. {02,04,06,08,10,12}
-                    1. {03,05,07,11,13,15}
-                       Channel 0 is reserved for default note, 
-                       Channel 1 is reserved for split note
-                       Channel 9 is reserved for percussion
-             
-             */
-            if (MidiEngine == null) return;
-            if (count > 6 || count < 1)
-            {
-                throw new ArgumentException("Count must be no more than 6, no less than 1.");
-            }
-
-            async Task t()
-            {
-                // int[CHANNEL INDEX, STEP INDEX];
-                int[,] channelMapper = new int[15, 6] {
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 9, 9, 9, 9, 9, 9 },
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                };
-
-
-                for (int i = 0; i < count; i++)
-                {
-                    await Task.Delay(delay);
-                    if (Config.EnforceInstruments)
-                    {
-                        MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, channelMapper[ch, i]);
-                    }
-                    int velo = velocity - (int)(velocity * (float)((float)AppContext.ActiveNFXProfile.OffsetMap[i].decay / 100));
-
-                    MidiEngine.MidiNote_Play(channelMapper[ch, i], note + AppContext.ActiveNFXProfile.OffsetMap[i].pitch, velo, false);
-                    Dispatcher.Invoke(() =>
-                    {
-                        int zkb = note + AppContext.ActiveNFXProfile.OffsetMap[i].pitch - 12 - Transpose - (12 * CTRL_Octave.Value);
-                        pianomain.ALTLightKey(zkb);
-                    });
-                    
-                    await Dispatcher.InvokeAsync(() => FlashChannelActivity(channelMapper[ch, i]));
-
-                }
-            }
-            await Task.Run(() => t());
-        }
-
-        private async Task StopDelayedNFX(int ch, int note, int delay, int count)
-        {
-            if (MidiEngine == null) return;
-            if (count > 6 || count < 1)
-            {
-                throw new ArgumentException("Count must be no more than 6, no less than 1.");
-            }
-            async Task t()
-            {
-
-                int[,] channelMapper = new int[15, 6] {
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 9, 9, 9, 9, 9, 9 },
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                    { 1, 2, 3, 4, 5, 6},
-                };
-
-                for (int i = 0; i < count; i++)
-                {
-                    await Task.Delay(delay);
-                    MidiEngine.MidiNote_Stop(channelMapper[ch, i], note + AppContext.ActiveNFXProfile.OffsetMap[i].pitch, false);
-
-                    Dispatcher.Invoke(() =>
-                    {
-                        int zkb = note + AppContext.ActiveNFXProfile.OffsetMap[i].pitch - 12 - Transpose - (12 * CTRL_Octave.Value);
-                        pianomain.UnLightKey(zkb);
-                    });
-                    await Dispatcher.InvokeAsync(() => FlashChannelActivity(channelMapper[ch, i]));
-                }
-            }
-            await Task.Run(() => t());
-        }
-
-        private void BN_CustomizeDelay_Click(object sender, RoutedEventArgs e)
-        {
-            //use active profile!
-            AppContext.ShowNFX();
-        }
-
-        private void Dials_TextPromptStateChanged(object sender, EventArgs e)
-        {
-            HaltKeyboardInput = ((DialControl)sender).InputCaptured;
-        }
-
-        private void Cb_nfx_ProfileSel_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (AppContext == null) return;
-            if (cb_NFX_Dropdown.SelectedItem == null) return;
-            var item = cb_NFX_Dropdown.SelectedItem;
-
-            AppContext.ActiveNFXProfile = (NFXDelayProfile)item;
-            if (AppContext.ActiveNFXProfile == null)
-            {
-                AppContext.ActiveNFXProfile = AppContext.NFXProfiles[0];
-            }
-
-            //update all onscreen datas
-
-            Dial_NFX_Interval.SetValueSuppressed(AppContext.ActiveNFXProfile.Delay);
-            Dial_NFX_StepCount.SetValueSuppressed(AppContext.ActiveNFXProfile.OffsetMap.Count);
-
-            lv_steps.Items.Clear();
-            for (int i = 0; i < AppContext.ActiveNFXProfile.OffsetMap.Count; i++)
-            {
-                lv_steps.Items.Add(new { Step = i + 1, Pitch = AppContext.ActiveNFXProfile.OffsetMap[i].pitch, Decay = AppContext.ActiveNFXProfile.OffsetMap[i].decay });
-            }
-        }
-
-        #endregion
-
-        #region Riff Center
+        #region Sequencer
         private void BnRiff_Define_Click(object sender, RoutedEventArgs e)
         {
             CB_Sequencer_Check.IsChecked = false;
@@ -1309,5 +1082,194 @@ namespace MidiSynth7.components.views
         }
 
         #endregion
+        
+        #region SynthView Interface
+        public async void HandleNoteOnEvent(object sender, NoteEventArgs e)
+        {
+            await FlashChannelActivity(e.IsFromInputDevice ? activeCh : e.ChannelMssge.MidiChannel);
+            if (SequencerRecording) { return; }
+            await Dispatcher.InvokeAsync(() => pianomain.UnLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value));
+            
+            if (e.ChannelMssge.Data2 > 0)
+            {
+                if (e.ChannelMssge.MidiChannel == 0)
+                {
+                    pianomain.LightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
+                }
+                if (e.ChannelMssge.MidiChannel != 0 && e.ChannelMssge.MidiChannel != 9)
+                {
+                    pianomain.ALTLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
+                }
+                if (e.ChannelMssge.MidiChannel == 9)
+                {
+                    pianomain.CustomLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value, (LinearGradientBrush)this.TryFindResource("PercussionKeyLightBrush"));
+                }
+            }
+
+            else
+            {
+                pianomain.UnLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
+            }
+            if (cb_NFX_Enable.IsChecked.Value)
+            {
+                if (cb_DS_Enable.IsChecked.Value)
+                {
+                    Dispatcher.InvokeAsync(() => PlayDelayedNFX((Bank)cb_mBank.SelectedItem, (NumberedEntry)cb_dkitlist.SelectedItem, cb_DS_Enable.IsChecked.Value ? 9 : e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, e.ChannelMssge.Data2, AppContext.ActiveNFXProfile.Delay, AppContext.ActiveNFXProfile.OffsetMap.Count));
+
+                }
+                else
+                {
+                    Dispatcher.InvokeAsync(() => PlayDelayedNFX((Bank)cb_mBank.SelectedItem, (NumberedEntry)cb_mPatch.SelectedItem, e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, e.ChannelMssge.Data2, AppContext.ActiveNFXProfile.Delay, AppContext.ActiveNFXProfile.OffsetMap.Count));
+
+                }
+
+            }
+        }
+
+        public async void HandleNoteOffEvent(object sender, NoteEventArgs e)
+        {
+
+
+            await FlashChannelActivity(e.IsFromInputDevice ? activeCh : e.ChannelMssge.MidiChannel);
+            pianomain.UnLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
+
+            if (cb_NFX_Enable.IsChecked.Value)
+            {
+#pragma warning disable CS4014 // 😏
+                Dispatcher.InvokeAsync(() => StopDelayedNFX(cb_DS_Enable.IsChecked.Value ? 9 : e.ChannelMssge.MidiChannel, e.ChannelMssge.Data1, AppContext.ActiveNFXProfile.Delay, AppContext.ActiveNFXProfile.OffsetMap.Count));
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+
+            }
+            await Dispatcher.InvokeAsync(() => Pianomain_pKeyUp(sender, new PKeyEventArgs(e.ChannelMssge.Data1,0)));
+        }
+
+        public void HandleEvent(object sender, EventArgs e, string id = "generic")
+        {
+            void InsDefUpdate()
+            {
+                AppContext.ActiveInstrumentDefinition = AppContext.Definitions.FirstOrDefault(x => x.AssociatedDeviceIndex == ((NumberedEntry)cb_Devices.SelectedItem).Index) ?? AppContext.Definitions[0];//associated or default
+                UpdateInstrumentSelection(AppContext.AppConfig);
+            }
+            Console.WriteLine("EventID: {0}", id);
+            switch (id)
+            {
+                case "RefMIDIEngine": AppContext.GenerateMIDIEngine(this, ((NumberedEntry)cb_Devices.SelectedItem).Index); break;
+                case "RefMainWin": AppContext = (MainWindow)sender; break;
+                case "MTaskWorker": MidiEngine = AppContext.MidiEngine; break;
+                case "RefAppConfig": Config = AppContext.AppConfig; break;
+                case "SynthSustainCTRL_ON": Mio_SustainPdl.Fill = (Brush)FindResource("CH_IND_ON"); break;
+                case "SynthSustainCTRL_OFF": Mio_SustainPdl.Fill = (Brush)FindResource("CH_IND_OFF"); break;
+                case "MidiEngine_FileLoadComplete": cp_Info.Text = MidiEngine.Copyright; break;
+                case "MidiEngine_SequenceBuilder_Completed": break;
+                case "InsDEF_Changed": InsDefUpdate(); break;
+                case "RefNFXDelay": NFXProfileUpdate(); break;
+                case "TrSeqUpdate":
+                    Cb_SequencerProfile.ItemsSource = AppContext.Tracks;
+                    Cb_SequencerProfile.DisplayMemberPath = "SequenceName";
+                    UI_CheckActiveSequence();
+                    ; break;
+                default:
+                    Console.WriteLine("Unrecognized event string: {0}... lol", id);
+                    break;
+            }
+        }
+
+        private void NFXProfileUpdate()
+        {
+            cb_NFX_Dropdown.Items.Clear();
+            foreach (NFXDelayProfile item in AppContext.NFXProfiles)
+            {
+                cb_NFX_Dropdown.Items.Add(item);
+            }
+            cb_NFX_Dropdown.SelectedIndex = 0;
+        }
+
+        public void HandleKeyDown(object sender, KeyEventArgs e)
+        {
+            if (HaltKeyboardInput) return;
+            pianomain.UserControl_KeyDown(sender, e);
+        }
+
+        public void HandleKeyUp(object sender, KeyEventArgs e)
+        {
+            if (HaltKeyboardInput) return;
+            pianomain.UserControl_KeyUp(sender, e);
+
+            if (SequencerRecording)
+            {
+                if(e.Key == Key.Delete)
+                {
+                    int ch = activeCh < 0 ? 0 : activeCh;
+                    int pattern = LC_Sequence_PatternNumber.LightIndex;
+                    int step = LC_Sequence_PatternStep.LightIndex;
+                    AppContext.ActiveSequence.Patterns[pattern].Steps[step]
+                        .MidiMessages.RemoveAll(x=>x.MidiChannel == ch);
+                    for (int i = 0; i < 88; i++)
+                    {
+                        pianomain.UnLightKey(i);
+                    }
+                }
+
+                if (e.Key == Key.Escape)
+                {
+                    int pattern = LC_Sequence_PatternNumber.LightIndex;
+                    int step = LC_Sequence_PatternStep.LightIndex;
+                    AppContext.ActiveSequence.Patterns[pattern].Steps[step].MidiMessages.Clear();
+                    for (int i = 0; i < 88; i++)
+                    {
+                        pianomain.UnLightKey(i);
+                    }
+                }
+
+                if (e.Key == Key.End) // clear any existing notes for said channel, and send AllNotesOff on said channel.
+                {
+                    int ch = activeCh < 0 ? 0 : activeCh;
+                    int pattern = LC_Sequence_PatternNumber.LightIndex;
+                    int step = LC_Sequence_PatternStep.LightIndex;
+                    AppContext.ActiveSequence.Patterns[pattern].Steps[step]
+                        .MidiMessages.RemoveAll(x => x.MidiChannel == ch);
+                    AppContext.ActiveSequence.Patterns[pattern].Steps[step]
+                        .MidiMessages.Add(new ChannelMessage(ChannelCommand.Controller,ch,(int)ControllerType.AllNotesOff));
+                    for (int i = 0; i < 88; i++)
+                    {
+                        pianomain.UnLightKey(i);
+                    }
+                }
+            }
+
+            #region Studio keyboard shortcuts
+            
+            if (e.Key == Key.D && Keyboard.Modifiers.HasFlag(ModifierKeys.Control | ModifierKeys.Alt | ModifierKeys.Shift))
+            {
+                cb_DS_Enable.IsChecked = !cb_DS_Enable.IsChecked.Value;
+            }
+            #endregion
+
+            if (e.Key == Key.Up && Config.PitchOffsets[1] < 12)
+            {
+                Config.PitchOffsets[1]++;
+                pianomain.SetNoteText(Config.PitchOffsets[1]);
+            }
+
+            if (e.Key == Key.Down && Config.PitchOffsets[1] > -12)
+            {
+                Config.PitchOffsets[1]--;
+                pianomain.SetNoteText(Config.PitchOffsets[1]);
+            }
+
+            if (e.Key == Key.Left)
+            {
+                Config.PitchOffsets[1] = 0;
+                pianomain.SetNoteText(Config.PitchOffsets[1]);
+            }
+
+            Transpose = Config.PitchOffsets[1];
+
+        }
+
+        public async void HandleNoteOn_VS_Event(object sender, PKeyEventArgs e, int velocity, int channel = 0) => await Dispatcher.InvokeAsync(() => Pianomain_pKeyDown_VelocitySense(sender, e, velocity, activeCh));
+
+        #endregion
+
     }
 }
