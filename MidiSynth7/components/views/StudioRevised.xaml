@@ -325,16 +325,26 @@
             <Grid Margin="0,-4,0,0">
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                        <GradientStop Color="#FF0C0C0C"/>
-                        <GradientStop Color="#FF032300" Offset="1"/>
+                        <GradientStop Color="#FF032300"/>
+                        <GradientStop Color="#FF1D1D1D" Offset="1"/>
                     </LinearGradientBrush>
                 </Grid.Background>
-                <CheckBox x:Name="CB_EnforceInstruments" Content="Prevent External Override" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Background="{x:Null}" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="6,0,0,0">
+                <CheckBox x:Name="CB_EnforceInstruments" Content="Override External" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Background="{x:Null}" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="6,0,0,0">
                     <CheckBox.ToolTip>
                         <TextBlock>
     <Run FontWeight="Bold">Enforce Instrument/drum Selections</Run><LineBreak/><LineBreak/>
     <Run>If checked, the program will set instrument on every note played.</Run><LineBreak/>
-    <Run>Uncheck if you want an external application to control device instruments.</Run>
+    <Run>Uncheck if you want to let external programs control the instrument selection. Note: the program will not reflect any of these changes.</Run>
+                        </TextBlock>
+                    </CheckBox.ToolTip>
+                </CheckBox>
+
+                <CheckBox x:Name="CB_OverrideSequencerProgramChange" Content="Override Sequencer" Checked="ToggleChecked" Unchecked="ToggleChecked" Focusable="False" Background="{x:Null}" Foreground="White" VerticalAlignment="Center" Margin="156,0,0,0" HorizontalAlignment="Left" Width="127">
+                    <CheckBox.ToolTip>
+                        <TextBlock>
+<Run FontWeight="Bold">Override Sequencer Program Changes</Run><LineBreak/><LineBreak/>
+<Run>If checked, the program will ignore any program/bank changes sent from the sequencer, and use the instruments set by the program itself, or external application (If that is allowed)</Run><LineBreak/>
+<Run>Leave unchecked if you want the sequencer to take patch priority.</Run>
                         </TextBlock>
                     </CheckBox.ToolTip>
                 </CheckBox>

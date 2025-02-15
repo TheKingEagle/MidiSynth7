@@ -37,6 +37,8 @@ namespace MidiSynth7.components.views
         private bool _SequencerRecording = false;
         private bool _SequencerAutoAdvance = false;
         private bool _SequencerTranspose = false;
+        private bool _AllowSequenceProgramChange = false;
+        private bool SupressBankUpdate = false;
 
         public bool SequencerRecording
         {
@@ -284,7 +286,7 @@ namespace MidiSynth7.components.views
             if (!IsInitialized) {  return; }
             if (Config != null)
                 Config.EnforceInstruments = CB_EnforceInstruments?.IsChecked ?? true;
-            
+            _AllowSequenceProgramChange = !(CB_OverrideSequencerProgramChange?.IsChecked ?? false);
             // Unsubscribe to prevent recursive calls
             CB_InstrumentSelectEnable.Checked -= ToggleChecked;
             CB_InstrumentSelectEnable.Unchecked -= ToggleChecked;
@@ -339,11 +341,21 @@ namespace MidiSynth7.components.views
                 }
             }
             cb_DS_Enable.IsChecked = activeCh == 9;
+            CB_InstrumentSelectEnable.IsChecked = activeCh != 9;
             SetCHIndMarker();
             CTRL_Balance.SetValueSuppressed(Config.ChannelPans[activeCh < 0 ? 16 : activeCh]);
             CTRL_Chorus.SetValueSuppressed(Config.ChannelChoruses[activeCh < 0 ? 16 : activeCh]);
             CTRL_Volume.SetValueSuppressed(Config.ChannelVolumes[activeCh < 0 ? 16 : activeCh]);
             CTRL_Reverb.SetValueSuppressed(Config.ChannelReverbs[activeCh < 0 ? 16 : activeCh]);
+            //set instrument and bank indexes
+            if(activeCh != 9)
+            {
+                SupressBankUpdate = true;
+                cb_mBank.SelectedIndex = Config.ChannelBanks[activeCh < 0 ? 16 : activeCh];
+                SupressBankUpdate = false;
+                cb_mPatch.SelectedIndex = Config.ChannelInstruments[activeCh < 0 ? 16 : activeCh];
+            }
+            
         }
 
         private void SetCHIndMarker()
@@ -357,16 +369,19 @@ namespace MidiSynth7.components.views
                         ch.Stroke = (Brush)FindResource("CH_IND_MARKER");
                         GB_Controllers.Header = $"Controllers [Channel: {activeCh + 1}]";
                         LC_Sequence_PatternStep.Header = $"Step [Channel: {activeCh + 1}]";
+                        CB_InstrumentSelectEnable.Content = $"Instruments [Channel: {activeCh + 1}]";
                     }
                     else
                     {
                         ch.Stroke = (Brush)FindResource("CH_IND_STROKE");
                     }
-                    if (activeCh == -1)
-                    {
-                        GB_Controllers.Header = $"Controllers [Channel: All]";
-                        LC_Sequence_PatternStep.Header = $"Step [Channel: 1]";
-                    }
+                    //This should no longer be possible.
+                    //if (activeCh == -1)
+                    //{
+                    //    GB_Controllers.Header = "Controllers [Channel: 1]";
+                    //    LC_Sequence_PatternStep.Header = "Step [Channel: 1]";
+                    //    CB_InstrumentSelectEnable.Content = "Instruments [Channel: 1]";
+                    //}
                 }
 
             }
@@ -435,9 +450,9 @@ namespace MidiSynth7.components.views
             {
                 Bank bank = (Bank)cb_mBank.SelectedItem;
                 NumberedEntry patch = (NumberedEntry)cb_mPatch.SelectedItem;
-                MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 0);
+                MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, activeCh);
             }
-            Config.ChannelInstruments[0] = cb_mPatch.SelectedIndex;
+            Config.ChannelInstruments[activeCh] = cb_mPatch.SelectedIndex;
         }
 
         private void Cb_mBank_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -451,7 +466,11 @@ namespace MidiSynth7.components.views
                     cb_mPatch.Items.Add(item);
                 }
             }
-            cb_mPatch.SelectedIndex = 0;
+            Config.ChannelBanks[activeCh] = cb_mBank.SelectedIndex;
+            if (!SupressBankUpdate)
+            {
+                cb_mPatch.SelectedIndex = 0;
+            }
         }
 
         
@@ -472,35 +491,13 @@ namespace MidiSynth7.components.views
             {
                 Bank bank = (Bank)cb_mBank.SelectedItem;
                 NumberedEntry patch = (NumberedEntry)cb_mPatch.SelectedItem;
-
-                //NumberedEntry OFX_b1 = (NumberedEntry)OFX_I1BankSel.SelectedItem;
-                //NumberedEntry OFX_b2 = (NumberedEntry)OFX_I2BankSel.SelectedItem;
-                //NumberedEntry OFX_p1 = (NumberedEntry)OFX_I1PatchSel.SelectedItem;
-                //NumberedEntry OFX_p2 = (NumberedEntry)OFX_I2PatchSel.SelectedItem;
-                //TODO: REPLACE WITH AN ACTUAL SELECTION
-                Bank OFX_b1 = new Bank(0, "b1");
-                Bank OFX_b2 = new Bank(0, "b2");
-                NumberedEntry OFX_p1 = new NumberedEntry(32, "p1"); ;
-                NumberedEntry OFX_p2 = new NumberedEntry(48, "p2"); ;
-                if (CB_Sequencer_Check.IsChecked.Value)
-                {
-                    //return;
-                }
-                if (cb_DS_Enable.IsChecked.Value)
-                {
-                    NumberedEntry dkit = (NumberedEntry)cb_dkitlist.SelectedItem;
-                    MidiEngine.MidiNote_SetProgram(127, dkit.Index, 9);
-                    MidiEngine.MidiNote_Play(9, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, CTRL_Volume.Value);
-                    return;
-                }
-                
-                
+                NumberedEntry dkit = (NumberedEntry)cb_dkitlist.SelectedItem;
                 if (Config.EnforceInstruments)
                 {
-                    MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 0);
+                    MidiEngine.MidiNote_SetProgram(activeCh == 9 ? 127 : bank.Index, activeCh == 9 ? dkit.Index : patch.Index, activeCh);
                 }
                 //MidiEngine.MidiNote_SetPan(0, CTRL_Balance.Value);
-                MidiEngine.MidiNote_Play(0, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, CTRL_Volume.Value);
+                MidiEngine.MidiNote_Play(activeCh, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, CTRL_Volume.Value);
                 ActiveNotes.Add(Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value);
 
             }
@@ -546,26 +543,12 @@ namespace MidiSynth7.components.views
                         pianomain.CustomLightKey(e.KeyID, new LinearGradientBrush(Colors.Purple, Colors.MediumPurple, new Point(0, 0), new Point(1, 1)));
                     }
                 }
-                if (CB_Sequencer_Check.IsChecked.Value)
+
+                if (Config.EnforceInstruments)
                 {
-                    //return;
+                    MidiEngine.MidiNote_SetProgram(channel == 9 ? 127 : bank.Index, channel == 9 ? dkit.Index : patch.Index, channel);
                 }
-                if (cb_DS_Enable.IsChecked.Value)
-                {
-                    MidiEngine.MidiNote_SetProgram(127, dkit.Index, 9);
-                    MidiEngine.MidiNote_Play(9, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity);
-                    return;
-                }
-               
-               
-                if (channel == 0)
-                {
-                    if (Config.EnforceInstruments)
-                    {
-                        MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, 0);
-                    }
-                    //MidiEngine.MidiNote_SetPan(0, CTRL_Balance.Value);
-                }
+
                 MidiEngine.MidiNote_Play(channel, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity);
                 ActiveNotes.Add(Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value);
 
@@ -579,19 +562,6 @@ namespace MidiSynth7.components.views
                 Bank bank = (Bank)cb_mBank.SelectedItem;
                 NumberedEntry patch = (NumberedEntry)cb_mPatch.SelectedItem;
 
-                //Bank OFX_b1 = new Bank (Bank)OFX_I1BankSel.SelectedItem;
-                //Bank OFX_b2 = new Bank (Bank)OFX_I2BankSel.SelectedItem;
-                //NumberedEntry OFX_p1 = (NumberedEntry)OFX_I1PatchSel.SelectedItem;
-                //NumberedEntry OFX_p2 = (NumberedEntry)OFX_I2PatchSel.SelectedItem;
-                //TODO: Implement custom octaveFX dialog
-                Bank OFX_b1 = new Bank(0, "b1");
-                Bank OFX_b2 = new Bank(0, "b2");
-                NumberedEntry OFX_p1 = new NumberedEntry(32, "p1"); ;
-                NumberedEntry OFX_p2 = new NumberedEntry(48, "p2"); ;
-                if (CB_Sequencer_Check.IsChecked.Value)
-                {
-                    //return;
-                }
                 if (SequencerRecording)
                 {
                     //check active channel. 
@@ -612,14 +582,8 @@ namespace MidiSynth7.components.views
                         //pianomain.CustomLightKey(e.KeyID, new LinearGradientBrush(Colors.Purple, Colors.MediumPurple, new Point(0, 0), new Point(1, 1)));
                     }
                 }
-                if (cb_DS_Enable.IsChecked.Value)
-                {
-                    MidiEngine.MidiNote_Stop(9, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value,false);
-                    return;
-                }
 
-                
-                MidiEngine.MidiNote_Stop(0, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value,false);
+                MidiEngine.MidiNote_Stop(activeCh, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value,false);
                 ActiveNotes.Remove(Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value);
             }
         }
@@ -641,7 +605,7 @@ namespace MidiSynth7.components.views
         #region SynthView Interface
         public async void HandleNoteOnEvent(object sender, NoteEventArgs e)
         {
-            await FlashChannelActivity(e.ChannelMssge.MidiChannel);
+            await FlashChannelActivity(e.IsFromInputDevice ? activeCh : e.ChannelMssge.MidiChannel);
             if (SequencerRecording) { return; }
             await Dispatcher.InvokeAsync(() => pianomain.UnLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value));
             
@@ -683,9 +647,9 @@ namespace MidiSynth7.components.views
 
         public async void HandleNoteOffEvent(object sender, NoteEventArgs e)
         {
-            
 
-            await FlashChannelActivity(cb_DS_Enable.IsChecked.Value ? 9 : e.ChannelMssge.MidiChannel);
+
+            await FlashChannelActivity(e.IsFromInputDevice ? activeCh : e.ChannelMssge.MidiChannel);
             pianomain.UnLightKey(e.ChannelMssge.Data1 - 12 - Transpose - 12 * CTRL_Octave.Value);
 
             if (cb_NFX_Enable.IsChecked.Value)
@@ -822,7 +786,7 @@ namespace MidiSynth7.components.views
 
         }
 
-        public async void HandleNoteOn_VS_Event(object sender, PKeyEventArgs e, int velocity, int channel = 0) => await Dispatcher.InvokeAsync(() => Pianomain_pKeyDown_VelocitySense(sender, e, velocity, channel));
+        public async void HandleNoteOn_VS_Event(object sender, PKeyEventArgs e, int velocity, int channel = 0) => await Dispatcher.InvokeAsync(() => Pianomain_pKeyDown_VelocitySense(sender, e, velocity, activeCh));
 
         #endregion
 
@@ -1096,6 +1060,14 @@ namespace MidiSynth7.components.views
                                                     TransposedNotes[item.MidiChannel].Remove(item.Data1);
                                                 }
                                             }
+                                            else if (item.Command == ChannelCommand.ProgramChange || (item.Command == ChannelCommand.Controller && (item.Data1 == (int)ControllerType.BankSelect || item.Data1 == (int)ControllerType.BankSelectFine)))
+                                            {
+                                                if (_AllowSequenceProgramChange)
+                                                {
+                                                    MidiEngine.MidiEngine_SendRawChannelMessage(item);
+                                                }
+
+                                            }
                                             else
                                             {
                                                 // Send all other messages unchanged
@@ -1104,8 +1076,18 @@ namespace MidiSynth7.components.views
                                         }
                                         else
                                         {
-                                            // If transposition is off, send the raw message
-                                            MidiEngine.MidiEngine_SendRawChannelMessage(item);
+                                            if (item.Command == ChannelCommand.ProgramChange || (item.Command == ChannelCommand.Controller && (item.Data1 == (int)ControllerType.BankSelect || item.Data1 == (int)ControllerType.BankSelectFine)))
+                                            {
+                                                if (_AllowSequenceProgramChange)
+                                                {
+                                                    MidiEngine.MidiEngine_SendRawChannelMessage(item);
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                MidiEngine.MidiEngine_SendRawChannelMessage(item);
+                                            }
                                         }
 
                                         Dispatcher.InvokeAsync(() => FlashChannelActivity(item.MidiChannel));

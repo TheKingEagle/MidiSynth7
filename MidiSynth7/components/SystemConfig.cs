@@ -18,7 +18,7 @@ namespace MidiSynth7.components
         public bool Input2RelayMode { get; set; }
 
         public bool EnforceInstruments { get; set; }
-
+        //WHY 17???!!!???
         /// <summary>
         /// Expects 17 items
         /// </summary>

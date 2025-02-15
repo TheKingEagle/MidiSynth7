@@ -793,7 +793,7 @@ namespace MidiSynth7
                 else
                 {
                     MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
-                    Dispatcher.InvokeAsync(()=>currentView.HandleNoteOnEvent(this, new NoteEventArgs(e.Message)));
+                    Dispatcher.InvokeAsync(()=>currentView.HandleNoteOnEvent(this, new NoteEventArgs(e.Message,false, true)));
                     return;
                 }
             }
@@ -801,7 +801,7 @@ namespace MidiSynth7
             {
                 MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
                 
-                Dispatcher.InvokeAsync(()=>currentView.HandleNoteOffEvent(this,new NoteEventArgs(e.Message)));
+                Dispatcher.InvokeAsync(()=>currentView.HandleNoteOffEvent(this,new NoteEventArgs(e.Message,false,true)));
             }
         }
 

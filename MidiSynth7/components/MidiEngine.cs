@@ -933,14 +933,12 @@ namespace MidiSynth7.components
     {
         ChannelMessage cm;
         bool sq = false;
-        public NoteEventArgs(ChannelMessage chMsg)
+        bool InDeviceCapture = false;
+        public NoteEventArgs(ChannelMessage chMsg, bool IsSequence = false, bool InDeviceCaptured = false)
         {
             cm = chMsg;
-        }
-        public NoteEventArgs(ChannelMessage chMsg, bool isSequence)
-        {
-            cm = chMsg;
-            sq = isSequence;
+            sq = IsSequence;
+            InDeviceCapture = InDeviceCaptured;
         }
         public ChannelMessage ChannelMssge
         {
@@ -949,13 +947,8 @@ namespace MidiSynth7.components
                 return cm;
             }
         }
-        public bool Sequence
-        {
-            get
-            {
-                return sq;
-            }
-        }
+        public bool FromSequence { get => sq; }
+        public bool IsFromInputDevice { get => InDeviceCapture; }
     }
 
     #endregion
