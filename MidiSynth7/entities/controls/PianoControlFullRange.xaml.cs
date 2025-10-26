@@ -14,6 +14,12 @@ namespace MidiSynth7.entities.controls
     public partial class PianoControlFullRange : UserControl
     {
         List<(int keyID, ISynthKey keyItem)> Keys = new List<(int keyID, ISynthKey keyItem)>();
+
+        public int SplitPoint { get => _sp; set {
+                _sp = value;
+                Update_split();
+            } }
+        int _sp = 0;
         public int KeyCount { get { return contentGrid.Children.Count; } }
 
         public PianoControlFullRange()
@@ -29,6 +35,7 @@ namespace MidiSynth7.entities.controls
                     {
                         if (key.KeyID == i)
                         {
+                            key.SplitKey = key.KeyID < SplitPoint;
                             key.VKeyDown += PianoControl_vKeyDown;
                             key.VKeyUp += PianoControl_vKeyUp;
                             Keys.Add((key.KeyID, key));
@@ -38,6 +45,26 @@ namespace MidiSynth7.entities.controls
             }
         }
 
+
+        void Update_split()
+        {
+            if (!IsInitialized) return;
+            for (int i = 0; i < kTypeTable.Length + 1; i++)
+            {
+                foreach (UIElement item in contentGrid.Children)
+                {
+                    ISynthKey key = item as ISynthKey;
+                    if (key != null)
+                    {
+                        if (key.KeyID == i)
+                        {
+                            key.SplitKey = key.KeyID < SplitPoint;
+                            
+                        }
+                    }
+                }
+            }
+        }
         void PianoControl_vKeyUp(object sender, PKeyEventArgs e)
         {
             EventHandler<PKeyEventArgs> temp = pKeyUp;
@@ -75,6 +102,7 @@ namespace MidiSynth7.entities.controls
                 KeyTypes.White,
             };
         
+
         public void UserControl_KeyDown(object sender, KeyEventArgs e)
         {
             if (Keyboard.Modifiers != ModifierKeys.None && Keyboard.Modifiers != ModifierKeys.Shift)

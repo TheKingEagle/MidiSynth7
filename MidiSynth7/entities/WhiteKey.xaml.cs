@@ -13,15 +13,27 @@ namespace MidiSynth7.entities
     {
         public int KeyID { get; set; }
         public string NoteText { get; set; }
+        public bool SplitKey
+        {
+            get => _sk;
+            set
+            {
+                _sk = value;
+                border.Background = SplitKey ? (Brush)TryFindResource("OFFBRUSH_SPLIT") : (Brush)TryFindResource("OFFBrush");
+            }
+        }
+        bool _sk = false;
 
         public event EventHandler<PKeyEventArgs> VKeyUp;
         bool down = false;
+        
         public event EventHandler<PKeyEventArgs> VKeyDown;
 
         public WhiteKey()
         {
             InitializeComponent();
-            
+            border.Background = SplitKey ? (Brush)TryFindResource("OFFBRUSH_SPLIT") : (Brush)TryFindResource("OFFBrush");
+
         }
         protected virtual void OnInvokeKeyUp(PKeyEventArgs e)
         {
@@ -51,7 +63,7 @@ namespace MidiSynth7.entities
 
         public void SendOff()
         {
-            border.Background = (Brush)this.TryFindResource("OFFBrush");
+            border.Background = SplitKey ? (Brush)TryFindResource("OFFBRUSH_SPLIT") : (Brush)TryFindResource("OFFBrush");
 
             OnInvokeKeyUp(new PKeyEventArgs(KeyID));
 
@@ -62,7 +74,7 @@ namespace MidiSynth7.entities
         }
         public void FSendOff()
         {
-            border.Background = (Brush)this.TryFindResource("OFFBrush");
+            border.Background = SplitKey ? (Brush)TryFindResource("OFFBRUSH_SPLIT") : (Brush)TryFindResource("OFFBrush");
             down = false;
         }
         public void FSendOn()
@@ -87,7 +99,7 @@ namespace MidiSynth7.entities
 
         private void Border_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            border.Background = (Brush)this.TryFindResource("OFFBrush");
+            border.Background = SplitKey ? (Brush)TryFindResource("OFFBRUSH_SPLIT") : (Brush)TryFindResource("OFFBrush");
             OnInvokeKeyUp(new PKeyEventArgs(KeyID));
         }
 
@@ -95,7 +107,7 @@ namespace MidiSynth7.entities
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                border.Background = (Brush)this.TryFindResource("OFFBrush");
+                border.Background = SplitKey ? (Brush)TryFindResource("OFFBRUSH_SPLIT") : (Brush)TryFindResource("OFFBrush");
                 OnInvokeKeyUp(new PKeyEventArgs(KeyID));
             }
         }

@@ -7,6 +7,7 @@ namespace MidiSynth7.components
     public interface ISynthKey
     {
         int KeyID { get; set; }
+        bool SplitKey { get; set; }
         string NoteText { get; set; }
 
         event EventHandler<PKeyEventArgs> VKeyUp;

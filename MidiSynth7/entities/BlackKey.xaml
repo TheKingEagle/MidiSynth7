@@ -10,6 +10,11 @@
             <GradientStop Color="Black" Offset="0.76"/>
             <GradientStop Color="#FF444444"/>
         </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="OFFBRUSH_SPLIT" EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="#FF060A0C" Offset="0.76"/>
+            <GradientStop Color="#FF416873"/>
+        </LinearGradientBrush>
         <LinearGradientBrush x:Key="ONBrush" EndPoint="0.5,1" StartPoint="0.5,0">
             <GradientStop Color="#FF00C2Ff" />
             <GradientStop Color="#FF0023Ff" Offset="1"/>
