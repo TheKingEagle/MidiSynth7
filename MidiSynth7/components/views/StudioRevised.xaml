@@ -165,7 +165,10 @@
         </GroupBox>
         <GroupBox HorizontalAlignment="Left" Margin="5,211,0,0" VerticalAlignment="Top" Height="91" Width="297" BorderThickness="2" BorderBrush="#FF035507" Padding="0" FontSize="14" >
             <GroupBox.Header>
-                <CheckBox IsChecked="True" Checked="ToggleChecked" Unchecked="ToggleChecked" x:Name="CB_InstrumentSelectEnable" Content="Instruments" Foreground="White" Background="{x:Null}"></CheckBox>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox IsChecked="True" Checked="ToggleChecked" Unchecked="ToggleChecked" x:Name="CB_InstrumentSelectEnable" Content="Instruments" Foreground="White" Background="{x:Null}" Margin="0,0,16,0"></CheckBox>
+                    <CheckBox IsChecked="False" Checked="ToggleChecked" Unchecked="ToggleChecked" x:Name="CB_InstrumentSplitter" Content="Split" Foreground="White" Background="{x:Null}"></CheckBox>
+                </StackPanel>
             </GroupBox.Header>
             <Grid Margin="0,-4,0,0">
                 <Grid.Background>
@@ -602,7 +605,7 @@
         <SynthGUI:PianoControlFullRange x:Name="pianomain" HorizontalAlignment="Left" Margin="5,437,0,-1" VerticalAlignment="Top" pKeyDown="Pianomain_pKeyDown" pKeyUp="Pianomain_pKeyUp" Height="150"/>
 
         <GroupBox Header="Channels" HorizontalAlignment="Left" Margin="1411,213,0,0" VerticalAlignment="Top" Height="368" Width="77" BorderBrush="#FF0008A6" BorderThickness="2">
-            <Grid Margin="-2,0,-3,0">
+            <Grid Margin="0,0,0,0">
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <GradientStop Color="#00121212" Offset="0"/>

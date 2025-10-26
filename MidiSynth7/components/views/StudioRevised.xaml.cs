@@ -199,7 +199,14 @@ namespace MidiSynth7.components.views
                 NumberedEntry patch = (NumberedEntry)cb_mPatch.SelectedItem;
                 MidiEngine.MidiNote_SetProgram(bank.Index, patch.Index, activeCh);
             }
-            Config.ChannelInstruments[activeCh] = cb_mPatch.SelectedIndex;
+            
+            if(CB_InstrumentSplitter.IsChecked == true)
+            {
+                Config.ChannelInstruments[16] = cb_mPatch.SelectedIndex;
+            } else
+            {
+                Config.ChannelInstruments[activeCh] = cb_mPatch.SelectedIndex;
+            }
         }
 
         private void Cb_mBank_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -213,10 +220,18 @@ namespace MidiSynth7.components.views
                     cb_mPatch.Items.Add(item);
                 }
             }
-            Config.ChannelBanks[activeCh] = cb_mBank.SelectedIndex;
-            if (!SupressBankUpdate)
+            
+
+            if (CB_InstrumentSplitter.IsChecked == true)
             {
-                cb_mPatch.SelectedIndex = 0;
+                Config.ChannelBanks[16] = cb_mBank.SelectedIndex;
+            } else
+            {
+                Config.ChannelBanks[activeCh] = cb_mBank.SelectedIndex;
+                if (!SupressBankUpdate)
+                {
+                    cb_mPatch.SelectedIndex = 0;
+                }
             }
         }
 
@@ -254,18 +269,18 @@ namespace MidiSynth7.components.views
             }
             cb_mBank.SelectedIndex = 0;
             cb_dkitlist.SelectedIndex = 0;
-            config.ChannelBanks[0] = (cb_mBank.Items.Count >= config.ChannelBanks[0]) ? config.ChannelBanks[0] : 0;
-            config.ChannelInstruments[0] = (cb_mPatch.Items.Count >= config.ChannelInstruments[0]) ? config.ChannelInstruments[0] : 0;
+            config.ChannelBanks[CB_InstrumentSplitter.IsChecked == true ? 16 : 0] = (cb_mBank.Items.Count >= config.ChannelBanks[CB_InstrumentSplitter.IsChecked == true ? 16 : 0]) ? config.ChannelBanks[0] : 0;
+            config.ChannelInstruments[CB_InstrumentSplitter.IsChecked == true ? 16 : 0] = (cb_mPatch.Items.Count >= config.ChannelInstruments[0]) ? config.ChannelInstruments[CB_InstrumentSplitter.IsChecked == true ? 16 : 0] : 0;
 
             config.ChannelInstruments[9] = (cb_dkitlist.Items.Count >= config.ChannelInstruments[9]) ? config.ChannelInstruments[9] : 0;
 
-            cb_mBank.SelectedIndex = config.ChannelBanks[0];
+            cb_mBank.SelectedIndex = config.ChannelBanks[CB_InstrumentSplitter.IsChecked == true ?  16 : 0];
 
-            cb_mPatch.SelectedIndex = config.ChannelInstruments[0];
+            cb_mPatch.SelectedIndex = config.ChannelInstruments[CB_InstrumentSplitter.IsChecked == true ? 16 : 0];
 
             cb_dkitlist.SelectedIndex = config.ChannelInstruments[9];
         }
-        #endregion
+        #endregion      
         
         #region Channels
         private void ChInd_MouseUp(object sender, MouseButtonEventArgs e)
@@ -280,19 +295,26 @@ namespace MidiSynth7.components.views
                 }
             }
             cb_DS_Enable.IsChecked = activeCh == 9;
-            CB_InstrumentSelectEnable.IsChecked = activeCh != 9;
+            CB_InstrumentSelectEnable.IsChecked = activeCh != 9 && !CB_InstrumentSplitter.IsChecked.Value;
             SetCHIndMarker();
             CTRL_Balance.SetValueSuppressed(Config.ChannelPans[activeCh < 0 ? 16 : activeCh]);
             CTRL_Chorus.SetValueSuppressed(Config.ChannelChoruses[activeCh < 0 ? 16 : activeCh]);
             CTRL_Volume.SetValueSuppressed(Config.ChannelVolumes[activeCh < 0 ? 16 : activeCh]);
             CTRL_Reverb.SetValueSuppressed(Config.ChannelReverbs[activeCh < 0 ? 16 : activeCh]);
 
-            if (activeCh != 9)
+            if (activeCh != 9 )
             {
                 SupressBankUpdate = true;
                 cb_mBank.SelectedIndex = Config.ChannelBanks[activeCh < 0 ? 16 : activeCh];
                 SupressBankUpdate = false;
                 cb_mPatch.SelectedIndex = Config.ChannelInstruments[activeCh < 0 ? 16 : activeCh];
+            }
+            if(CB_InstrumentSplitter.IsChecked == true)
+            {
+                SupressBankUpdate = true;
+                cb_mBank.SelectedIndex = Config.ChannelBanks[16];
+                SupressBankUpdate = false;
+                cb_mPatch.SelectedIndex = Config.ChannelInstruments[16];
             }
 
         }
@@ -445,32 +467,45 @@ namespace MidiSynth7.components.views
             CB_InstrumentSelectEnable.Unchecked -= ToggleChecked;
             cb_DS_Enable.Checked -= ToggleChecked;
             cb_DS_Enable.Unchecked -= ToggleChecked;
+            CB_InstrumentSplitter.Checked -= ToggleChecked;
+            CB_InstrumentSplitter.Unchecked -= ToggleChecked;
 
             if (sender == CB_InstrumentSelectEnable && CB_InstrumentSelectEnable.IsChecked == true)
             {
                 cb_DS_Enable.IsChecked = false;
+                CB_InstrumentSplitter.IsChecked = false;
                 activeCh = 0;
             }
-            else if (sender == cb_DS_Enable && cb_DS_Enable.IsChecked == true)
+            if (sender == cb_DS_Enable && cb_DS_Enable.IsChecked == true)
             {
                 CB_InstrumentSelectEnable.IsChecked = false;
+                CB_InstrumentSplitter.IsChecked = false;
                 activeCh = 9;
             }
-            if(sender == cb_DS_Enable || sender == CB_InstrumentSelectEnable)
+            else if (sender == CB_InstrumentSplitter && CB_InstrumentSplitter.IsChecked == true)
             {
-                // If both checkboxes are unchecked, re-check the one that was just unchecked
-                if (CB_InstrumentSelectEnable.IsChecked == false && cb_DS_Enable.IsChecked == false)
+                CB_InstrumentSelectEnable.IsChecked = false; //please
+                cb_DS_Enable.IsChecked = false;
+                activeCh = 0;
+                UpdateInstrumentSelection(Config);//set ui hopefully.
+            }
+            if (sender == cb_DS_Enable || sender == CB_InstrumentSelectEnable || sender == CB_InstrumentSplitter)
+            {
+                // If all checkboxes are unchecked, re-check the one that was just unchecked
+                if (CB_InstrumentSelectEnable.IsChecked == false && cb_DS_Enable.IsChecked == false && CB_InstrumentSplitter.IsChecked == false)
                 {
                     ((CheckBox)sender).IsChecked = true;
                 }
             }
             
             ChInd_MouseUp(this, new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left));
-
+            pianomain.SplitPoint = CB_InstrumentSplitter.IsChecked.Value ? 61 : 0;
             CB_InstrumentSelectEnable.Checked += ToggleChecked;
             CB_InstrumentSelectEnable.Unchecked += ToggleChecked;
             cb_DS_Enable.Checked += ToggleChecked;
             cb_DS_Enable.Unchecked += ToggleChecked;
+            CB_InstrumentSplitter.Checked += ToggleChecked;
+            CB_InstrumentSplitter.Unchecked += ToggleChecked;
 
         }
 
@@ -603,10 +638,20 @@ namespace MidiSynth7.components.views
             {
                 Bank bank = (Bank)cb_mBank.SelectedItem;
                 NumberedEntry patch = (NumberedEntry)cb_mPatch.SelectedItem;
+
+                Bank sbank = (Bank)cb_mBank.Items[Config.ChannelBanks[16]];
+                NumberedEntry spatch = (NumberedEntry)cb_mPatch.Items[Config.ChannelInstruments[16]];
                 NumberedEntry dkit = (NumberedEntry)cb_dkitlist.SelectedItem;
                 if (Config.EnforceInstruments)
                 {
                     MidiEngine.MidiNote_SetProgram(activeCh == 9 ? 127 : bank.Index, activeCh == 9 ? dkit.Index : patch.Index, activeCh);
+                }
+                if (CB_InstrumentSplitter.IsChecked == true)
+                {
+                    if(Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value < pianomain.SplitPoint)
+                    {
+                        MidiEngine.MidiNote_SetProgram(activeCh == 9 ? 127 : sbank.Index, activeCh == 9 ? dkit.Index : spatch.Index, activeCh);
+                    }
                 }
                 //MidiEngine.MidiNote_SetPan(0, CTRL_Balance.Value);
                 MidiEngine.MidiNote_Play(activeCh, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, CTRL_Volume.Value);
@@ -620,8 +665,10 @@ namespace MidiSynth7.components.views
 
             if (MidiEngine != null)
             {
-                Bank bank = (Bank)cb_mBank.SelectedItem;
-                NumberedEntry patch = (NumberedEntry)cb_mPatch.SelectedItem;
+                Bank bank = (Bank)cb_mBank.Items[Config.ChannelBanks[activeCh]];
+                NumberedEntry patch = (NumberedEntry)cb_mPatch.Items[Config.ChannelInstruments[activeCh]];
+                Bank sbank = (Bank)cb_mBank.Items[Config.ChannelBanks[16]];
+                NumberedEntry spatch = (NumberedEntry)cb_mPatch.Items[Config.ChannelInstruments[16]];
                 NumberedEntry dkit = (NumberedEntry)cb_dkitlist.SelectedItem;
 
                 if (SequencerRecording)
@@ -660,7 +707,17 @@ namespace MidiSynth7.components.views
                 {
                     MidiEngine.MidiNote_SetProgram(channel == 9 ? 127 : bank.Index, channel == 9 ? dkit.Index : patch.Index, channel);
                 }
+                if (CB_InstrumentSplitter.IsChecked == true)
+                {
+                    if (Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value < pianomain.SplitPoint)
+                    {
+                        MidiEngine.MidiNote_SetProgram(activeCh == 9 ? 127 : sbank.Index, activeCh == 9 ? dkit.Index : spatch.Index, activeCh);
+                    } else
+                    {
+                        MidiEngine.MidiNote_SetProgram(channel == 9 ? 127 : bank.Index, channel == 9 ? dkit.Index : patch.Index, channel);
 
+                    }
+                }
                 MidiEngine.MidiNote_Play(channel, Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value, velocity);
                 ActiveNotes.Add(Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value);
 
