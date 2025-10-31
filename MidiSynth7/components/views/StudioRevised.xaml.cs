@@ -225,6 +225,10 @@ namespace MidiSynth7.components.views
             if (CB_InstrumentSplitter.IsChecked == true)
             {
                 Config.ChannelBanks[16] = cb_mBank.SelectedIndex;
+                if (!SupressBankUpdate)
+                {
+                    cb_mPatch.SelectedIndex = 0;
+                }
             } else
             {
                 Config.ChannelBanks[activeCh] = cb_mBank.SelectedIndex;
