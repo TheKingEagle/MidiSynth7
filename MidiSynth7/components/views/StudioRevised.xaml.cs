@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Sequence = MidiSynth7.components.sequencer.Sequence;
+using MidiSynth7.entities.controls.extensions;
 
 namespace MidiSynth7.components.views
 {
@@ -643,8 +644,8 @@ namespace MidiSynth7.components.views
                 Bank bank = (Bank)cb_mBank.SelectedItem;
                 NumberedEntry patch = (NumberedEntry)cb_mPatch.SelectedItem;
 
-                Bank sbank = (Bank)cb_mBank.Items[Config.ChannelBanks[16]];
-                NumberedEntry spatch = (NumberedEntry)cb_mPatch.Items[Config.ChannelInstruments[16]];
+                Bank sbank = (Bank)cb_mBank.GetItemOrFirst(Config.ChannelBanks[16]);
+                NumberedEntry spatch = (NumberedEntry)cb_mPatch.GetItemOrFirst(Config.ChannelInstruments[16]);
                 NumberedEntry dkit = (NumberedEntry)cb_dkitlist.SelectedItem;
                 if (Config.EnforceInstruments)
                 {
@@ -669,10 +670,9 @@ namespace MidiSynth7.components.views
 
             if (MidiEngine != null)
             {
-                Bank bank = (Bank)cb_mBank.Items[Config.ChannelBanks[activeCh]];
-                NumberedEntry patch = (NumberedEntry)cb_mPatch.Items[Config.ChannelInstruments[activeCh]];
-                Bank sbank = (Bank)cb_mBank.Items[Config.ChannelBanks[16]];
-                NumberedEntry spatch = (NumberedEntry)cb_mPatch.Items[Config.ChannelInstruments[16]];
+                Bank bank = (Bank)cb_mBank.GetItemOrFirst(Config.ChannelBanks[activeCh]);
+                NumberedEntry patch = (NumberedEntry)cb_mPatch.GetItemOrFirst(Config.ChannelInstruments[activeCh]);
+                
                 NumberedEntry dkit = (NumberedEntry)cb_dkitlist.SelectedItem;
 
                 if (SequencerRecording)
@@ -713,6 +713,8 @@ namespace MidiSynth7.components.views
                 }
                 if (CB_InstrumentSplitter.IsChecked == true)
                 {
+                    Bank sbank = (Bank)cb_mBank.GetItemOrFirst(Config.ChannelBanks[16]);
+                    NumberedEntry spatch = (NumberedEntry)cb_mPatch.GetItemOrFirst(Config.ChannelInstruments[16]);
                     if (Transpose + e.KeyID + 12 + 12 * CTRL_Octave.Value < pianomain.SplitPoint)
                     {
                         MidiEngine.MidiNote_SetProgram(activeCh == 9 ? 127 : sbank.Index, activeCh == 9 ? dkit.Index : spatch.Index, activeCh);

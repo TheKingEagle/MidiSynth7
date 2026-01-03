@@ -229,6 +229,7 @@
     <Compile Include="entities\controls\Dialog.xaml.cs">
       <DependentUpon>Dialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="entities\controls\extensions\ComboBoxExtensions.cs" />
     <Compile Include="entities\controls\LightCell.xaml.cs">
       <DependentUpon>LightCell.xaml</DependentUpon>
     </Compile>
