@@ -675,9 +675,10 @@ namespace MidiSynth7
                 if (AppConfig.ActiveInputDeviceIndex > -1)
                 {
                     MidiEngine.inDevice = new Sanford.Multimedia.Midi.InputDevice(AppConfig.ActiveInputDeviceIndex);
-                    MidiEngine.inDevice.PostDriverCallbackToDelegateQueue = false;
+                    MidiEngine.inDevice.PostDriverCallbackToDelegateQueue = true;
                     MidiEngine.inDevice.PostEventsOnCreationContext = false;
                     MidiEngine.inDevice.ChannelMessageReceived += InDevice_ChannelMessageReceived;
+                    MidiEngine.inDevice.Reset();   // add this
                     MidiEngine.inDevice.StartRecording(); 
                 }
 
@@ -689,9 +690,10 @@ namespace MidiSynth7
                 if (AppConfig.ActiveInputDevice2Index > -1)
                 {
                     MidiEngine.inDevice2 = new Sanford.Multimedia.Midi.InputDevice(AppConfig.ActiveInputDevice2Index);
-                    MidiEngine.inDevice2.PostDriverCallbackToDelegateQueue = false;
+                    MidiEngine.inDevice2.PostDriverCallbackToDelegateQueue = true;
                     MidiEngine.inDevice2.PostEventsOnCreationContext = false;
                     MidiEngine.inDevice2.ChannelMessageReceived += InDevice_ChannelMessageReceived;
+                    MidiEngine.inDevice2.Reset();   // add thisMidiEngine.inDevice2.Reset();
                     MidiEngine.inDevice2.StartRecording();
                 }
             }

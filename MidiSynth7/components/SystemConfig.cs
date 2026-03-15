@@ -108,23 +108,23 @@ namespace MidiSynth7.components
 
             var controller1 = new (int controllerID, int value)[]
             {
-                ((int)ControllerType.TremeloLevel, 0),
-                ((int)ControllerType.TremeloLevel, 0),
-                ((int)ControllerType.TremeloLevel, 0),
-                ((int)ControllerType.TremeloLevel, 0),
-                ((int)ControllerType.TremeloLevel, 0),
-                ((int)ControllerType.TremeloLevel, 0),
-                ((int)ControllerType.TremeloLevel, 0),
-                ((int)ControllerType.TremeloLevel, 0),
-                ((int)ControllerType.TremeloLevel, 0),
-                ((int)ControllerType.TremeloLevel, 0),
-                ((int)ControllerType.TremeloLevel, 0),
-                ((int)ControllerType.TremeloLevel, 0),
-                ((int)ControllerType.TremeloLevel, 0),
-                ((int)ControllerType.TremeloLevel, 0),
-                ((int)ControllerType.TremeloLevel, 0),
-                ((int)ControllerType.TremeloLevel, 0),
-                ((int)ControllerType.TremeloLevel, 0)
+                ((int)ControllerType.TremoloLevel, 0),
+                ((int)ControllerType.TremoloLevel, 0),
+                ((int)ControllerType.TremoloLevel, 0),
+                ((int)ControllerType.TremoloLevel, 0),
+                ((int)ControllerType.TremoloLevel, 0),
+                ((int)ControllerType.TremoloLevel, 0),
+                ((int)ControllerType.TremoloLevel, 0),
+                ((int)ControllerType.TremoloLevel, 0),
+                ((int)ControllerType.TremoloLevel, 0),
+                ((int)ControllerType.TremoloLevel, 0),
+                ((int)ControllerType.TremoloLevel, 0),
+                ((int)ControllerType.TremoloLevel, 0),
+                ((int)ControllerType.TremoloLevel, 0),
+                ((int)ControllerType.TremoloLevel, 0),
+                ((int)ControllerType.TremoloLevel, 0),
+                ((int)ControllerType.TremoloLevel, 0),
+                ((int)ControllerType.TremoloLevel, 0)
             };
 
             var controller2 = new (int controllerID, int value)[]
