@@ -62,12 +62,18 @@ namespace MidiSynth7.components
         public List<(string name, (int controllerID, int value)[])> ChannelCustomControls { get; set; }
 
         public List<(int aux, int device)> AuxOutDevices { get; set; }
-        
+
         /// <summary>
         /// Configures which events the input devices may send, are processed [true] or ignored [false] by the synth.
         /// Expects 9 items: {pitch wheel, velocity, instrument change, volume, pan/balance, Reverb, chorus, phaser, modulation}
         /// </summary>
         public bool[] InDeviceAllowedParams { get; set; }
+
+        /// <summary>
+        /// Configures which MIDI channels respond to incoming sustain pedal controller events.
+        /// Expects 16 items, indexed 0-15 for MIDI channels 1-16.
+        /// </summary>
+        public bool[] SustainPedalChannels { get; set; }
 
         public int SelectedRiff { get; set; }
 
@@ -87,24 +93,25 @@ namespace MidiSynth7.components
             //Constructor for new instance
             DisplayMode = displayMode;
 
-            ActiveInputDeviceIndex   = -1;
-            ActiveInputDevice2Index   = -1;
-            ActiveOutputDeviceIndex  = 0;
-            EnableRiffs              = false;
-            ChannelInstruments       = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 , 0 };
-            ChannelBanks             = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 , 0 };
+            ActiveInputDeviceIndex = -1;
+            ActiveInputDevice2Index = -1;
+            ActiveOutputDeviceIndex = 0;
+            EnableRiffs = false;
+            ChannelInstruments = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            ChannelBanks = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             //Offset layout:                     {global octave, global transpose, ofx 3 transpose 1, ofx3 transpose 2, ..etc}
-            PitchOffsets             = new int[] { 3, 0, -12, -24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            ChannelVolumes           = new int[] { 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127,127 };
-            ChannelPans              = new int[] { 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64 , 64 };
-            ChannelReverbs           = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            ChannelChoruses          = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            ChannelModulations       = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            PitchOffsets = new int[] { 3, 0, -12, -24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            ChannelVolumes = new int[] { 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127 };
+            ChannelPans = new int[] { 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64 };
+            ChannelReverbs = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            ChannelChoruses = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            ChannelModulations = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             //Lists.
-            ChannelCustomControls    = new List<(string name, (int controllerID, int value)[])>();
-            AuxOutDevices            = new List<(int aux, int device)>();
+            ChannelCustomControls = new List<(string name, (int controllerID, int value)[])>();
+            AuxOutDevices = new List<(int aux, int device)>();
 
-            InDeviceAllowedParams    = new bool[] { true, true, true, true, true, true, true, true, true };
+            InDeviceAllowedParams = new bool[] { true, true, true, true, true, true, true, true, true };
+            SustainPedalChannels = Enumerable.Repeat(true, 16).ToArray();
 
             var controller1 = new (int controllerID, int value)[]
             {
@@ -148,17 +155,31 @@ namespace MidiSynth7.components
                 ((int)ControllerType.PhaserLevel, 0)
             };
 
-            ChannelCustomControls.Add(("Tremolo",controller1));
+            ChannelCustomControls.Add(("Tremolo", controller1));
             ChannelCustomControls.Add(("Phaser", controller2));
+        }
+
+        public void Normalize()
+        {
+            if (SustainPedalChannels == null || SustainPedalChannels.Length < 16)
+            {
+                bool[] normalized = Enumerable.Repeat(true, 16).ToArray();
+                if (SustainPedalChannels != null)
+                {
+                    Array.Copy(SustainPedalChannels, normalized, Math.Min(SustainPedalChannels.Length, normalized.Length));
+                }
+                SustainPedalChannels = normalized;
+            }
         }
 
         public bool CheckForMissingValues()
         {
+            Normalize();
             object[] items = new object[]
             {
                 DisplayMode,PitchOffsets,ChannelInstruments,
                 ChannelVolumes,ChannelCustomControls,ChannelChoruses,ChannelReverbs,
-                ChannelModulations,ChannelPans,ChannelBanks, InDeviceAllowedParams
+                ChannelModulations,ChannelPans,ChannelBanks, InDeviceAllowedParams, SustainPedalChannels
             };
             return items.Any(v => v == null);
         }
@@ -173,9 +194,9 @@ namespace MidiSynth7.components
             };
             object[] items2 = new object[]
             {
-                InDeviceAllowedParams
+                InDeviceAllowedParams, SustainPedalChannels
             };
-            return items.Any(v=> ((Array)v).Length < 17) && items2.Any(v2 => ((Array)v2).Length < 9);
+            return items.Any(v => ((Array)v).Length < 17) && items2.Any(v2 => ((Array)v2).Length < 9);
         }
 
     }

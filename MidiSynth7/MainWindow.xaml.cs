@@ -46,7 +46,7 @@ namespace MidiSynth7
         internal DisplayModes _switchto = DisplayModes.Standard;
         internal ISynthView currentView;
         internal DisplayModes CurrentViewDM;
-        
+
 
         public bool SynHelpRequested { get; private set; }
         public InstrumentDefinition ActiveInstrumentDefinition { get; set; }
@@ -62,7 +62,7 @@ namespace MidiSynth7
         public ObservableCollection<Sequence> Tracks = new ObservableCollection<Sequence>();
 
         public Sequence ActiveSequence { get; set; }
-        
+
 
         #endregion
 
@@ -70,7 +70,7 @@ namespace MidiSynth7
         {
             InitializeComponent();
             Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
-            
+
 
             appinfo_projectRevision = Assembly.GetExecutingAssembly().GetName().Version.Revision;
             AppConfig = LoadConfig();
@@ -154,7 +154,7 @@ namespace MidiSynth7
 
         private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            Dialog.Message(this,GR_OverlayContent,e.Exception.ToString(),"FUCK",Icons.Critical);
+            Dialog.Message(this, GR_OverlayContent, e.Exception.ToString(), "FUCK", Icons.Critical);
         }
 
         internal void PopulateSequences()
@@ -167,7 +167,7 @@ namespace MidiSynth7
             {
                 Tracks = new ObservableCollection<Sequence>();
             }
-            if(!File.Exists(App.APP_DATA_DIR + "sequences.mton"))
+            if (!File.Exists(App.APP_DATA_DIR + "sequences.mton"))
             {
                 var fs = File.Create(App.APP_DATA_DIR + "sequences.mton");
                 fs.Flush();
@@ -180,7 +180,7 @@ namespace MidiSynth7
                 {
                     Converters = new List<JsonConverter> { new ChannelMessageConverter() }
                 };
-                List<Sequence> ts = JsonConvert.DeserializeObject<List<Sequence>>(sr.ReadToEnd(),settings);
+                List<Sequence> ts = JsonConvert.DeserializeObject<List<Sequence>>(sr.ReadToEnd(), settings);
                 if (ts != null)
                 {
                     foreach (var item in ts)
@@ -193,7 +193,7 @@ namespace MidiSynth7
                     Console.WriteLine("Failed to parse file: sequences.mton");
                 }
             }
-            
+
             currentView?.HandleEvent(this, new EventArgs(), "TrSeqUpdate");
         }
 
@@ -227,8 +227,8 @@ namespace MidiSynth7
             {
                 _Closing = true;
                 FadeUI(1, 0, this);
-                ScaleUI(1, 0.8,this);
-                
+                ScaleUI(1, 0.8, this);
+
 
             }
             catch (Exception ex)
@@ -247,7 +247,7 @@ namespace MidiSynth7
                 _Closing = false;
                 _Minimized = true;
                 FadeUI(1, 0, this);
-                ScaleUI(1, 0.8,this);
+                ScaleUI(1, 0.8, this);
 
 
             }
@@ -264,7 +264,7 @@ namespace MidiSynth7
             if (GR_OverlayContent.Visibility == Visibility.Visible) return;
             Dialog g = new Dialog();
             g.SnapsToDevicePixels = true;
-            g.ShowDialog(new Settings(AppConfig,this,g), this, GR_OverlayContent);
+            g.ShowDialog(new Settings(AppConfig, this, g), this, GR_OverlayContent);
         }
 
         private void Bn_Maximize_Click(object sender, RoutedEventArgs e)
@@ -281,7 +281,7 @@ namespace MidiSynth7
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if(GR_OverlayContent.Visibility == Visibility.Visible)
+            if (GR_OverlayContent.Visibility == Visibility.Visible)
             {
                 return;
             }
@@ -303,7 +303,7 @@ namespace MidiSynth7
 
         private void CfgHelpRequested_Click(object sender, RoutedEventArgs e)
         {
-            
+
 
             SynHelpRequested = !SynHelpRequested;
             Cursor = SynHelpRequested ? Cursors.Help : Cursors.Arrow;
@@ -323,7 +323,7 @@ namespace MidiSynth7
 
         #endregion
 
-       
+
 
         #region Window Logic & Animation
         private void Window_Initialized(object sender, EventArgs e)
@@ -335,23 +335,23 @@ namespace MidiSynth7
                 InputDevices.Add(new NumberedEntry(midiInIndex, item));
                 midiInIndex++;
             }
-            
+
             int midiOutIndex = 0;
             foreach (string item in MidiEngine.GetOutputDevices())
             {
                 OutputDevices.Add(new NumberedEntry(midiOutIndex, item));
                 midiOutIndex++;
             }
-            
+
         }
 
         private void Window_StateChanged(object sender, EventArgs e)
         {
-            if(window.WindowState == WindowState.Normal || window.WindowState == WindowState.Maximized)
+            if (window.WindowState == WindowState.Normal || window.WindowState == WindowState.Maximized)
             {
                 _Minimized = false;
                 FadeUI(0, 1, this);
-                ScaleUI(0.8, 1,this);
+                ScaleUI(0.8, 1, this);
             }
 
             MainWinBdr.Margin = WindowState == WindowState.Maximized ? new Thickness(0) : new Thickness(12);
@@ -362,13 +362,13 @@ namespace MidiSynth7
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            ScaleUI(0.8, 1,this);
+            ScaleUI(0.8, 1, this);
             FadeUI(0, 1, this);
         }
 
         private void Window_Unloaded(object sender, RoutedEventArgs e)
         {
-            if(MidiEngine != null)
+            if (MidiEngine != null)
             {
                 if (MidiEngine.inDevice != null)
                 {
@@ -382,7 +382,7 @@ namespace MidiSynth7
                 }
                 MidiEngine.MidiEngine_Close();
             }
-            
+
 
             // close all active threads
             Environment.Exit(0);
@@ -442,7 +442,7 @@ namespace MidiSynth7
         public void FadeUI(double from, double to, UIElement uielm)
         {
             _elementFromanim = uielm;
-            if(uielm.Visibility != Visibility.Visible)
+            if (uielm.Visibility != Visibility.Visible)
             {
                 uielm.Opacity = 0;
                 uielm.Visibility = Visibility.Visible;
@@ -465,28 +465,28 @@ namespace MidiSynth7
         public void ScaleUI(double from, double to, UIElement uielm, double originX = 0.5d, double originY = 0.5d)
         {
             //ensure element is visible.
-            
-            if(from <= to)
+
+            if (from <= to)
             {
                 if (uielm != this)
                 {
-                uielm.Visibility = Visibility.Visible;
+                    uielm.Visibility = Visibility.Visible;
                 }
             }
             double _scale = (uielm != this && uielm.GetType() != typeof(Dialog)) ? scale : 1; //exclude scaling to some elements (thanks to WPF blurring :))
             ScaleTransform trans = new ScaleTransform();
             uielm.RenderTransform = trans;
-            uielm.RenderTransformOrigin = new Point(originX,originY);
-            
-            if(from != to)
+            uielm.RenderTransformOrigin = new Point(originX, originY);
+
+            if (from != to)
             {
-                DoubleAnimation scaler = new DoubleAnimation(from * _scale, to * _scale, TimeSpan.FromMilliseconds(120),FillBehavior.HoldEnd);
-                scaler.Completed += (object s, EventArgs e)=> {
+                DoubleAnimation scaler = new DoubleAnimation(from * _scale, to * _scale, TimeSpan.FromMilliseconds(120), FillBehavior.HoldEnd);
+                scaler.Completed += (object s, EventArgs e) => {
                     if (from > to)
                     {
                         if (uielm == this) return;
                         uielm.Visibility = Visibility.Collapsed;
-                        
+
                     }
                     if (uielm.GetType() == typeof(Dialog))
                     {
@@ -502,12 +502,12 @@ namespace MidiSynth7
                 trans.BeginAnimation(ScaleTransform.ScaleXProperty, scaler);
                 trans.BeginAnimation(ScaleTransform.ScaleYProperty, scaler);
             }
-            
+
         }
 
         private void WindowStoryboard_Completed(object sender, EventArgs e)
         {
-            if(_elementFromanim.Opacity <= 0.2 && _elementFromanim != this)
+            if (_elementFromanim.Opacity <= 0.2 && _elementFromanim != this)
             {
                 _elementFromanim.Visibility = Visibility.Collapsed;
             }
@@ -519,18 +519,18 @@ namespace MidiSynth7
             {
                 _Minimized = false;
                 this.WindowState = System.Windows.WindowState.Minimized;
-                ScaleUI(1, 1,this);
+                ScaleUI(1, 1, this);
                 this.Opacity = 1;
 
             }
-            if(_loadingView)
+            if (_loadingView)
             {
-                
+
                 _Minimized = false;
                 _loadingView = false;
                 Loadview(_switchto);
                 FadeUI(0, 1, this);
-                ScaleUI(0.8, 1,this);
+                ScaleUI(0.8, 1, this);
 
             }
         }
@@ -541,17 +541,17 @@ namespace MidiSynth7
         public void SaveConfig()
         {
             if (!Directory.Exists(App.APP_DATA_DIR)) Directory.CreateDirectory(App.APP_DATA_DIR);
-            if(AppConfig == null)
+            if (AppConfig == null)
             {
-                Dialog.Message(this,GR_OverlayContent,
+                Dialog.Message(this, GR_OverlayContent,
                     "The application configuration could not be saved because it's null.",
-                    "Config Error",Icons.Critical);
+                    "Config Error", Icons.Critical);
                 return;
             }
-            
+
             using (StreamWriter sw = new StreamWriter(App.APP_DATA_DIR + "synth7.config"))
             {
-                sw.WriteLine(JsonConvert.SerializeObject(AppConfig,Formatting.Indented));
+                sw.WriteLine(JsonConvert.SerializeObject(AppConfig, Formatting.Indented));
                 sw.Flush();
             }
         }
@@ -600,7 +600,7 @@ namespace MidiSynth7
 
         public SystemConfig LoadConfig()
         {
-            if(!File.Exists(App.APP_DATA_DIR+"synth7.config"))
+            if (!File.Exists(App.APP_DATA_DIR + "synth7.config"))
             {
                 Console.WriteLine("CONFIG: config file didn't exist.");
                 return new SystemConfig(DisplayModes.Standard);
@@ -613,6 +613,7 @@ namespace MidiSynth7
                     json = sr.ReadToEnd();
                 }
                 SystemConfig cfg = JsonConvert.DeserializeObject<SystemConfig>(json);
+                cfg?.Normalize();
                 if (cfg == null)
                 {
                     Console.WriteLine("CONFIG: Json was invalid, null entity returned.");
@@ -643,12 +644,12 @@ namespace MidiSynth7
             }
         }
 
-        
+
 
         #endregion
 
         #region MIDI Engine Logic
-        public void GenerateMIDIEngine(ISynthView view, int deviceId=0)
+        public void GenerateMIDIEngine(ISynthView view, int deviceId = 0)
         {
             try
             {
@@ -657,13 +658,13 @@ namespace MidiSynth7
                     MidiEngine.MidiEngine_Close();
                 }
                 MidiEngine = new MidiEngine(deviceId);
-                
+
                 MidiEngine.NotePlayed += MidiEngine_NotePlayed;
                 MidiEngine.NoteStopped += MidiEngine_NoteStoped;
                 MidiEngine.FileLoadComplete += MidiEngine_FileLoadComplete;
                 MidiEngine.SequenceBuilder_Completed += MidiEngine_SequenceBuilder_Completed;
 
-                
+
                 //tell view we updated shit
                 view.HandleEvent(this, new EventArgs(), "RefMainWin");
                 view.HandleEvent(this, new EventArgs(), "MTaskWorker");
@@ -679,7 +680,7 @@ namespace MidiSynth7
                     MidiEngine.inDevice.PostEventsOnCreationContext = false;
                     MidiEngine.inDevice.ChannelMessageReceived += InDevice_ChannelMessageReceived;
                     MidiEngine.inDevice.Reset();   // add this
-                    MidiEngine.inDevice.StartRecording(); 
+                    MidiEngine.inDevice.StartRecording();
                 }
 
                 if (MidiEngine.inDevice2 != null)
@@ -706,7 +707,7 @@ namespace MidiSynth7
 
         private void MidiEngine_SequenceBuilder_Completed(object sender, EventArgs e)
         {
-            currentView.HandleEvent(sender,e,"MidiEngine_SequenceBuilder_Completed");
+            currentView.HandleEvent(sender, e, "MidiEngine_SequenceBuilder_Completed");
         }
 
         private void MidiEngine_FileLoadComplete(object sender, EventArgs e)
@@ -731,14 +732,16 @@ namespace MidiSynth7
             {
                 if (e.Message.Data1 == (int)ControllerType.HoldPedal1)
                 {
-                    if((sender as Sanford.Multimedia.Midi.InputDevice) == MidiEngine.inDevice && !AppConfig.Input1RelayMode)
+                    if ((sender as Sanford.Multimedia.Midi.InputDevice) == MidiEngine.inDevice && !AppConfig.Input1RelayMode)
                     {
-                        Dispatcher.InvokeAsync(()=>currentView.HandleEvent(this, e, e.Message.Data2 >= 63 ? "SynthSustainCTRL_ON" : "SynthSustainCTRL_OFF"));
+                        Dispatcher.InvokeAsync(() => currentView.HandleEvent(this, e, e.Message.Data2 >= 63 ? "SynthSustainCTRL_ON" : "SynthSustainCTRL_OFF"));
                         for (int i = 0; i < 16; i++)
                         {
-                            //This is probably slow :D
-                            MidiEngine.MidiNote_SetControl(ControllerType.HoldPedal1, i, e.Message.Data2);
-
+                            if (AppConfig.SustainPedalChannels[i])
+                            {
+                                //This is probably slow :D
+                                MidiEngine.MidiNote_SetControl(ControllerType.HoldPedal1, i, e.Message.Data2);
+                            }
                         }
                         return;
                     }
@@ -748,9 +751,11 @@ namespace MidiSynth7
                         Dispatcher.InvokeAsync(() => currentView.HandleEvent(this, e, e.Message.Data2 >= 63 ? "SynthSustainCTRL_ON" : "SynthSustainCTRL_OFF"));
                         for (int i = 0; i < 16; i++)
                         {
-                            //This is probably slow :D
-                            MidiEngine.MidiNote_SetControl(ControllerType.HoldPedal1, i, e.Message.Data2);
-
+                            if (AppConfig.SustainPedalChannels[i])
+                            {
+                                //This is probably slow :D
+                                MidiEngine.MidiNote_SetControl(ControllerType.HoldPedal1, i, e.Message.Data2);
+                            }
                         }
                         return;
                     }
@@ -780,7 +785,7 @@ namespace MidiSynth7
             {
                 //MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
                 //Dispatcher.InvokeAsync(()=>currentView.HandleNoteOnEvent(this, new NoteEventArgs(e.Message)));
-                if(sender as Sanford.Multimedia.Midi.InputDevice == MidiEngine.inDevice && !AppConfig.Input1RelayMode)
+                if (sender as Sanford.Multimedia.Midi.InputDevice == MidiEngine.inDevice && !AppConfig.Input1RelayMode)
                 {
                     //TODO: FIXME -- Non-relay mode still bound to ui thread.
                     Dispatcher.InvokeAsync(() => currentView.HandleNoteOn_VS_Event(this, new PKeyEventArgs(e.Message.Data1), e.Message.Data2));
@@ -795,15 +800,15 @@ namespace MidiSynth7
                 else
                 {
                     MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
-                    Dispatcher.InvokeAsync(()=>currentView.HandleNoteOnEvent(this, new NoteEventArgs(e.Message,false, true)));
+                    Dispatcher.InvokeAsync(() => currentView.HandleNoteOnEvent(this, new NoteEventArgs(e.Message, false, true)));
                     return;
                 }
             }
             if (e.Message.Command == ChannelCommand.NoteOff || (e.Message.Command == ChannelCommand.NoteOn && e.Message.Data2 == 0))
             {
                 MidiEngine.MidiEngine_SendRawChannelMessage(e.Message);
-                
-                Dispatcher.InvokeAsync(()=>currentView.HandleNoteOffEvent(this,new NoteEventArgs(e.Message,false,true)));
+
+                Dispatcher.InvokeAsync(() => currentView.HandleNoteOffEvent(this, new NoteEventArgs(e.Message, false, true)));
             }
         }
 
@@ -818,12 +823,12 @@ namespace MidiSynth7
                 return;
             }
             Dialog g = new Dialog();
-            
+
             g.SnapsToDevicePixels = true;
             g.ShowDialog(new NFXDelay(this, GR_OverlayContent, ActiveNFXProfile), this, GR_OverlayContent);
         }
 
-        
+
 
         public class ChInvk
         {
@@ -861,7 +866,7 @@ namespace MidiSynth7
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("gracefully continue... but: "+ex.Message);
+                    Console.WriteLine("gracefully continue... but: " + ex.Message);
                 }
 
             }

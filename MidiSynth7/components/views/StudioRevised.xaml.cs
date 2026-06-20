@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Sequence = MidiSynth7.components.sequencer.Sequence;
@@ -111,6 +112,7 @@ namespace MidiSynth7.components.views
         {
             InitializeComponent();
             Config = config;
+            Config.Normalize();
             MidiEngine = engine;
             AppContext = context;
             cb_Devices.Items.Clear();
@@ -158,6 +160,7 @@ namespace MidiSynth7.components.views
             #endregion
 
             NFXProfileUpdate();
+            SetupSustainChannelContextMenu();
 
             #region ADD ellipses
             AppContext.channelIndicators.Clear();
@@ -287,6 +290,173 @@ namespace MidiSynth7.components.views
         }
         #endregion      
         
+
+        private void SetupSustainChannelContextMenu()
+        {
+            Config.Normalize();
+
+            Brush menuBackground = new SolidColorBrush(Color.FromRgb(16, 18, 22));
+            Brush menuForeground = new SolidColorBrush(Color.FromRgb(238, 244, 255));
+            Brush menuBorder = new SolidColorBrush(Color.FromRgb(0, 170, 255));
+
+            ContextMenu menu = new ContextMenu()
+            {
+                Background = menuBackground,
+                Foreground = menuForeground,
+                BorderBrush = menuBorder,
+                BorderThickness = new Thickness(1),
+                Padding = new Thickness(2),
+                Margin = new Thickness(0),
+                PlacementTarget = Mio_SustainPdl,
+               
+            };
+            menu.Template = (ControlTemplate)XamlReader.Parse(@"
+<ControlTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+                 xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+                 TargetType='{x:Type ContextMenu}'>
+    <Border Background='#101216'
+            BorderBrush='#00AAFF'
+            BorderThickness='1'
+            Padding='4'
+            SnapsToDevicePixels='True'>
+        <StackPanel IsItemsHost='True'
+                    Margin='0'
+                    Background='#101216'/>
+    </Border>
+</ControlTemplate>");
+            menu.ItemContainerStyle = (Style)XamlReader.Parse(@"
+<Style xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+       xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+       TargetType='{x:Type MenuItem}'>
+    <Setter Property='Padding' Value='0'/>
+    <Setter Property='Margin' Value='0'/>
+    <Setter Property='Background' Value='Transparent'/>
+    <Setter Property='Template'>
+        <Setter.Value>
+            <ControlTemplate TargetType='{x:Type MenuItem}'>
+                <ContentPresenter
+                    ContentSource='Header'
+                    Margin='0'
+                    RecognizesAccessKey='True'/>
+            </ControlTemplate>
+        </Setter.Value>
+    </Setter>
+</Style>");
+            menu.Resources.Add(typeof(CheckBox), BuildSustainMenuCheckBoxStyle());
+            menu.Resources[SystemColors.MenuBrushKey] = menuBackground;
+            menu.Resources[SystemColors.ControlBrushKey] = menuBackground;
+            menu.Resources[SystemColors.MenuTextBrushKey] = menuForeground;
+            menu.Resources[SystemColors.HighlightBrushKey] = new SolidColorBrush(Color.FromRgb(0, 58, 82));
+            menu.Resources[SystemColors.HighlightTextBrushKey] = menuForeground;
+            menu.OverridesDefaultStyle = true;
+            for (int i = 0; i < 16; i++)
+            {
+                CheckBox item = new CheckBox()
+                {
+                    Content = $"Channel {i + 1}",
+                    IsChecked = Config.SustainPedalChannels[i],
+                    Tag = i
+                };
+                
+                item.Checked += SustainChannelMenuItem_Changed;
+                item.Unchecked += SustainChannelMenuItem_Changed;
+                menu.Items.Add(item);
+                
+            }
+
+            Mio_SustainPdl.ContextMenu = menu;
+            Mio_SustainPdl.MouseLeftButtonUp += Mio_SustainPdl_MouseLeftButtonUp;
+            Mio_SustainPdl.Cursor = Cursors.Hand;
+            Mio_SustainPdl.ToolTip = "Right-click to choose which channels respond to sustain.";
+        }
+        private void Mio_SustainPdl_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (Mio_SustainPdl.ContextMenu == null)
+                return;
+
+            Mio_SustainPdl.ContextMenu.PlacementTarget = Mio_SustainPdl;
+            Mio_SustainPdl.ContextMenu.IsOpen = true;
+
+            e.Handled = true;
+        }
+        private Style BuildSustainMenuCheckBoxStyle()
+        {
+            const string xaml = @"
+<Style xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+       xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+       TargetType='{x:Type CheckBox}'>
+    <Setter Property='Foreground' Value='#EEF4FF'/>
+    <Setter Property='Background' Value='Transparent'/>
+    <Setter Property='BorderBrush' Value='#00AAFF'/>
+    <Setter Property='Padding' Value='8,4,12,4'/>
+    <Setter Property='HorizontalContentAlignment' Value='Left'/>
+    <Setter Property='Template'>
+        <Setter.Value>
+            <ControlTemplate TargetType='{x:Type CheckBox}'>
+                <Border x:Name='Row'
+                        Background='{TemplateBinding Background}'
+                        BorderBrush='Transparent'
+                        BorderThickness='1'
+                        SnapsToDevicePixels='True'>
+                    <Grid Margin='{TemplateBinding Padding}'>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width='14'/>
+                            <ColumnDefinition Width='8'/>
+                            <ColumnDefinition Width='*'/>
+                        </Grid.ColumnDefinitions>
+                        <Border x:Name='Box'
+                                Width='14'
+                                Height='14'
+                                HorizontalAlignment='Left'
+                                VerticalAlignment='Center'
+                                Background='#060A12'
+                                BorderBrush='#6A7A8A'
+                                BorderThickness='1'/>
+                        <Path x:Name='Tick'
+                              Grid.Column='0'
+                              Data='M 2 7 L 6 11 L 13 2'
+                              Stroke='#00D8FF'
+                              StrokeThickness='2'
+                              StrokeStartLineCap='Square'
+                              StrokeEndLineCap='Square'
+                              Visibility='Collapsed'/>
+                        <ContentPresenter Grid.Column='2'
+                                          VerticalAlignment='Center'
+                                          RecognizesAccessKey='True'/>
+                    </Grid>
+                </Border>
+                <ControlTemplate.Triggers>
+                    <Trigger Property='IsMouseOver' Value='True'>
+                        <Setter TargetName='Row' Property='Background' Value='#003A52'/>
+                        <Setter TargetName='Row' Property='BorderBrush' Value='#00AAFF'/>
+                    </Trigger>
+                    <Trigger Property='IsChecked' Value='True'>
+                        <Setter TargetName='Box' Property='BorderBrush' Value='#00AAFF'/>
+                        <Setter TargetName='Box' Property='Background' Value='#082638'/>
+                        <Setter TargetName='Tick' Property='Visibility' Value='Visible'/>
+                    </Trigger>
+                    <Trigger Property='IsEnabled' Value='False'>
+                        <Setter Property='Opacity' Value='0.45'/>
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+        </Setter.Value>
+    </Setter>
+</Style>";
+            return (Style)XamlReader.Parse(xaml);
+        }
+
+        private void SustainChannelMenuItem_Changed(object sender, RoutedEventArgs e)
+        {
+            CheckBox item = sender as CheckBox;
+            if (Config == null || item == null || item.Tag == null) return;
+            if (!int.TryParse(item.Tag.ToString(), out int channel)) return;
+            if (channel < 0 || channel > 15) return;
+
+            Config.Normalize();
+            Config.SustainPedalChannels[channel] = item.IsChecked == true;
+        }
+
         #region Channels
         private void ChInd_MouseUp(object sender, MouseButtonEventArgs e)
         {
